@@ -31,6 +31,31 @@
    - 保存关键词研究文档
    - 保存竞品分析文档
 
+4. **项目基础信息**
+   - 域名：extractkeywords.com ✅ 已购买
+   - 品牌名：ExtractKeywords
+   - 项目邮箱：support@extractkeywords.com
+
+5. **技术栈选型**
+   - 部署：Vercel
+   - 框架：Next.js + Tailwind CSS
+   - 认证：Clerk
+   - 支付：Creem
+   - 邮件：Resend
+   - 数据库：Supabase
+   - AI：DeepSeek / 阿里云
+
+6. **网站结构设计**
+   - 首页 + 功能落地页 + 博客
+   - 必备页面：Privacy, Terms, Contact, Pricing
+   - 内部链接策略
+
+7. **GEO & AI SEO 策略**
+   - Schema.org 结构化数据
+   - AI 爬虫友好的 robots.txt
+   - E-E-A-T 信号
+   - 内容结构优化
+
 #### 🔄 进行中
 
 - 暂无
@@ -103,5 +128,8 @@
 
 - [x] 域名选择 → `extractkeywords.com` ✅ 已购买
 - [x] 技术栈选择 → Next.js + Tailwind + Clerk + Creem + Resend + Supabase
-- [ ] 首页设计
-- [ ] MVP 功能细节确认
+- [x] 网站结构设计 ✅
+- [x] GEO & AI SEO 策略 ✅
+- [ ] 首页设计细节
+- [ ] MVP 功能详细规格
+- [ ] 开发任务拆分
