@@ -101,6 +101,7 @@
 
 ## 下次会议议题
 
-- [ ] 域名选择
-- [ ] MVP 功能确认
-- [ ] 技术栈选择
+- [x] 域名选择 → `extractkeywords.com` ✅ 已购买
+- [x] 技术栈选择 → Next.js + Tailwind + Clerk + Creem + Resend + Supabase
+- [ ] 首页设计
+- [ ] MVP 功能细节确认
