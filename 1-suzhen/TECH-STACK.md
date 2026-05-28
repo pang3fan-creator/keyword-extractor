@@ -1,5 +1,14 @@
 # 技术栈选型
 
+## 项目信息
+
+| 项目 | 值 |
+|-----|-----|
+| 域名 | extractkeywords.com |
+| 项目邮箱 | support@extractkeywords.com |
+
+---
+
 ## 基础架构
 
 | 用途 | 技术选型 | 说明 |
