@@ -5,6 +5,7 @@
 | 项目 | 值 |
 |-----|-----|
 | 域名 | extractkeywords.com |
+| 品牌名 | ExtractKeywords |
 | 项目邮箱 | support@extractkeywords.com |
 
 ---
