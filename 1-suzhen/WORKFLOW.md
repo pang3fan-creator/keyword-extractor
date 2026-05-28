@@ -4,7 +4,7 @@
 
 ```
 project-name/
-├── 1-suzhen/                      # 素贞专属文件夹
+├── 1-suzhen/                      # 专属文件夹
 │   ├── KEYWORD-RESEARCH.md        # 关键词研究
 │   ├── COMPETITOR-ANALYSIS.md     # 竞品分析
 │   ├── PROGRESS.md                # 项目进度
@@ -16,7 +16,7 @@ project-name/
 
 ## 分工原则
 
-### 素贞的职责
+### hermes的职责
 
 - ✅ 关键词研究、数据分析
 - ✅ 竞品分析、市场调研
@@ -42,8 +42,8 @@ project-name/
 
 ## 固定流程
 
-1. **开始项目** → 素贞在 `own/` 新建项目文件夹
-2. **创建 `1-suzhen/` 文件夹** → 存放素贞的笔记
+1. **开始项目** → hermes在 `own/` 新建项目文件夹
+2. **创建 `1-suzhen/` 文件夹** → 存放hermes的笔记
 3. **讨论内容保存** → 所有有价值信息保存到 `1-suzhen/`
 4. **工程实现** → Claude Code 在项目根目录生成代码
 5. **推送 GitHub** → 定期同步
@@ -52,6 +52,6 @@ project-name/
 
 ## 配合原则
 
-1. **素贞只提意见，不写代码**
+1. **hermes只提意见，不写代码**
 2. **讨论记录保存在 `1-suzhen/`，与代码分离**
 3. **主人看完讨论后，用 Claude Code 实现具体功能**
