@@ -188,11 +188,43 @@ User-Agent: ExtractKeywordsBot/1.0
 
 ### 3.7 Robots.txt 合规
 
+**遵守目标网站的 robots.txt**
+
 ```
-检查目标网站的 robots.txt
-遵守 Disallow 规则
-避免过度抓取
+用户输入URL → 解析域名 → 获取 robots.txt →
+  ├─ 允许抓取 → 执行抓取
+  └─ 禁止抓取 → 返回提示 "This site doesn't allow automated extraction"
 ```
+
+**实现方式：**
+
+```javascript
+async function checkRobotsTxt(url) {
+  const domain = new URL(url).origin;
+  const robotsUrl = `${domain}/robots.txt`;
+
+  try {
+    const response = await fetch(robotsUrl);
+    const robotsTxt = await response.text();
+
+    // 解析 robots.txt
+    const parser = new RobotsParser(robotsTxt);
+    const allowed = parser.canFetch('ExtractKeywordsBot', url);
+
+    return allowed;
+  } catch (error) {
+    // robots.txt 不存在，默认允许
+    return true;
+  }
+}
+```
+
+**User-Agent：** `ExtractKeywordsBot/1.0`
+
+**注意事项：**
+- robots.txt 不存在时默认允许
+- 检查结果可缓存 24 小时
+- 避免 Crawl-delay 过长的网站
 
 ---
 
@@ -479,12 +511,58 @@ keyword, extraction, tool, content, analysis...
 
 | 功能 | Guest | Free User | Pro User |
 |-----|-------|-----------|----------|
-| 文本提取 | ✅ | ✅ | ✅ |
-| URL 提取 | ✅ | ✅ | ✅ |
+| 文本提取 | ✅ 每日10次 | ✅ 无限 | ✅ 无限 |
+| URL 提取 | ✅ 每日10次 | ✅ 无限 | ✅ 无限 |
 | AI 提取 | ❌ | ❌ | ✅ |
 | PDF 提取 | ❌ | ❌ | ✅ |
 | YouTube 提取 | ❌ | ❌ | ✅ |
 | 提取历史 | ❌ | ❌ | ✅ |
+
+### 10.4 次数限制实现
+
+**未登录用户：每日 10 次**
+
+**统计方式：Cookie + IP 双重方案**
+
+```javascript
+// 1. 优先读取 Cookie
+const cookieCount = getCookie('daily_usage_count');
+
+// 2. Cookie 不存在，读取 IP 记录
+if (!cookieCount) {
+  const ipCount = await getIPUsageCount(userIP);
+  return ipCount;
+}
+
+// 3. 返回当前使用次数
+return cookieCount;
+```
+
+**限制逻辑：**
+
+```
+用户访问 → 检查是否登录
+  ├─ 已登录 → 无限制（免费用户）/ 无限（付费用户）
+  └─ 未登录 → 检查今日使用次数
+       ├─ < 10 次 → 正常使用，计数 +1
+       └─ ≥ 10 次 → 提示注册
+```
+
+**Cookie 设置：**
+- 过期时间：当日 23:59:59
+- 内容：`daily_usage_count=5`
+- 路径：`/`
+
+**IP 记录（后端）：**
+```sql
+CREATE TABLE ip_usage (
+  ip_address TEXT PRIMARY KEY,
+  date DATE,
+  count INTEGER DEFAULT 0
+);
+```
+
+**每日凌晨自动清理过期记录**
 
 ---
 
@@ -702,14 +780,17 @@ function extractKeywords(text, options = {}) {
 
 ---
 
-## 十五、待确认事项
+## 十五、已确认事项
 
-1. **中文分词库：** jieba-js 还是调用后端 API？
-2. **AI 模型选择：** DeepSeek 还是阿里云通义？
-3. **URL 抓取策略：** 是否遵守 robots.txt？
-4. **免费版限制：** 是否添加每日次数限制？
+| 问题 | 决策 |
+|-----|------|
+| 语言支持 | MVP 只做英语，不做中文分词 |
+| AI 模型 | DeepSeek |
+| Robots.txt | 遵守目标网站的 robots.txt |
+| 免费版限制 | 未登录用户每日10次，注册后不限 |
 
 ---
 
 *功能规格文档创建：2026-05-28*
+*决策确认：2026-05-28*
 *待主人审阅后交给 Claude Code 开发*
