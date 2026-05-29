@@ -102,9 +102,22 @@
     - 文档：`1-suzhen/UI-COMPONENTS.md`
     - PRD 更新：技术栈添加 HyperUI
 
+13. **Phase 0 项目初始化**（Claude Code 执行）
+    - Next.js 16.2.6 + React 19.2 + Tailwind v4 + TypeScript（App Router、src 目录、Turbopack）
+    - 实际版本说明：模板已升级到 Next 16，与 PRD 写的 14+ 相比有破坏性变化（Tailwind v4 CSS-first 配置、动态路由 `params` 为 Promise 等）
+    - 安装运行时依赖：`@clerk/nextjs@^7.4.2`（注意：实际版本 7，PRD 写的 5 已过时）、`cheerio@^1.2.0`、`clsx@^2.1.1`、`tailwind-merge@^3.6.0`
+    - 安装开发依赖：`prettier`、`prettier-plugin-tailwindcss`
+    - 创建 `.env.example` 与 `.env.local`（Clerk / DeepSeek / Creem / Supabase / Resend / 应用 URL）
+    - 整理 `.gitignore`（清掉 vim 状态栏污染段、保留 `.ccb/` `.clerk/` `.worktrees/` 等保护）
+    - ESLint 忽略文档与 agent 沙箱目录
+    - 建立目录骨架：`src/components/{ui,layout,extractor}` `src/lib` `src/types` `src/app/{pricing,privacy,terms}`
+    - 通用工具：`src/lib/utils.ts`（cn 函数）、`src/types/index.ts`（共享类型）
+    - 自检：`npm run dev` ✅、`npm run build` ✅、`npm run lint` ✅
+    - 跳过：Task 0.4 Vercel 部署（需主人账号操作）
+
 #### 🔄 进行中
 
-- 等待主人用 HyperUI 试开发前端，确认效果
+- 等待主人决策三个 UI 选项（品牌主色、Logo 形式、AI Tab 显隐）后开始 UI 设计
 
 #### 📋 待办
 
@@ -117,7 +130,8 @@
 7. [x] 技术决策确认 ✅
 8. [x] 开发任务拆分 ✅
 9. [x] UI 组件库选型 → HyperUI ✅
-10. [ ] Claude Code 开发启动
+10. [x] Claude Code 开发启动 → Phase 0 完成 ✅
+11. [ ] UI 设计
 
 ---
 
