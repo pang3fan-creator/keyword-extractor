@@ -12,7 +12,7 @@
 
 ### 2.1 Header 导航栏
 
-**链接**：https://www.hyperui.dev/components/marketing/header
+**链接**：https://www.hyperui.dev/components/marketing/headers
 
 **推荐款式**：
 - Header 1-8 任选，推荐简洁款
