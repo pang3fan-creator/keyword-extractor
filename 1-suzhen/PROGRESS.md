@@ -90,9 +90,21 @@
     - 数据库设计 + 验收标准
     - 文档：`0-Develop_Doc/DEVELOPMENT-TASKS.md`
 
+---
+
+### 2026-05-29
+
+#### ✅ 已完成
+
+12. **UI 组件库选型**
+    - 调研 Tailwind UI（付费）、HyperUI（免费）、shadcn/ui（免费）
+    - 选择 HyperUI：免费、MIT 协议、覆盖 90% 组件需求
+    - 文档：`1-suzhen/UI-COMPONENTS.md`
+    - PRD 更新：技术栈添加 HyperUI
+
 #### 🔄 进行中
 
-- UI 组件库调研完成，等待主人确认开发启动
+- 等待主人用 HyperUI 试开发前端，确认效果
 
 #### 📋 待办
 
@@ -104,7 +116,8 @@
 6. [x] MVP 功能详细规格 ✅
 7. [x] 技术决策确认 ✅
 8. [x] 开发任务拆分 ✅
-9. [ ] Claude Code 开发启动
+9. [x] UI 组件库选型 → HyperUI ✅
+10. [ ] Claude Code 开发启动
 
 ---
 
@@ -190,5 +203,6 @@
 - [x] 首页设计细节 ✅
 - [x] MVP 功能详细规格 ✅
 - [x] 技术决策确认 ✅
-- [ ] 开发任务拆分
+- [x] 开发任务拆分 ✅
+- [x] UI 组件库选型 → HyperUI ✅
 - [ ] Claude Code 开发启动
