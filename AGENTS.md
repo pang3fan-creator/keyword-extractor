@@ -41,7 +41,7 @@ npm run lint         # 代码检查
 | 类型定义 | `src/types/index.ts`（Keyword, Phrase, ExtractionResult, AIExtractionResult 等） |
 | 工具函数 | `src/lib/utils.ts`（cn 函数） |
 | 提取逻辑 | `src/lib/keyword-extractor.ts`, `src/lib/url-fetcher.ts`, `src/lib/ai-extractor.ts`（规划中） |
-| 国际化 | `src/i18n/routing.ts`, `src/i18n/request.ts`, `src/proxy.ts`, `messages/en.json` |
+| 国际化 | `src/i18n/routing.ts`, `src/i18n/request.ts`, `src/middleware.ts`, `messages/en.json` |
 | SEO | `src/app/sitemap.ts`, `src/app/robots.ts`, `src/app/llms.txt/route.ts`（规划中） |
 | 规划文档 | `PRD.md`, `DEVELOPMENT-TASKS.md`, `1-suzhen/`（MVP-SPEC / HOMEPAGE-DESIGN / PRICING / COMPETITOR-ANALYSIS / GEO-AI-SEO / KEYWORD-RESEARCH / SITE-STRUCTURE / TECH-STACK / UI-COMPONENTS / WORKFLOW / PROGRESS） |
 
@@ -50,7 +50,7 @@ npm run lint         # 代码检查
 | # | 议题 | 决策 |
 |---|------|------|
 | D-001 | 暗色模式 | class 切换 + Tailwind v4 `@custom-variant dark` + ThemeProvider 三态（light/dark/system），FOUC 用 `<script>` 内联预热 |
-| D-002 | 多语言 | next-intl + `[locale]` 路由 + RTL 预留，Next 16 用 `proxy.ts` 替代 `middleware.ts`，MVP 仅英文 |
+| D-002 | 多语言 | next-intl + `[locale]` 路由 + RTL 预留，MVP 仅英文。当前使用 `middleware.ts`（Vercel 尚不完全支持 `proxy.ts`），Next 16 的 `proxy.ts` 为未来迁移方向 |
 | D-003 | AI Tab 可见性 | 显示但禁用 + PRO 徽章；未登录弹登录、已登录未付费弹升级 |
 | D-004 | Vercel | 已上线，暂不提交 GSC（等 SEO 内容就绪后再提交） |
 
@@ -58,14 +58,14 @@ npm run lint         # 代码检查
 
 ### next-intl 路由规则（Next.js 16）
 
-- Next.js 16 将 `middleware.ts` 重命名为 `proxy.ts`，next-intl 在 `proxy.ts` 中 `createMiddleware(routing)`
+- Next.js 16 新增 `proxy.ts` 替代 `middleware.ts`，但 Vercel 部署当前不完全支持 `proxy.ts`，实际仍使用 `middleware.ts`。next-intl 在 `middleware.ts` 中 `createMiddleware(routing)`
 - 根布局 `app/layout.tsx` 含 `<html>`/`<body>` + FOUC 脚本；`app/[locale]/layout.tsx` 注入 `NextIntlClientProvider` + `ThemeProvider`
 - `/` → 英文首页，直接展示
 - `/en` → 英文首页，重定向到 `/`
 - 不要在 `[locale]` 目录下直接创建 `en/` 文件夹
 - `usePathname()` 返回的路径包含语言前缀（如 `/es/about`），解析时需过滤
 - 过滤语言段: `segments.filter((s, i) => i !== 0 || !SUPPORTED_LOCALES.includes(s))`
-- **非 locale 路径**（如 `/auth/*`）需要在 `proxy.ts` 的 matcher 中显式排除，且需要自己的 layout（含 `<html>`/`<body>` 标签）
+- **非 locale 路径**（如 `/auth/*`）需要在 `middleware.ts` 的 matcher 中显式排除，且需要自己的 layout（含 `<html>`/`<body>` 标签）
 - 组件用 Tailwind logical 属性 `ms-*/me-*` 替代 `ml-*/mr-*`，兼容未来 RTL 语言
 
 ### 多语言 URL 拼接
@@ -185,7 +185,7 @@ npm run lint         # 代码检查
 
 - AI 搜索引擎（ChatGPT、Perplexity）使用 `/llms.txt` 获取网站摘要
 - 实现方式：Route Handler `src/app/llms.txt/route.ts`，返回 `text/plain`，内联纯文本内容
-- proxy.ts matcher 排除 `.*\\..*`（含点号 URL），所以路由不受 next-intl 影响
+- proxy.ts/middleware.ts matcher 排除 `.*\\..*`（含点号 URL），所以路由不受 next-intl 影响
 
 ## Git 操作陷阱
 
