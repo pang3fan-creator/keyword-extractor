@@ -88,7 +88,7 @@
     - Phase 3: SEO 内容（8 个任务）
     - Phase 4: 差异化功能（后期）
     - 数据库设计 + 验收标准
-    - 文档：`0-Develop_Doc/DEVELOPMENT-TASKS.md`
+    - 文档：`../DEVELOPMENT-TASKS.md`
 
 ---
 
