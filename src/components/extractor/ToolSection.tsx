@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { cn } from '@/lib/utils';
 import { Tabs } from '@/components/ui/Tabs';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -19,9 +20,14 @@ export function ToolSection() {
   const [urlInput, setUrlInput] = useState('');
   const [activeTab, setActiveTab] = useState('text');
   const [results, setResults] = useState<KeywordItem[] | null>(null);
+  const [bigrams, setBigrams] = useState<KeywordItem[]>([]);
+  const [trigrams, setTrigrams] = useState<KeywordItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [urlError, setUrlError] = useState('');
+  const [resultFilter, setResultFilter] = useState('all');
+  const [sortField, setSortField] = useState('count');
+  const [sortDir, setSortDir] = useState('desc');
 
   const charCount = textInput.length;
 
@@ -76,6 +82,35 @@ export function ToolSection() {
         .sort((a, b) => b.count - a.count);
 
       setResults(items);
+
+      // Generate bigrams (2-word phrases)
+      const nonStopWords = words
+        .map((w) => w.replace(/[^a-z0-9-]/g, ''))
+        .filter((w) => w.length >= 2 && !stopWords.has(w));
+
+      const bigramMap: Record<string, number> = {};
+      for (let i = 0; i < nonStopWords.length - 1; i++) {
+        const bg = nonStopWords[i] + ' ' + nonStopWords[i + 1];
+        bigramMap[bg] = (bigramMap[bg] || 0) + 1;
+      }
+      const bigramTotal = Object.values(bigramMap).reduce((a, b) => a + b, 0) || 1;
+      const bigramItems: KeywordItem[] = Object.entries(bigramMap)
+        .map(([word, count]) => ({ word, count, density: Math.round((count / bigramTotal) * 10000) / 100 }))
+        .sort((a, b) => b.count - a.count);
+      setBigrams(bigramItems);
+
+      // Generate trigrams (3-word phrases)
+      const trigramMap: Record<string, number> = {};
+      for (let i = 0; i < nonStopWords.length - 2; i++) {
+        const tg = nonStopWords[i] + ' ' + nonStopWords[i + 1] + ' ' + nonStopWords[i + 2];
+        trigramMap[tg] = (trigramMap[tg] || 0) + 1;
+      }
+      const trigramTotal = Object.values(trigramMap).reduce((a, b) => a + b, 0) || 1;
+      const trigramItems: KeywordItem[] = Object.entries(trigramMap)
+        .map(([word, count]) => ({ word, count, density: Math.round((count / trigramTotal) * 10000) / 100 }))
+        .sort((a, b) => b.count - a.count);
+      setTrigrams(trigramItems);
+
       setLoading(false);
     }, 500);
   };
@@ -103,6 +138,26 @@ export function ToolSection() {
   const handleAiClick = () => {
     alert('AI extraction requires a Pro subscription. Please sign up and upgrade to access this feature.');
   };
+
+  const filteredResults = (() => {
+    if (!results) return [];
+    if (resultFilter === 'all' || resultFilter === '1word') return results;
+    if (resultFilter === '2word') return bigrams;
+    if (resultFilter === '3word') return trigrams;
+    return results;
+  })();
+
+  const sortedResults = [...filteredResults].sort((a, b) => {
+    let va: string | number, vb: string | number;
+    if (sortField === 'word') { va = a.word; vb = b.word; }
+    else if (sortField === 'density') { va = a.density; vb = b.density; }
+    else { va = a.count; vb = b.count; }
+
+    if (typeof va === 'string' && typeof vb === 'string') {
+      return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
+    }
+    return sortDir === 'asc' ? (va as number) - (vb as number) : (vb as number) - (va as number);
+  });
 
   const tabs = [
     {
@@ -195,7 +250,7 @@ export function ToolSection() {
         <div className="mt-8 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">
-              {t('results', { count: results.length })}
+              {t('results', { count: sortedResults.length })}
             </h2>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={handleCopy}>
@@ -206,14 +261,57 @@ export function ToolSection() {
               </Button>
             </div>
           </div>
+
+          {/* Sub-tabs for filtering: All / 1-word / 2-word / 3-word */}
+          <div className="flex gap-1 rounded-lg bg-surface p-1">
+            {(['all', '1word', '2word', '3word'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setResultFilter(f)}
+                className={cn(
+                  'rounded-md px-3 py-1.5 text-xs font-medium transition-colors',
+                  resultFilter === f
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted hover:text-foreground'
+                )}
+              >
+                {t(f === 'all' ? 'filterAll' : f === '1word' ? 'filterOneWord' : f === '2word' ? 'filterTwoWord' : 'filterThreeWord')}
+              </button>
+            ))}
+          </div>
+
           <Table>
             <TableHead>
-              <Th>Keyword</Th>
-              <Th className="text-right">Count</Th>
-              <Th className="text-right">Density</Th>
+              <Th
+                className="cursor-pointer select-none"
+                onClick={() => {
+                  if (sortField === 'word') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                  else { setSortField('word'); setSortDir('asc'); }
+                }}
+              >
+                Keyword {sortField === 'word' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+              </Th>
+              <Th
+                className="cursor-pointer select-none text-right"
+                onClick={() => {
+                  if (sortField === 'count') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                  else { setSortField('count'); setSortDir('desc'); }
+                }}
+              >
+                Count {sortField === 'count' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+              </Th>
+              <Th
+                className="cursor-pointer select-none text-right"
+                onClick={() => {
+                  if (sortField === 'density') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                  else { setSortField('density'); setSortDir('desc'); }
+                }}
+              >
+                Density {sortField === 'density' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+              </Th>
             </TableHead>
             <TableBody>
-              {results.map((item) => (
+              {sortedResults.map((item) => (
                 <Tr key={item.word}>
                   <Td className="font-medium">{item.word}</Td>
                   <Td className="text-right tabular-nums">{item.count}</Td>
