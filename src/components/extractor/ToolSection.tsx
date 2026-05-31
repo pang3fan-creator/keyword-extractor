@@ -96,27 +96,31 @@ export function ToolSection() {
       label: t('tabText'),
       content: (
         <div className="space-y-4">
-          <textarea
-            className="h-64 w-full resize-y rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            placeholder={t('placeholderText')}
-            value={textInput}
-            onChange={(e) => setTextInput(e.target.value)}
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-xs text-muted">
+          <div className="relative">
+            <textarea
+              className="h-64 w-full resize-y rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+              placeholder={t('placeholderText')}
+              value={textInput}
+              onChange={(e) => setTextInput(e.target.value)}
+            />
+            <span className="pointer-events-none absolute right-3 bottom-3 text-xs text-muted">
               {t('characters', { count: charCount.toLocaleString() })}
             </span>
-            <Button onClick={handleExtract} disabled={loading || !textInput.trim()}>
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-fg/30 border-t-primary-fg" />
-                  {t('extracting')}
-                </span>
-              ) : (
-                t('extract')
-              )}
-            </Button>
           </div>
+          <Button
+            onClick={handleExtract}
+            disabled={loading || !textInput.trim()}
+            className="w-full"
+          >
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-fg/30 border-t-primary-fg" />
+                {t('extracting')}
+              </span>
+            ) : (
+              t('extract')
+            )}
+          </Button>
         </div>
       ),
     },
