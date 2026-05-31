@@ -64,8 +64,10 @@
     "tableCount": "Count",
     "tableDensity": "Density",
     "pageOf": "Page {current} of {total}",
-    "pagePrevious": "Previous",
-    "pageNext": "Next"
+"pagePrevious": "Previous",
+"pageNext": "Next",
+"pageFirst": "First",
+"pageLast": "Last"
   },
   "nav": {
     "pricing": "Pricing",

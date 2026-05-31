@@ -331,6 +331,16 @@ export function ToolSection() {
                 <Button
                   variant="outline"
                   size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={safePage <= 1}
+                  aria-label={t('pageFirst')}
+                >
+                  {'\u00AB'} {t('pageFirst')}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                   disabled={safePage <= 1}
                 >
@@ -379,6 +389,16 @@ export function ToolSection() {
                   disabled={safePage >= totalPages}
                 >
                   {t('pageNext')}
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={safePage >= totalPages}
+                  aria-label={t('pageLast')}
+                >
+                  {t('pageLast')} {'\u00BB'}
                 </Button>
               </div>
 
