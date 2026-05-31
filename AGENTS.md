@@ -3,7 +3,8 @@
 ## 技术栈
 
 - **框架**: Next.js 16 (App Router, Turbopack)
-- **样式**: Tailwind CSS v4（CSS-first 配置，`@import "tailwindcss"`）
+- **样式**: Tailwind CSS v4（CSS-first 配置，`@import "tailwindcss"`）+ shadcn/ui v4（`@base-ui/react` 底层）
+- **UI 布局模式**: HyperUI（HTML 片段，营销页面参考）
 - **认证**: Clerk (`@clerk/nextjs` v7)
 - **网页抓取**: Cheerio
 - **AI**: DeepSeek（语义关键词提取）
@@ -37,7 +38,7 @@ npm run lint         # 代码检查
 | 区域 | 关键路径 |
 |------|---------|
 | 页面 | `src/app/[locale]/page.tsx`（首页）, `src/app/pricing/`, `src/app/privacy/`, `src/app/terms/` |
-| 组件 | `src/components/ui/`（Button, Input, Tabs, Table）, `src/components/layout/`（Header, Footer, Logo）, `src/components/extractor/`（ToolSection）, `src/components/theme/`（ThemeProvider, ThemeToggle） |
+| 组件 | `src/components/ui/`（shadcn/ui v4：Button, Input, Textarea, Tabs, Table, Accordion）+ `src/components/layout/`（Header, Footer, Logo）+ `src/components/extractor/`（ToolSection, ExtractorTabs）+ `src/components/seo/`（FaqSection）+ `src/components/theme/`（ThemeProvider, ThemeToggle） |
 | 类型定义 | `src/types/index.ts`（Keyword, Phrase, ExtractionResult, AIExtractionResult 等） |
 | 工具函数 | `src/lib/utils.ts`（cn 函数） |
 | 提取逻辑 | `src/lib/keyword-extractor.ts`, `src/lib/url-fetcher.ts`, `src/lib/ai-extractor.ts`（规划中） |
@@ -49,7 +50,7 @@ npm run lint         # 代码检查
 
 | # | 议题 | 决策 |
 |---|------|------|
-| D-001 | 暗色模式 | class 切换 + Tailwind v4 `@custom-variant dark` + ThemeProvider 三态（light/dark/system），FOUC 用 `<script>` 内联预热 |
+| D-001 | 暗色模式 | class 切换 + Tailwind v4 `@custom-variant dark` + ThemeProvider 三态（light/dark/system），FOUC 用 `<script>` 内联预热。shadcn/ui CSS 变量通过 `.dark` 选择器同步切换 |
 | D-002 | 多语言 | next-intl + `[locale]` 路由 + RTL 预留，MVP 仅英文。使用 `proxy.ts`（Next.js 16 约定），`app/page.tsx` 提供 `/` 兜底路由 |
 | D-003 | AI Tab 可见性 | 显示但禁用 + PRO 徽章；未登录弹登录、已登录未付费弹升级 |
 | D-004 | Vercel | 已上线，暂不提交 GSC（等 SEO 内容就绪后再提交） |
@@ -103,6 +104,18 @@ npm run lint         # 代码检查
 - **不要用 `<Script strategy="beforeInteractive">`** 做 FOUC 脚本——它会被渲染成 `<html>` 的直接子元素，导致非法 HTML 嵌套和 hydration 错误。用 `<head>` 内直接 `<script dangerouslySetInnerHTML>`。React dev 端的 "script inside component" warning 是已知无害的
 - **Hydration 陷阱**：ThemeProvider 的 `useState` 初始值必须固定为 `'system'`，不能直接从 `localStorage` 读取（SSR 无 `window` → 服务端 `'system'` vs 客户端 `'dark'` = hydration mismatch）。`localStorage` 读取放在 `useEffect` 中，FOUC 脚本负责视觉防护，ThemeProvider 负责交互状态
 - **ESLint `react-hooks/set-state-in-effect`**：在 `useEffect` 中读 `localStorage` 后 `setState` 会触发此规则。这是标准模式，加 `// eslint-disable-next-line` 即可
+
+### shadcn/ui 组件（v4，基于 @base-ui/react）
+
+- 组件通过 `npx shadcn@latest add <name>` 安装，输出到 `src/components/ui/<name>.tsx`
+- **CSS 变量命名**：shadcn 使用 `--primary-foreground`（不是 `--primary-fg`），`--secondary-foreground` 等。所有变量在 `globals.css` 的 `@theme inline` 块中注册
+- **暗色模式**：shadcn 使用 class 策略，`globals.css` 中 `.dark { ... }` 块覆盖亮色变量，与 ThemeProvider 兼容
+- **新增组件命令**：`npx shadcn@latest add badge --yes` 等
+- **Button variant 映射**：shadcn 的 `default` = 我们的旧 `primary`，`outline`/`secondary`/`ghost`/`link`/`destructive` 同名
+- **Input error 态**：shadcn Input 不支持 `error` prop，用 `aria-invalid={true}` 触发内置 `aria-invalid:border-destructive` 样式
+- **Tabs API**：配置式 → 组合式。`ExtractorTabs.tsx` 是薄封装层，保持旧 API 不变
+- **Table 命名**：`Tr`→`TableRow`, `Td`→`TableCell`, `Th`→`TableHead`, `<TableHead>`(thead wrapper)→`<TableHeader>`
+- **Button asChild**：shadcn Button 基于 `@base-ui/react/button`，原生不支持 `asChild`。我们通过 `React.cloneElement` 补丁实现（`src/components/ui/Button.tsx:54-58`）
 
 ### 全屏覆盖层滚动锁定
 
