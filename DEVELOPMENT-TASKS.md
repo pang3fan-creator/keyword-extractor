@@ -2,148 +2,50 @@
 
 ## 任务概览
 
-| Phase | 内容 | 预计工时 | 优先级 |
-|-------|------|---------|--------|
-| Phase 0 | 项目初始化 | 0.5 天 | P0 |
-| Phase 1 | 核心功能 | 2 天 | P0 |
-| Phase 2 | 用户系统 + 支付 | 2 天 | P0 |
-| Phase 3 | SEO 内容 | 1.5 天 | P1 |
-| Phase 4 | 差异化功能 | 3 天 | P2 |
+| Phase | 内容 | 预计工时 | 优先级 | 状态 |
+|-------|------|---------|--------|------|
+| Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
+| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中 |
+| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | 🔄 进行中 |
+| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 进行中 |
+| Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
 
 **MVP 上线范围：Phase 0-3**
 
 ---
 
-## Phase 0: 项目初始化
+## Phase 0: 项目初始化 ✅
 
-### Task 0.1: 创建 Next.js 项目
+~~### Task 0.1: 创建 Next.js 项目~~ ✅（Next.js 16.2.6 + TS + Tailwind + Turbopack）
+~~### Task 0.2: 安装依赖~~ ✅（+ next-intl、tailwind-merge）
+~~### Task 0.3: 配置环境变量~~ ✅（.env.local + .env.example）
+~~### Task 0.4: 配置 Vercel 部署~~ ✅（extractkeywords.com 上线）
 
-**输入：** 无
-
-**命令：**
-```bash
-npx create-next-app@latest keyword-extractor --typescript --tailwind --eslint --app --src-dir --import-alias "@/*"
-```
-
-**输出：**
-- Next.js 项目骨架
-- Tailwind CSS 配置
-- TypeScript 配置
-
-**验证：** `npm run dev` 正常启动
-
----
-
-### Task 0.2: 安装依赖
-
-**输入：** Task 0.1 完成
-
-**依赖列表：**
-```json
-{
-  "dependencies": {
-    "@clerk/nextjs": "^5.x",
-    " cheerio": "^1.x",
-    "clsx": "^2.x",
-    "tailwind-merge": "^2.x"
-  },
-  "devDependencies": {
-    "@types/node": "^20.x",
-    "eslint": "^8.x",
-    "prettier": "^3.x"
-  }
-}
-```
-
-**输出：** package.json 更新
-
----
-
-### Task 0.3: 配置环境变量
-
-**输入：** Task 0.2 完成
-
-**创建文件：** `.env.local`
-
-```env
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_xxx
-CLERK_SECRET_KEY=sk_xxx
-
-# DeepSeek
-DEEPSEEK_API_KEY=sk-xxx
-
-# Creem
-CREEM_API_KEY=xxx
-
-# App
-NEXT_PUBLIC_APP_URL=https://extractkeywords.com
-```
-
-**创建文件：** `.env.example`（脱敏版本）
-
----
-
-### Task 0.4: 配置 Vercel 部署
-
-**输入：** Task 0.3 完成
-
-**操作：**
-1. 连接 GitHub 仓库
-2. 配置环境变量
-3. 设置域名 `extractkeywords.com`
-
-**输出：** Vercel 项目创建完成
-
----
-
-### Task 0.5: 创建基础组件结构
+### Task 0.5: 创建基础组件结构 ⚠️ 部分完成
 
 **输入：** Task 0.4 完成
 
-**目录结构：**
-```
-src/
-├── app/
-│   ├── layout.tsx
-│   ├── page.tsx
-│   ├── globals.css
-│   ├── pricing/
-│   │   └── page.tsx
-│   ├── privacy/
-│   │   └── page.tsx
-│   └── terms/
-│       └── page.tsx
-├── components/
-│   ├── ui/
-│   │   ├── button.tsx
-│   │   ├── input.tsx
-│   │   ├── tabs.tsx
-│   │   └── table.tsx
-│   ├── layout/
-│   │   ├── header.tsx
-│   │   └── footer.tsx
-│   └── extractor/
-│       ├── text-input.tsx
-│       ├── url-input.tsx
-│       ├── results-table.tsx
-│       └── export-buttons.tsx
-├── lib/
-│   ├── utils.ts
-│   ├── keyword-extractor.ts
-│   ├── url-fetcher.ts
-│   └── ai-extractor.ts
-└── types/
-    └── index.ts
-```
+**已完成：**
+- `src/app/layout.tsx`, `page.tsx`, `[locale]/layout.tsx`, `[locale]/page.tsx`, `globals.css`
+- `src/components/ui/` — Button, Input, Tabs, Table ✓
+- `src/components/layout/` — Header, Footer, Logo ✓（额外）
+- `src/components/theme/` — ThemeProvider, ThemeToggle（额外）
+- `src/types/index.ts` ✓
+- `src/lib/utils.ts` ✓（cn 函数）
+- `src/i18n/routing.ts`, `request.ts`, `proxy.ts`（额外）
 
-**输出：** 基础文件结构创建
+**未完成/缺失：**
+- `src/app/pricing/page.tsx` ❌（目录存在，文件缺失）
+- `src/app/privacy/page.tsx` ❌（目录存在，文件缺失）
+- `src/app/terms/page.tsx` ❌（目录存在，文件缺失）
+- `src/components/extractor/` — 逻辑全部内联在 `ToolSection.tsx` 中，无独立组件文件
+- `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `ai-extractor.ts` ❌（逻辑内联或未实现）
 
 ---
 
-## Phase 1: 核心功能
+## Phase 1: 核心功能 🔄
 
-### Task 1.1: 实现关键词提取算法
+### Task 1.1: 实现关键词提取算法 ⚠️ 内联实现
 
 **输入：** 用户文本
 
@@ -185,9 +87,11 @@ function extractKeywords(
 
 **验证：** 单元测试通过
 
+> ⚠️ 逻辑已内联在 `src/components/extractor/ToolSection.tsx`（31-65行）。支持文本清洗、分词、停用词过滤、词频统计、密度计算。**缺失：** Bigram/Trigram 分析、独立 `extractKeywords()` 函数导出、`ExtractionResult` 类型使用。
+
 ---
 
-### Task 1.2: 实现停用词列表
+### Task 1.2: 实现停用词列表 ⚠️ 内联实现
 
 **输入：** 无
 
@@ -209,9 +113,11 @@ export const ENGLISH_STOP_WORDS = [
 
 **验证：** 导出正确
 
+> ⚠️ 停用词列表内联在 `ToolSection.tsx`（38-47行）的 `Set` 中，未创建独立 `src/lib/stop-words.ts` 文件。
+
 ---
 
-### Task 1.3: 实现 URL 抓取功能
+### Task 1.3: 实现 URL 抓取功能 ❌ 未开始
 
 **输入：** URL 字符串
 
@@ -241,7 +147,7 @@ async function fetchURLContent(url: string): Promise<URLFetchResult>;
 
 ---
 
-### Task 1.4: 实现 Robots.txt 检查
+### Task 1.4: 实现 Robots.txt 检查 ❌ 未开始
 
 **输入：** URL
 
@@ -262,7 +168,7 @@ async function checkRobotsTxt(url: string): Promise<boolean>;
 
 ---
 
-### Task 1.5: 创建文本输入组件
+### Task 1.5: 创建文本输入组件 ❌ 未开始（内联在 ToolSection）
 
 **输入：** 无
 
@@ -287,7 +193,7 @@ export function TextInput({ onSubmit, maxLength = 5000, isLoading }: TextInputPr
 
 ---
 
-### Task 1.6: 创建 URL 输入组件
+### Task 1.6: 创建 URL 输入组件 ❌ 未开始（内联在 ToolSection）
 
 **输入：** 无
 
@@ -311,7 +217,7 @@ export function URLInput({ onSubmit, isLoading }: URLInputProps);
 
 ---
 
-### Task 1.7: 创建结果展示组件
+### Task 1.7: 创建结果展示组件 ❌ 未开始（内联在 ToolSection）
 
 **输入：** 提取结果数据
 
@@ -335,7 +241,7 @@ export function ResultsTable({ result, onExport }: ResultsTableProps);
 
 ---
 
-### Task 1.8: 创建导出功能
+### Task 1.8: 创建导出功能 ❌ 未开始（内联在 ToolSection）
 
 **输入：** 提取结果数据
 
@@ -354,7 +260,7 @@ function copyToClipboard(result: ExtractionResult): void;
 
 ---
 
-### Task 1.9: 创建 API 路由 - 文本提取
+### Task 1.9: 创建 API 路由 - 文本提取 ❌ 未开始
 
 **输入：** POST 请求
 
@@ -376,7 +282,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 1.10: 创建 API 路由 - URL 提取
+### Task 1.10: 创建 API 路由 - URL 提取 ❌ 未开始
 
 **输入：** POST 请求
 
@@ -397,7 +303,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 1.11: 创建使用次数限制逻辑
+### Task 1.11: 创建使用次数限制逻辑 ❌ 未开始
 
 **输入：** 请求信息
 
@@ -429,9 +335,9 @@ async function incrementRateLimit(
 
 ---
 
-## Phase 2: 用户系统 + 支付
+## Phase 2: 用户系统 + 支付 🔄
 
-### Task 2.1: 集成 Clerk 认证
+### Task 2.1: 集成 Clerk 认证 ❌ 未开始
 
 **输入：** Clerk 账号
 
@@ -446,7 +352,7 @@ async function incrementRateLimit(
 
 ---
 
-### Task 2.2: 创建 Header 组件
+### Task 2.2: 创建 Header 组件 ⚠️ 基本完成
 
 **输入：** 无
 
@@ -466,9 +372,11 @@ export function Header() {
 - Pricing 链接
 - 登录按钮 / 用户头像下拉
 
+> ⚠️ 已实现基本布局（Logo + nav + Login 链接 + ThemeToggle），但缺少 Clerk 认证集成（无用户头像下拉、无 Auth 绑定）。
+
 ---
 
-### Task 2.3: 创建 Footer 组件
+### Task 2.3: 创建 Footer 组件 ✅ 已完成
 
 **输入：** 无
 
@@ -479,9 +387,11 @@ export function Header() {
 - 导航链接
 - 版权声明
 
+> ✅ 完整实现。3 列网格布局（Product / Resources / Legal），含所有导航链接和版权行。
+
 ---
 
-### Task 2.4: 实现 AI 提取功能
+### Task 2.4: 实现 AI 提取功能 ❌ 未开始
 
 **输入：** 用户文本
 
@@ -510,7 +420,7 @@ async function extractWithAI(text: string): Promise<AIExtractionResult>;
 
 ---
 
-### Task 2.5: 创建 API 路由 - AI 提取
+### Task 2.5: 创建 API 路由 - AI 提取 ❌ 未开始
 
 **输入：** POST 请求
 
@@ -532,7 +442,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 2.6: 集成 Creem 支付
+### Task 2.6: 集成 Creem 支付 ❌ 未开始
 
 **输入：** Creem 账号
 
@@ -547,7 +457,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 2.7: 创建 Pricing 页面
+### Task 2.7: 创建 Pricing 页面 ❌ 未开始
 
 **输入：** 无
 
@@ -561,7 +471,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 2.8: 创建用户订阅管理
+### Task 2.8: 创建用户订阅管理 ❌ 未开始
 
 **输入：** 用户 ID
 
@@ -578,7 +488,7 @@ async function cancelSubscription(userId: string): Promise<void>;
 
 ---
 
-### Task 2.9: 创建权限控制 Hook
+### Task 2.9: 创建权限控制 Hook ❌ 未开始
 
 **输入：** 无
 
@@ -594,15 +504,18 @@ function usePermissions() {
     canUseAI: boolean;
     dailyLimit: number | null;
     dailyRemaining: number;
-  };
+};
+
+> ⚠️ 已在根 `layout.tsx` 中配置 title.template、description、OG、Twitter 元数据，但为硬编码文本，未使用 `getTranslations()` 动态获取翻译。各页面（pricing/privacy/terms）因页面不存在而无元数据。
+
 }
 ```
 
 ---
 
-## Phase 3: SEO 内容
+## Phase 3: SEO 内容 🔄
 
-### Task 3.1: 创建首页布局
+### Task 3.1: 创建首页布局 ✅ 已完成
 
 **输入：** 无
 
@@ -614,9 +527,11 @@ function usePermissions() {
 - SEO 内容区
 - CTA
 
+> ✅ 首页完整实现。Hero + ToolSection（Text/URL/AI Tab） + how-it-works + why-it-matters + use-cases + FAQ + CTA，全部从 i18n 翻译文件驱动。
+
 ---
 
-### Task 3.2: 创建 SEO 内容组件
+### Task 3.2: 创建 SEO 内容组件 ⚠️ 内联实现
 
 **输入：** 无
 
@@ -628,9 +543,11 @@ function usePermissions() {
 - `use-cases.tsx` - 使用场景
 - `faq.tsx` - 常见问题
 
+> ⚠️ 所有 SEO 内容（how-it-works / why-it-matters / use-cases / FAQ）直接在 `[locale]/page.tsx` 中内联渲染，未创建 `src/components/seo/` 独立组件。
+
 ---
 
-### Task 3.3: 添加 Schema.org 结构化数据
+### Task 3.3: 添加 Schema.org 结构化数据 ❌ 未开始
 
 **输入：** 无
 
@@ -643,7 +560,7 @@ function usePermissions() {
 
 ---
 
-### Task 3.4: 创建 Privacy Policy 页面
+### Task 3.4: 创建 Privacy Policy 页面 ❌ 未开始（目录存在，文件缺失）
 
 **输入：** 无
 
@@ -657,7 +574,7 @@ function usePermissions() {
 
 ---
 
-### Task 3.5: 创建 Terms of Service 页面
+### Task 3.5: 创建 Terms of Service 页面 ❌ 未开始（目录存在，文件缺失）
 
 **输入：** 无
 
@@ -671,7 +588,7 @@ function usePermissions() {
 
 ---
 
-### Task 3.6: 创建 robots.txt
+### Task 3.6: 创建 robots.txt ❌ 未开始
 
 **输入：** 无
 
@@ -686,7 +603,7 @@ Sitemap: https://extractkeywords.com/sitemap.xml
 
 ---
 
-### Task 3.7: 创建 sitemap.xml
+### Task 3.7: 创建 sitemap.xml ❌ 未开始
 
 **输入：** 无
 
@@ -698,7 +615,7 @@ Sitemap: https://extractkeywords.com/sitemap.xml
 
 ---
 
-### Task 3.8: 创建 SEO 元数据
+### Task 3.8: 创建 SEO 元数据 ⚠️ 部分完成
 
 **输入：** 无
 
@@ -844,9 +761,9 @@ test: 添加单元测试
 
 ### Phase 0 验收
 
-- [ ] Next.js 项目可正常启动
-- [ ] Tailwind CSS 生效
-- [ ] 环境变量配置正确
+- [x] Next.js 项目可正常启动
+- [x] Tailwind CSS 生效
+- [x] 环境变量配置正确
 
 ### Phase 1 验收
 

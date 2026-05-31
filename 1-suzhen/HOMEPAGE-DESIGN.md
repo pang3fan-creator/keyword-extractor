@@ -442,39 +442,101 @@
 ## 十、开发任务拆分（待 Claude Code 执行）
 
 ### Phase 1: 基础结构
-- [ ] Header 组件（Logo + 导航）
-- [ ] Hero 区域（H1 + 副标题）
-- [ ] Footer 组件
+- [x] Header 组件（Logo + 导航）
+- [x] Hero 区域（H1 + 副标题）
+- [x] Footer 组件
 
 ### Phase 2: 工具区
-- [ ] Tab 切换组件
-- [ ] Text Tab（文本输入 + 按钮）
-- [ ] URL Tab（URL 输入 + 按钮）
-- [ ] 结果展示区（表格 + 导出）
+- [x] Tab 切换组件
+- [x] Text Tab（文本输入 + 按钮）
+- [x] URL Tab（URL 输入 + 按钮）
+- [x] 结果展示区（表格 + 导出）
 
 ### Phase 3: SEO 内容区
-- [ ] How it Works 模块
-- [ ] Why it Matters 模块
-- [ ] Use Cases 模块
-- [ ] FAQ 模块（含 Schema）
-- [ ] 底部 CTA
+- [x] How it Works 模块
+- [x] Why it Matters 模块
+- [x] Use Cases 模块
+- [x] FAQ 模块（含 Schema） ~~Schema 部分 ❌~~
+- [x] 底部 CTA
 
 ### Phase 4: 功能实现
-- [ ] 文本提取算法（词频统计）
-- [ ] URL 抓取 + 提取
-- [ ] CSV 导出
-- [ ] Copy to Clipboard
+- [x] 文本提取算法（词频统计）
+- [ ] URL 抓取 + 提取（使用硬编码占位文本）
+- [x] CSV 导出
+- [x] Copy to Clipboard
 
 ---
 
 ## 十一、待确认事项
 
-1. **品牌主色：** 蓝色 or 绿色？
-2. **Logo：** 纯文字 or 文字+图标？
-3. **免费版限制：** 是否限制字数/次数？
-4. **AI 功能：** 付费后才显示 Tab，或显示但锁定？
+1. **品牌主色：** 蓝色 or 绿色？→ **已确认：绿色 #059669**
+2. **Logo：** 纯文字 or 文字+图标？→ **已实现：文字+SVG 图标**
+3. **免费版限制：** 是否限制字数/次数？→ **待确认**
+4. **AI 功能：** 付费后才显示 Tab，或显示但锁定？→ **已确认：显示但锁定 + PRO 徽章**
 
 ---
 
-*文档创建：2026-05-28*
-*待主人审阅后交给 Claude Code 执行*
+## 十二、首页完成度审计（2026-05-31）
+
+### ✅ 已完成（25 项）
+
+| # | 项目 | 规格来源 | 实现位置 |
+|---|------|---------|---------|
+| 1 | Header（Logo + Pricing + Login） | §三 | `Header.tsx` |
+| 2 | ThemeToggle（额外，未在 spec） | — | `Header.tsx` |
+| 3 | H1 + 副标题 | §四 | `[locale]/page.tsx:15-20` |
+| 4 | Tab 切换（Text/URL/AI） | §四 | `Tabs.tsx` + `ToolSection.tsx:93-165` |
+| 5 | AI Tab + PRO 徽章 + 锁定 | §四 | `Tabs.tsx:51-54`, `ToolSection.tsx:142-164` |
+| 6 | Text Tab（多行文本框 250px+） | §5.1 | `ToolSection.tsx:98-121` |
+| 7 | 字数统计右下角 | §5.1 | `ToolSection.tsx:106-108` |
+| 8 | Extract Keywords 按钮 + Loading | §5.1 | `ToolSection.tsx:109-119` |
+| 9 | URL Tab（单行输入框） | §5.2 | `ToolSection.tsx:127-140` |
+| 10 | 结果表格（Keyword/Count/Density） | §5.4 | `ToolSection.tsx:186-201` |
+| 11 | CSV 导出 + 复制到剪贴板 | §5.4 | `ToolSection.tsx:69-87` |
+| 12 | 默认按 Count 降序 | §5.4 | `ToolSection.tsx:62` |
+| 13 | How it Works（3 步） | §6.1 | `[locale]/page.tsx:29-48` |
+| 14 | Why it Matters | §6.2 | `[locale]/page.tsx:50-65` |
+| 15 | Use Cases（4 卡片） | §6.3 | `[locale]/page.tsx:67-83` |
+| 16 | FAQ（6 项 accordion） | §6.4 | `[locale]/page.tsx:85-112` |
+| 17 | 底部 CTA | §6.5 | `[locale]/page.tsx:114-125` |
+| 18 | Footer（3 列 + 版权） | §七 | `Footer.tsx` |
+| 19 | 暗色模式（ThemeProvider 三态） | — | `ThemeProvider.tsx` |
+| 20 | i18n（next-intl, en.json ~55 翻译键） | — | `messages/en.json` |
+| 21 | Button（primary/outline, sm/md/lg） | UI | `Button.tsx` |
+| 22 | Table（compound 子组件） | UI | `Table.tsx` |
+| 23 | Input（error 态） | UI | `Input.tsx` |
+| 24 | Logo（SVG icon + 文字） | — | `Logo.tsx` |
+| 25 | 词频统计算法（清洗/分词/停用词/密度） | §5.4 | `ToolSection.tsx:31-66` |
+
+### ❌ 缺失 / 未达标（14 项）
+
+| # | 问题 | 严重程度 | 对应规格 |
+|---|------|---------|---------|
+| 1 | **URL 抓取未实现**（硬编码占位文本 "Sample content from URL extraction results."） | 🔴 功能 | §5.2, §5.4 |
+| 2 | **URL 格式实时校验缺失**（仅 browser default `type="url"`） | 🔴 交互 | §5.2 |
+| 3 | **结果区无子 Tab**（All / 1-word / 2-word / 3-word） | 🔴 UI | §5.4 |
+| 4 | **结果表头点击排序缺失** | 🔴 交互 | §5.4 |
+| 5 | **Schema.org 全部缺失**（WebApplication / FAQPage / BreadcrumbList） | 🔴 SEO | §八.4 |
+| 6 | **定价/隐私/条款页缺失**（目录存在，page.tsx 空） | 🔴 页面 | §七 |
+| 7 | JSON 导出缺失（仅有 CSV） | 🟡 | Task 1.8 |
+| 8 | Bigram/Trigram 分析缺失 | 🟡 | Task 1.1 |
+| 9 | 表格缺少 `<caption>` | 🟡 无障碍 | §八.3 |
+| 10 | 按钮缺少 aria-label | 🟡 无障碍 | §八.3 |
+| 11 | SEO 内容区无 lazy load | 🟢 性能 | §八.2 |
+| 12 | 内容量约 600-700 词（spec 要求 1500） | 🟢 | §六 |
+| 13 | 移动端 Tab 未垂直堆叠 | 🟢 响应式 | §八.1 |
+| 14 | 移动端无汉堡菜单 | 🟢 响应式 | 未在 spec 但有益 |
+
+### 基于 UI-COMPONENTS.md 优先级
+
+| 等级 | 组件 | 状态 |
+|------|------|------|
+| P0 | Header, Hero, Tabs, Textarea, Input, Button, Table | ✅ 7/7 |
+| P1 | Steps, FAQ, CTA, Footer | ✅ 4/4 |
+| P2 | Pricing, Loaders, Dropdowns | 1/3（仅 Loaders ✅） |
+
+### 总评
+
+- **页面视觉还原度：~85%**。布局、组件、暗色模式、i18n 完整对齐设计 spec。
+- **功能实现度：~40%**。URL 抓取硬编码、无 API 路由、无 n-gram、无排序。
+- 首页作为 **演示原型（Demo）** 已足够；作为 **生产工具** 需补齐 🔴 标记项。
