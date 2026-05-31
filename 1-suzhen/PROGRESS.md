@@ -154,6 +154,50 @@
 
 ---
 
+### 2026-05-31
+
+#### ✅ 已完成
+
+16. **首页免费功能后端能力**
+    - 新增 `src/lib/stop-words.ts`：英文停用词独立维护
+    - 新增 `src/lib/keyword-extractor.ts`：导出 `extractKeywords(text, options?)`
+    - 支持 1-word 关键词、2-word bigram、3-word trigram、词频与 density
+    - 修复短语分析逻辑：2-word/3-word 保留停用词，避免 `to` 等连接词从短语中丢失
+    - 新增 `POST /api/extract/text`：文本提取 API，含空文本与 50,000 字符上限校验
+
+17. **URL 提取后端能力**
+    - 新增 `src/lib/robots-checker.ts`：支持 `User-agent: *`、`Allow`、`Disallow`，24 小时内存缓存
+    - 新增 `src/lib/url-fetcher.ts`：URL 安全校验、SSRF 防护、HTML content-type 校验、超时/重定向/大小限制
+    - 新增 `POST /api/extract/url`：URL 提取 API，返回 `sourceUrl`、`pageTitle`、关键词与短语结果
+    - 使用 Cheerio 抽取正文，移除 `script/style/nav/footer/aside` 等噪音
+
+18. **URL 抓取问题修复**
+    - 修复 URL Tab 之前分析硬编码示例文本的问题，已接入真实 `/api/extract/url`
+    - 修复 `https://heicpdf.to/blog/heic-vs-jpeg` 抽取范围过窄的问题
+    - 根因：文章导语位于 `<main>` 内、`<article>` 外，旧逻辑只抽 `<article>` 且误删文章头部 `header`
+    - 修复后真实抓取该 URL 时，`HEIC and JPEG` 计数从 3 次恢复为 4 次
+
+19. **测试工具链**
+    - 新增 Vitest
+    - 新增 `npm test` 脚本
+    - 覆盖关键词提取、URL 安全校验、robots 解析、URL 抽取、Text/API Route、URL/API Route
+    - 最近验证：`npm test` ✅、`npm run lint` ✅、`npm run build` ✅
+
+#### 🔄 当前状态
+
+- Phase 1 免费核心后端已基本完成：文本提取、URL 提取、robots 检查、API 路由、单元测试均已落地
+- 首页前端已做最小 API 接线：Text / URL Tab 请求真实后端接口
+- 本轮没有做登录、付费、AI、限流、历史记录、PDF/YouTube
+
+#### 📋 下一步建议
+
+1. 完成首页免费功能的手动浏览器验收：Text Tab、URL Tab、错误提示、CSV/复制交互
+2. 继续处理用户系统与付费前置：Clerk 登录、Pricing 页面、Pro 权限模型
+3. 再进入 AI 提取后端，不要提前消耗 API 成本
+4. SEO 基础设施补齐：Privacy、Terms、sitemap、站点 robots、Schema.org
+
+---
+
 ## 项目决策记录
 
 ### 决策 1：选择 `extract keywords` 而非 `keyword extraction`

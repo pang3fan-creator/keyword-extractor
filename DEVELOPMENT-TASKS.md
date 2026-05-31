@@ -5,7 +5,7 @@
 | Phase | 内容 | 预计工时 | 优先级 | 状态 |
 |-------|------|---------|--------|------|
 | Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
-| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中 |
+| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中（免费后端基本完成） |
 | Phase 2 | 用户系统 + 支付 | 2 天 | P0 | 🔄 进行中 |
 | Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 进行中 |
 | Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
@@ -39,13 +39,14 @@
 - `src/app/privacy/page.tsx` ❌（目录存在，文件缺失）
 - `src/app/terms/page.tsx` ❌（目录存在，文件缺失）
 - `src/components/extractor/` — 逻辑全部内联在 `ToolSection.tsx` 中，无独立组件文件
-- `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `ai-extractor.ts` ❌（逻辑内联或未实现）
+- `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `robots-checker.ts` ✅
+- `src/lib/ai-extractor.ts` ❌（AI 功能未开始）
 
 ---
 
 ## Phase 1: 核心功能 🔄
 
-### Task 1.1: 实现关键词提取算法 ⚠️ 内联实现
+### Task 1.1: 实现关键词提取算法 ✅ 已完成
 
 **输入：** 用户文本
 
@@ -87,11 +88,11 @@ function extractKeywords(
 
 **验证：** 单元测试通过
 
-> ⚠️ 逻辑已内联在 `src/components/extractor/ToolSection.tsx`（31-65行）。支持文本清洗、分词、停用词过滤、词频统计、密度计算。**缺失：** Bigram/Trigram 分析、独立 `extractKeywords()` 函数导出、`ExtractionResult` 类型使用。
+> ✅ 已实现 `src/lib/keyword-extractor.ts`，导出 `extractKeywords(text, options?)`。支持文本清洗、英文分词、停用词过滤、词频统计、density、bigram、trigram。短语分析保留停用词，避免 `to` 等连接词从 2-word/3-word 短语中丢失。已添加 Vitest 单元测试。
 
 ---
 
-### Task 1.2: 实现停用词列表 ⚠️ 内联实现
+### Task 1.2: 实现停用词列表 ✅ 已完成
 
 **输入：** 无
 
@@ -113,11 +114,11 @@ export const ENGLISH_STOP_WORDS = [
 
 **验证：** 导出正确
 
-> ⚠️ 停用词列表内联在 `ToolSection.tsx`（38-47行）的 `Set` 中，未创建独立 `src/lib/stop-words.ts` 文件。
+> ✅ 已实现 `src/lib/stop-words.ts`，导出英文停用词列表与 Set，供后端提取模块复用。
 
 ---
 
-### Task 1.3: 实现 URL 抓取功能 ❌ 未开始
+### Task 1.3: 实现 URL 抓取功能 ✅ 已完成
 
 **输入：** URL 字符串
 
@@ -145,9 +146,11 @@ async function fetchURLContent(url: string): Promise<URLFetchResult>;
 
 **验证：** 测试用例通过
 
+> ✅ 已实现 `src/lib/url-fetcher.ts`。包含 URL 安全校验、SSRF 防护、fetch 超时、重定向限制、HTML content-type 检查、响应大小限制、Cheerio 正文抽取与 title 提取。已修复 `https://heicpdf.to/blog/heic-vs-jpeg` 的文章导语漏抓问题。
+
 ---
 
-### Task 1.4: 实现 Robots.txt 检查 ❌ 未开始
+### Task 1.4: 实现 Robots.txt 检查 ✅ 已完成
 
 **输入：** URL
 
@@ -165,6 +168,8 @@ async function checkRobotsTxt(url: string): Promise<boolean>;
 4. 判断是否允许抓取
 
 **缓存：** 内存缓存，24 小时过期
+
+> ✅ 已实现 `src/lib/robots-checker.ts`。MVP 支持 `User-agent: *`、`Allow`、`Disallow`，robots 缺失或抓取失败时默认允许，明确 disallow 当前路径时拒绝。
 
 ---
 
@@ -260,7 +265,7 @@ function copyToClipboard(result: ExtractionResult): void;
 
 ---
 
-### Task 1.9: 创建 API 路由 - 文本提取 ❌ 未开始
+### Task 1.9: 创建 API 路由 - 文本提取 ✅ 已完成
 
 **输入：** POST 请求
 
@@ -280,9 +285,11 @@ export async function POST(request: Request) {
 
 **验证：** API 测试通过
 
+> ✅ 已实现 `src/app/api/extract/text/route.ts`。接收 `{ text, options }`，空文本返回 400，超过 50,000 字符返回 400，成功返回 `ExtractionResult`。已添加 API route 测试。
+
 ---
 
-### Task 1.10: 创建 API 路由 - URL 提取 ❌ 未开始
+### Task 1.10: 创建 API 路由 - URL 提取 ✅ 已完成
 
 **输入：** POST 请求
 
@@ -300,6 +307,8 @@ export async function POST(request: Request) {
   // 5. 返回结果
 }
 ```
+
+> ✅ 已实现 `src/app/api/extract/url/route.ts`。接收 `{ url, options }`，先做 URL 安全校验，再检查 robots.txt，抓取 HTML 后复用 `extractKeywords`，返回 `sourceUrl`、`pageTitle`、`totalWords`、`uniqueKeywords`、`keywords`、`bigrams`、`trigrams`。已添加 API route 测试。使用次数限制仍未实现。
 
 ---
 
@@ -767,9 +776,9 @@ test: 添加单元测试
 
 ### Phase 1 验收
 
-- [ ] 文本提取功能正常
-- [ ] URL 提取功能正常
-- [ ] 2词/3词短语分析正常
+- [x] 文本提取功能正常
+- [x] URL 提取功能正常
+- [x] 2词/3词短语分析正常
 - [ ] CSV 导出正常
 - [ ] 使用次数限制生效
 
