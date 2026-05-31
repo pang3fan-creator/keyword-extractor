@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { Tabs } from '@/components/ui/Tabs';
+import { ExtractorTabs } from './ExtractorTabs';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
-import { Table, TableHead, Th, TableBody, Tr, Td } from '@/components/ui/Table';
+import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/Table';
 
 interface KeywordItem {
   word: string;
@@ -206,7 +206,7 @@ export function ToolSection() {
             type="url"
             placeholder={t('placeholderUrl')}
             value={urlInput}
-            error={urlError ? urlError : undefined}
+            aria-invalid={!!urlError}
             onChange={(e) => {
               setUrlInput(e.target.value);
               validateUrl(e.target.value);
@@ -237,7 +237,7 @@ export function ToolSection() {
             disabled
           />
           <div className="flex justify-end">
-            <Button variant="primary" onClick={handleAiClick}>
+            <Button variant="default" onClick={handleAiClick}>
               {t('extract')}
             </Button>
           </div>
@@ -248,7 +248,7 @@ export function ToolSection() {
 
   return (
     <div>
-      <Tabs tabs={tabs} defaultTab="text" onTabChange={setActiveTab} />
+      <ExtractorTabs tabs={tabs} defaultTab="text" onTabChange={setActiveTab} />
 
       {results && results.length > 0 && (
         <div className="mt-8 space-y-4">
@@ -285,42 +285,44 @@ export function ToolSection() {
           </div>
 
           <Table>
-            <TableHead>
-              <Th
-                className="cursor-pointer select-none"
-                onClick={() => {
-                  if (sortField === 'word') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-                  else { setSortField('word'); setSortDir('asc'); }
-                }}
-              >
-                {t('tableKeyword')} {sortField === 'word' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
-              </Th>
-              <Th
-                className="cursor-pointer select-none text-right"
-                onClick={() => {
-                  if (sortField === 'count') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-                  else { setSortField('count'); setSortDir('desc'); }
-                }}
-              >
-                {t('tableCount')} {sortField === 'count' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
-              </Th>
-              <Th
-                className="cursor-pointer select-none text-right"
-                onClick={() => {
-                  if (sortField === 'density') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-                  else { setSortField('density'); setSortDir('desc'); }
-                }}
-              >
-                {t('tableDensity')} {sortField === 'density' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
-              </Th>
-            </TableHead>
+            <TableHeader>
+              <TableRow>
+                <TableHead
+                  className="cursor-pointer select-none"
+                  onClick={() => {
+                    if (sortField === 'word') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                    else { setSortField('word'); setSortDir('asc'); }
+                  }}
+                >
+                  {t('tableKeyword')} {sortField === 'word' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer select-none text-right"
+                  onClick={() => {
+                    if (sortField === 'count') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                    else { setSortField('count'); setSortDir('desc'); }
+                  }}
+                >
+                  {t('tableCount')} {sortField === 'count' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer select-none text-right"
+                  onClick={() => {
+                    if (sortField === 'density') setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+                    else { setSortField('density'); setSortDir('desc'); }
+                  }}
+                >
+                  {t('tableDensity')} {sortField === 'density' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {paginatedResults.map((item) => (
-                <Tr key={item.word}>
-                  <Td className="font-medium">{item.word}</Td>
-                  <Td className="text-right tabular-nums">{item.count}</Td>
-                  <Td className="text-right tabular-nums">{item.density}%</Td>
-                </Tr>
+                <TableRow key={item.word}>
+                  <TableCell className="font-medium">{item.word}</TableCell>
+                  <TableCell className="text-right tabular-nums">{item.count}</TableCell>
+                  <TableCell className="text-right tabular-nums">{item.density}%</TableCell>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
