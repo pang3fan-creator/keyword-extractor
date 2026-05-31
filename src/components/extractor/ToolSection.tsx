@@ -14,6 +14,19 @@ interface KeywordItem {
   density: number;
 }
 
+interface PhraseItem {
+  phrase: string;
+  count: number;
+  density: number;
+}
+
+interface ExtractionResponse {
+  keywords: KeywordItem[];
+  bigrams?: PhraseItem[];
+  trigrams?: PhraseItem[];
+  error?: string;
+}
+
 export function ToolSection() {
   const t = useTranslations('home');
   const [textInput, setTextInput] = useState('');
@@ -25,7 +38,7 @@ export function ToolSection() {
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [urlError, setUrlError] = useState('');
-  const [resultFilter, setResultFilter] = useState('all');
+  const [resultFilter, setResultFilter] = useState('1word');
   const [sortField, setSortField] = useState('count');
   const [sortDir, setSortDir] = useState('desc');
 
@@ -44,75 +57,50 @@ export function ToolSection() {
     }
   };
 
-  const handleExtract = () => {
+  const handleExtract = async () => {
+    if (activeTab === 'url') {
+      validateUrl(urlInput);
+      try {
+        new URL(urlInput);
+      } catch {
+        return;
+      }
+    }
+
     setLoading(true);
-    setTimeout(() => {
-      const sampleText =
-        activeTab === 'text' ? textInput : 'Sample content from URL extraction results.';
-      const words = sampleText
-        .toLowerCase()
-        .split(/\s+/)
-        .filter(Boolean);
+    setUrlError('');
 
-      const freq: Record<string, number> = {};
-      const stopWords = new Set([
-        'a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for',
-        'of', 'with', 'by', 'from', 'is', 'are', 'was', 'were', 'be', 'been',
-        'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would',
-        'could', 'should', 'may', 'might', 'must', 'shall', 'can', 'this',
-        'that', 'these', 'those', 'i', 'you', 'he', 'she', 'it', 'we', 'they',
-        'what', 'which', 'who', 'when', 'where', 'why', 'how', 'all', 'each',
-        'every', 'both', 'few', 'more', 'most', 'other', 'some', 'such', 'no',
-        'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just',
-      ]);
+    try {
+      const endpoint = activeTab === 'url' ? '/api/extract/url' : '/api/extract/text';
+      const payload =
+        activeTab === 'url'
+          ? { url: urlInput, options: { includeBigrams: true, includeTrigrams: true } }
+          : { text: textInput, options: { includeBigrams: true, includeTrigrams: true } };
 
-      words.forEach((w) => {
-        const cleaned = w.replace(/[^a-z0-9-]/g, '');
-        if (cleaned.length < 2 || stopWords.has(cleaned)) return;
-        freq[cleaned] = (freq[cleaned] || 0) + 1;
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
       });
+      const data = (await response.json()) as ExtractionResponse;
 
-      const total = Object.values(freq).reduce((a, b) => a + b, 0);
-      const items: KeywordItem[] = Object.entries(freq)
-        .map(([word, count]) => ({
-          word,
-          count,
-          density: Math.round((count / total) * 10000) / 100,
-        }))
-        .sort((a, b) => b.count - a.count);
-
-      setResults(items);
-
-      // Generate bigrams (2-word phrases)
-      const nonStopWords = words
-        .map((w) => w.replace(/[^a-z0-9-]/g, ''))
-        .filter((w) => w.length >= 2 && !stopWords.has(w));
-
-      const bigramMap: Record<string, number> = {};
-      for (let i = 0; i < nonStopWords.length - 1; i++) {
-        const bg = nonStopWords[i] + ' ' + nonStopWords[i + 1];
-        bigramMap[bg] = (bigramMap[bg] || 0) + 1;
+      if (!response.ok || data.error) {
+        throw new Error(data.error || t('extractFailed'));
       }
-      const bigramTotal = Object.values(bigramMap).reduce((a, b) => a + b, 0) || 1;
-      const bigramItems: KeywordItem[] = Object.entries(bigramMap)
-        .map(([word, count]) => ({ word, count, density: Math.round((count / bigramTotal) * 10000) / 100 }))
-        .sort((a, b) => b.count - a.count);
-      setBigrams(bigramItems);
 
-      // Generate trigrams (3-word phrases)
-      const trigramMap: Record<string, number> = {};
-      for (let i = 0; i < nonStopWords.length - 2; i++) {
-        const tg = nonStopWords[i] + ' ' + nonStopWords[i + 1] + ' ' + nonStopWords[i + 2];
-        trigramMap[tg] = (trigramMap[tg] || 0) + 1;
-      }
-      const trigramTotal = Object.values(trigramMap).reduce((a, b) => a + b, 0) || 1;
-      const trigramItems: KeywordItem[] = Object.entries(trigramMap)
-        .map(([word, count]) => ({ word, count, density: Math.round((count / trigramTotal) * 10000) / 100 }))
-        .sort((a, b) => b.count - a.count);
-      setTrigrams(trigramItems);
-
+      setResults(data.keywords);
+      setBigrams((data.bigrams ?? []).map((item) => ({ ...item, word: item.phrase })));
+      setTrigrams((data.trigrams ?? []).map((item) => ({ ...item, word: item.phrase })));
+      setResultFilter('1word');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : t('extractFailed');
+      setUrlError(message);
+      setResults([]);
+      setBigrams([]);
+      setTrigrams([]);
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   };
 
   const handleCopy = async () => {
@@ -141,7 +129,7 @@ export function ToolSection() {
 
   const filteredResults = (() => {
     if (!results) return [];
-    if (resultFilter === 'all' || resultFilter === '1word') return results;
+    if (resultFilter === '1word') return results;
     if (resultFilter === '2word') return bigrams;
     if (resultFilter === '3word') return trigrams;
     return results;
@@ -262,9 +250,9 @@ export function ToolSection() {
             </div>
           </div>
 
-          {/* Sub-tabs for filtering: All / 1-word / 2-word / 3-word */}
+          {/* Sub-tabs for filtering: 1-word / 2-word / 3-word */}
           <div className="flex gap-1 rounded-lg bg-surface p-1">
-            {(['all', '1word', '2word', '3word'] as const).map((f) => (
+            {(['1word', '2word', '3word'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setResultFilter(f)}
@@ -275,7 +263,7 @@ export function ToolSection() {
                     : 'text-muted hover:text-foreground'
                 )}
               >
-                {t(f === 'all' ? 'filterAll' : f === '1word' ? 'filterOneWord' : f === '2word' ? 'filterTwoWord' : 'filterThreeWord')}
+                {t(f === '1word' ? 'filterOneWord' : f === '2word' ? 'filterTwoWord' : 'filterThreeWord')}
               </button>
             ))}
           </div>
@@ -289,7 +277,7 @@ export function ToolSection() {
                   else { setSortField('word'); setSortDir('asc'); }
                 }}
               >
-                Keyword {sortField === 'word' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                {t('tableKeyword')} {sortField === 'word' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
               </Th>
               <Th
                 className="cursor-pointer select-none text-right"
@@ -298,7 +286,7 @@ export function ToolSection() {
                   else { setSortField('count'); setSortDir('desc'); }
                 }}
               >
-                Count {sortField === 'count' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                {t('tableCount')} {sortField === 'count' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
               </Th>
               <Th
                 className="cursor-pointer select-none text-right"
@@ -307,7 +295,7 @@ export function ToolSection() {
                   else { setSortField('density'); setSortDir('desc'); }
                 }}
               >
-                Density {sortField === 'density' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
+                {t('tableDensity')} {sortField === 'density' && (sortDir === 'asc' ? '\u2191' : '\u2193')}
               </Th>
             </TableHead>
             <TableBody>
@@ -325,7 +313,7 @@ export function ToolSection() {
 
       {results && results.length === 0 && (
         <div className="mt-8 rounded-lg border border-border bg-surface/30 px-4 py-8 text-center text-sm text-muted">
-          No keywords found. Try pasting more text.
+          {urlError || t('noKeywordsFound')}
         </div>
       )}
 

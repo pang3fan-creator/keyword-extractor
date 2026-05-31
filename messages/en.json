@@ -55,10 +55,14 @@
     "seoCtaDesc": "No signup required. Free forever.",
     "seoCtaButton": "Try Free Tool",
     "invalidUrl": "Please enter a valid URL (e.g. https://example.com)",
-    "filterAll": "All",
     "filterOneWord": "1-word",
     "filterTwoWord": "2-word",
-    "filterThreeWord": "3-word"
+    "filterThreeWord": "3-word",
+    "extractFailed": "Extraction failed. Please try again.",
+    "noKeywordsFound": "No keywords found. Try adding more content.",
+    "tableKeyword": "Keyword",
+    "tableCount": "Count",
+    "tableDensity": "Density"
   },
   "nav": {
     "pricing": "Pricing",
