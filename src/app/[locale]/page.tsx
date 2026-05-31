@@ -30,18 +30,23 @@ export default async function HomePage() {
               <h2 className="mb-10 text-center text-2xl font-bold text-foreground sm:text-3xl">
                 {t('seoHowTitle')}
               </h2>
-              <div className="grid gap-8 sm:grid-cols-3">
+              <div className="flex items-start justify-center">
                 {[1, 2, 3].map((step) => (
-                  <div key={step} className="text-center">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary text-sm font-bold text-primary-fg">
-                      {step}
-                    </span>
-                    <h3 className="mt-4 font-semibold text-foreground">
-                      {t(`seoHowStep${step}Title` as never)}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted">
-                      {t(`seoHowStep${step}Desc` as never)}
-                    </p>
+                  <div key={step} className="flex items-start">
+                    <div className="flex flex-col items-center text-center">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-bold text-primary-fg">
+                        {step}
+                      </span>
+                      <h3 className="mt-4 font-semibold text-foreground">
+                        {t(`seoHowStep${step}Title` as never)}
+                      </h3>
+                      <p className="mt-1 max-w-[200px] text-sm text-muted">
+                        {t(`seoHowStep${step}Desc` as never)}
+                      </p>
+                    </div>
+                    {step < 3 && (
+                      <div className="mx-4 mt-6 h-0.5 w-12 bg-primary/30 sm:w-24" />
+                    )}
                   </div>
                 ))}
               </div>
