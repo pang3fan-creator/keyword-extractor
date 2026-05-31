@@ -30,7 +30,7 @@ export function Tabs({ tabs, defaultTab, className, onTabChange }: TabsProps) {
 
   return (
     <div className={cn('w-full', className)}>
-      <div className="flex border-b border-border" role="tablist">
+      <div className="flex flex-col border-b border-border sm:flex-row" role="tablist">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -40,10 +40,10 @@ export function Tabs({ tabs, defaultTab, className, onTabChange }: TabsProps) {
             disabled={tab.disabled}
             onClick={() => !tab.disabled && handleTabClick(tab.id)}
             className={cn(
-              'relative flex items-center gap-1.5 px-4 py-3 text-sm font-medium transition-colors',
+              'relative flex items-center gap-1.5 px-4 py-3 text-sm transition-colors',
               activeTab === tab.id
-                ? 'text-foreground'
-                : 'text-muted hover:text-foreground',
+                ? 'rounded-md bg-primary/10 font-semibold text-primary'
+                : 'font-medium text-muted hover:text-foreground',
               tab.disabled && 'cursor-not-allowed opacity-60'
             )}
           >
@@ -52,9 +52,6 @@ export function Tabs({ tabs, defaultTab, className, onTabChange }: TabsProps) {
               <span className="ml-1 rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
                 {tab.badge}
               </span>
-            )}
-            {activeTab === tab.id && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary" />
             )}
           </button>
         ))}
