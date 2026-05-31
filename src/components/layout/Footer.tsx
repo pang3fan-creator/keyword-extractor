@@ -7,6 +7,12 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-surface/50">
       <div className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
+        <div className="mb-8">
+          <Link href="/" className="text-lg font-semibold text-foreground">
+            ExtractKeywords
+          </Link>
+          <p className="mt-1 text-sm text-muted">{t('tagline')}</p>
+        </div>
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
           <div>
             <h3 className="text-sm font-semibold text-foreground">{t('product')}</h3>
