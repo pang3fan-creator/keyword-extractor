@@ -21,8 +21,22 @@ export function ToolSection() {
   const [results, setResults] = useState<KeywordItem[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [urlError, setUrlError] = useState('');
 
   const charCount = textInput.length;
+
+  const validateUrl = (value: string) => {
+    if (!value) {
+      setUrlError('');
+      return;
+    }
+    try {
+      new URL(value);
+      setUrlError('');
+    } catch {
+      setUrlError(t('invalidUrl'));
+    }
+  };
 
   const handleExtract = () => {
     setLoading(true);
@@ -133,13 +147,18 @@ export function ToolSection() {
             type="url"
             placeholder={t('placeholderUrl')}
             value={urlInput}
-            onChange={(e) => setUrlInput(e.target.value)}
+            error={urlError ? urlError : undefined}
+            onChange={(e) => {
+              setUrlInput(e.target.value);
+              validateUrl(e.target.value);
+            }}
           />
-          <div className="flex justify-end">
-            <Button onClick={handleExtract} disabled={loading || !urlInput.trim()}>
-              {loading ? t('extracting') : t('extract')}
-            </Button>
-          </div>
+          {urlError && (
+            <p className="text-sm text-red-600 dark:text-red-400">{urlError}</p>
+          )}
+          <Button onClick={handleExtract} disabled={loading || !urlInput.trim()} className="w-full">
+            {loading ? t('extracting') : t('extract')}
+          </Button>
         </div>
       ),
     },

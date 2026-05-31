@@ -53,7 +53,8 @@
     "seoFaq6A": "Our frequency-based algorithm provides highly accurate results for English text. For deeper semantic understanding and concept extraction, try our AI-powered Pro version.",
     "seoCtaTitle": "Start Extracting Keywords Now",
     "seoCtaDesc": "No signup required. Free forever.",
-    "seoCtaButton": "Try Free Tool"
+    "seoCtaButton": "Try Free Tool",
+    "invalidUrl": "Please enter a valid URL (e.g. https://example.com)"
   },
   "nav": {
     "pricing": "Pricing",
