@@ -1,7 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { Logo } from './Logo';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
@@ -19,12 +20,9 @@ export function Header() {
           >
             {t('pricing')}
           </Link>
-          <Link
-            href="/sign-in"
-            className="inline-flex h-9 items-center rounded-lg border border-border bg-surface px-4 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
-          >
-            {t('login')}
-          </Link>
+          <Button variant="secondary" size="sm" asChild>
+            <Link href="/sign-in">{t('login')}</Link>
+          </Button>
           <ThemeToggle />
         </nav>
       </div>

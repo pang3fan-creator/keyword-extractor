@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ToolSection } from '@/components/extractor/ToolSection';
 import { FaqSection } from '@/components/seo/FaqSection';
+import { Button } from '@/components/ui/Button';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
@@ -95,12 +96,9 @@ export default async function HomePage() {
                 {t('seoCtaTitle')}
               </h2>
               <p className="mt-2 text-muted">{t('seoCtaDesc')}</p>
-              <a
-                href="#tool"
-                className="mt-6 inline-flex h-12 items-center rounded-lg bg-primary px-8 text-sm font-medium text-primary-fg transition-colors hover:bg-[var(--primary-hover)]"
-              >
-                {t('seoCtaButton')}
-              </a>
+              <Button size="lg" asChild className="mt-6">
+                <a href="#tool">{t('seoCtaButton')}</a>
+              </Button>
             </div>
           </div>
         </section>
