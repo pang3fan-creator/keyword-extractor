@@ -46,6 +46,7 @@ export function ToolSection() {
 
   // Reset page when filter, sort, or results change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentPage(1);
   }, [results, resultFilter, sortField, sortDir]);
 
