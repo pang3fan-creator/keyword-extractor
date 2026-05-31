@@ -327,69 +327,64 @@ export function ToolSection() {
 
           {totalPages > 1 && (
             <div className="flex flex-col items-center gap-2 pt-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                >
+                  {t('pagePrevious')}
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  {(() => {
+                    const pages: (number | 'e')[] = [];
+                    if (totalPages <= 7) {
+                      for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                      pages.push(1);
+                      if (safePage > 3) pages.push('e');
+                      for (let i = Math.max(2, safePage - 1); i <= Math.min(totalPages - 1, safePage + 1); i++) {
+                        pages.push(i);
+                      }
+                      if (safePage < totalPages - 2) pages.push('e');
+                      pages.push(totalPages);
+                    }
+                    return pages.map((p, idx) =>
+                      p === 'e' ? (
+                        <span key={`e-${idx}`} className="px-0.5 text-sm text-muted">{'\u2026'}</span>
+                      ) : (
+                        <button
+                          key={p}
+                          onClick={() => setCurrentPage(p)}
+                          className={cn(
+                            'h-8 w-8 rounded-md text-sm font-medium transition-colors',
+                            p === safePage
+                              ? 'bg-primary text-primary-fg'
+                              : 'text-muted hover:bg-surface'
+                          )}
+                        >
+                          {p}
+                        </button>
+                      )
+                    );
+                  })()}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                >
+                  {t('pageNext')}
+                </Button>
+              </div>
+
               <span className="text-xs text-muted">
                 {t('pageOf', { current: safePage, total: totalPages })}
               </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={safePage <= 1}
-                  className={cn(
-                    'rounded-md px-2 py-1 text-xs font-medium transition-colors',
-                    safePage <= 1
-                      ? 'cursor-not-allowed text-muted/50'
-                      : 'text-muted hover:text-foreground'
-                  )}
-                >
-                  {t('pagePrevious')}
-                </button>
-
-                {(() => {
-                  const pages: (number | 'e')[] = [];
-                  if (totalPages <= 7) {
-                    for (let i = 1; i <= totalPages; i++) pages.push(i);
-                  } else {
-                    pages.push(1);
-                    if (safePage > 3) pages.push('e');
-                    for (let i = Math.max(2, safePage - 1); i <= Math.min(totalPages - 1, safePage + 1); i++) {
-                      pages.push(i);
-                    }
-                    if (safePage < totalPages - 2) pages.push('e');
-                    pages.push(totalPages);
-                  }
-                  return pages.map((p, idx) =>
-                    p === 'e' ? (
-                      <span key={`e-${idx}`} className="px-1 text-xs text-muted">{'\u2026'}</span>
-                    ) : (
-                      <button
-                        key={p}
-                        onClick={() => setCurrentPage(p)}
-                        className={cn(
-                          'h-7 w-7 rounded-md text-xs font-medium transition-colors',
-                          p === safePage
-                            ? 'bg-primary/10 text-primary'
-                            : 'text-muted hover:text-foreground'
-                        )}
-                      >
-                        {p}
-                      </button>
-                    )
-                  );
-                })()}
-
-                <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={safePage >= totalPages}
-                  className={cn(
-                    'rounded-md px-2 py-1 text-xs font-medium transition-colors',
-                    safePage >= totalPages
-                      ? 'cursor-not-allowed text-muted/50'
-                      : 'text-muted hover:text-foreground'
-                  )}
-                >
-                  {t('pageNext')}
-                </button>
-              </div>
             </div>
           )}
         </div>
