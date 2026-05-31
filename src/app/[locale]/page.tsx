@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ToolSection } from '@/components/extractor/ToolSection';
+import { FaqSection } from '@/components/seo/FaqSection';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
@@ -87,34 +88,7 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div>
-              <h2 className="mb-8 text-center text-2xl font-bold text-foreground sm:text-3xl">
-                {t('seoFaqTitle')}
-              </h2>
-              <div className="mx-auto max-w-2xl space-y-3">
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <details
-                    key={i}
-                    className="group rounded-lg border border-border bg-background"
-                  >
-                    <summary className="flex cursor-pointer items-center justify-between px-5 py-4 text-sm font-medium text-foreground select-none">
-                      {t(`seoFaq${i}Q` as never)}
-                      <svg
-                        className="h-4 w-4 shrink-0 text-muted transition-transform group-open:rotate-180"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </summary>
-                    <p className="border-t border-border px-5 py-4 text-sm text-muted">
-                      {t(`seoFaq${i}A` as never)}
-                    </p>
-                  </details>
-                ))}
-              </div>
-            </div>
+            <FaqSection />
 
             <div className="text-center">
               <h2 className="text-2xl font-bold text-foreground">
