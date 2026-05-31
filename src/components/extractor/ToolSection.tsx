@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { Tabs } from '@/components/ui/Tabs';
@@ -41,6 +41,13 @@ export function ToolSection() {
   const [resultFilter, setResultFilter] = useState('1word');
   const [sortField, setSortField] = useState('count');
   const [sortDir, setSortDir] = useState('desc');
+  const PAGE_SIZE = 20;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset page when filter, sort, or results change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [results, resultFilter, sortField, sortDir]);
 
   const charCount = textInput.length;
 
@@ -146,6 +153,14 @@ export function ToolSection() {
     }
     return sortDir === 'asc' ? (va as number) - (vb as number) : (vb as number) - (va as number);
   });
+
+  // Pagination
+  const totalPages = Math.max(1, Math.ceil(sortedResults.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedResults = sortedResults.slice(
+    (safePage - 1) * PAGE_SIZE,
+    safePage * PAGE_SIZE
+  );
 
   const tabs = [
     {
@@ -299,7 +314,7 @@ export function ToolSection() {
               </Th>
             </TableHead>
             <TableBody>
-              {sortedResults.map((item) => (
+              {paginatedResults.map((item) => (
                 <Tr key={item.word}>
                   <Td className="font-medium">{item.word}</Td>
                   <Td className="text-right tabular-nums">{item.count}</Td>
@@ -308,6 +323,74 @@ export function ToolSection() {
               ))}
             </TableBody>
           </Table>
+
+          {totalPages > 1 && (
+            <div className="flex flex-col items-center gap-2 pt-2">
+              <span className="text-xs text-muted">
+                {t('pageOf', { current: safePage, total: totalPages })}
+              </span>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                  className={cn(
+                    'rounded-md px-2 py-1 text-xs font-medium transition-colors',
+                    safePage <= 1
+                      ? 'cursor-not-allowed text-muted/50'
+                      : 'text-muted hover:text-foreground'
+                  )}
+                >
+                  {t('pagePrevious')}
+                </button>
+
+                {(() => {
+                  const pages: (number | 'e')[] = [];
+                  if (totalPages <= 7) {
+                    for (let i = 1; i <= totalPages; i++) pages.push(i);
+                  } else {
+                    pages.push(1);
+                    if (safePage > 3) pages.push('e');
+                    for (let i = Math.max(2, safePage - 1); i <= Math.min(totalPages - 1, safePage + 1); i++) {
+                      pages.push(i);
+                    }
+                    if (safePage < totalPages - 2) pages.push('e');
+                    pages.push(totalPages);
+                  }
+                  return pages.map((p, idx) =>
+                    p === 'e' ? (
+                      <span key={`e-${idx}`} className="px-1 text-xs text-muted">{'\u2026'}</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p)}
+                        className={cn(
+                          'h-7 w-7 rounded-md text-xs font-medium transition-colors',
+                          p === safePage
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted hover:text-foreground'
+                        )}
+                      >
+                        {p}
+                      </button>
+                    )
+                  );
+                })()}
+
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                  className={cn(
+                    'rounded-md px-2 py-1 text-xs font-medium transition-colors',
+                    safePage >= totalPages
+                      ? 'cursor-not-allowed text-muted/50'
+                      : 'text-muted hover:text-foreground'
+                  )}
+                >
+                  {t('pageNext')}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 

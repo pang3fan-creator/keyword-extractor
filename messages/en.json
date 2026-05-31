@@ -62,7 +62,10 @@
     "noKeywordsFound": "No keywords found. Try adding more content.",
     "tableKeyword": "Keyword",
     "tableCount": "Count",
-    "tableDensity": "Density"
+    "tableDensity": "Density",
+    "pageOf": "Page {current} of {total}",
+    "pagePrevious": "Previous",
+    "pageNext": "Next"
   },
   "nav": {
     "pricing": "Pricing",
