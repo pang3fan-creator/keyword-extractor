@@ -187,7 +187,7 @@ interface TextInputProps {
   isLoading?: boolean;
 }
 
-export function TextInput({ onSubmit, maxLength = 5000, isLoading }: TextInputProps);
+export function TextInput({ onSubmit, maxLength = 10000, isLoading }: TextInputProps);
 ```
 
 **UI 要素：**

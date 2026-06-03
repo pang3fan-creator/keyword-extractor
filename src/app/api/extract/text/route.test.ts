@@ -40,7 +40,7 @@ describe('POST /api/extract/text', () => {
   });
 
   it('rejects oversized text', async () => {
-    const response = await POST(jsonRequest({ text: 'a'.repeat(50001) }));
+    const response = await POST(jsonRequest({ text: 'a'.repeat(10001) }));
 
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({

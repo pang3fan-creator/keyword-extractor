@@ -32,7 +32,7 @@
 │ ✅ URL 输入    │ 🔓 Unlimited word count            │
 │ ✅ 2词/3词短语 │ ✨ AI Semantic Extraction          │
 │ ✅ CSV 导出    │ 📄 PDF Extraction                  │
-│ ⚠️ 5000字上限  │ 🎬 YouTube Extraction              │
+│ ⚠️ 10,000字上限 │ 🎬 YouTube Extraction              │
 │ ❌ 无历史记录  │ 📜 30-day History                  │
 │                │ ⚡ Priority Support                │
 ├────────────────┴────────────────────────────────────┤
@@ -48,8 +48,8 @@
 
 | 项目 | 限制 |
 |-----|------|
-| 单次输入上限 | 5000 字符 |
-| 超限提示 | "Your text exceeds 5,000 characters. Upgrade to Pro for unlimited extraction." |
+| 单次输入上限 | 10,000 字符 |
+| 超限提示 | \"Your text exceeds 10,000 characters. Upgrade to Pro for unlimited extraction.\" |
 
 ### 4.2 注册要求
 
@@ -216,7 +216,7 @@
 | 单层定价 | 简化决策，先验证需求 | 2026-05-28 |
 | $9.99/月 | 心理舒适区，低于 $10 | 2026-05-28 |
 | $99/年 | 相当于 $8.25/月，促进年付 | 2026-05-28 |
-| 免费版 5000 字 | 覆盖 95% 用例，避免滥用 | 2026-05-28 |
+| 免费版 10,000 字 | 覆盖 95% 用例，避免滥用 | 2026-05-28 |
 | 不强制注册 | 降低门槛，提升试用率 | 2026-05-28 |
 | AI 内部上限 | 控制成本，不让用户焦虑 | 2026-05-28 |
 

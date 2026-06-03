@@ -18,7 +18,7 @@ export interface APIErrorBody {
 export const API_ERROR_MESSAGES: Record<APIErrorCode, string> = {
   INVALID_JSON: 'Invalid JSON body.',
   TEXT_REQUIRED: 'Text is required.',
-  TEXT_TOO_LONG: 'Text must be 50,000 characters or fewer.',
+  TEXT_TOO_LONG: 'Text must be 10,000 characters or fewer.',
   INVALID_URL: 'A valid URL is required.',
   ROBOTS_BLOCKED: 'This URL is blocked by robots.txt.',
   FETCH_TIMEOUT: 'URL fetch timed out.',

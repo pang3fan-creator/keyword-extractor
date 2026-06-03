@@ -3,7 +3,7 @@ import { apiError } from '@/lib/api-errors';
 import { extractKeywords, type KeywordExtractionOptions } from '@/lib/keyword-extractor';
 import { checkRateLimit, getRateLimitKey } from '@/lib/rate-limiter';
 
-const MAX_TEXT_LENGTH = 50_000;
+const MAX_TEXT_LENGTH = 10_000;
 
 interface TextExtractionBody {
   text?: unknown;
