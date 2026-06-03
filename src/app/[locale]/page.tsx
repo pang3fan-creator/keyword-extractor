@@ -3,10 +3,20 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ToolSection } from '@/components/extractor/ToolSection';
 import { FaqSection } from '@/components/seo/FaqSection';
+import HowToUseSection from '@/components/seo/HowToUseSection';
+import UseCasesSection from '@/components/seo/UseCasesSection';
+import HowItWorksSection from '@/components/seo/HowItWorksSection';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
   const metadataT = await getTranslations('metadata');
+
+  const organizationJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: metadataT('siteName'),
+    url: 'https://extractkeywords.com',
+  };
 
   const webApplicationJsonLd = {
     '@context': 'https://schema.org',
@@ -22,7 +32,7 @@ export default async function HomePage() {
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: [1, 2, 3, 4].map((index) => ({
+    mainEntity: Array.from({ length: 6 }, (_, i) => i + 1).map((index) => ({
       '@type': 'Question',
       name: t(`seoFaq${index}Q` as never),
       acceptedAnswer: {
@@ -39,6 +49,10 @@ export default async function HomePage() {
       <main className="flex-1">
         <script
           type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationJsonLd) }}
         />
         <script
@@ -53,32 +67,21 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <section className="container" aria-label={t('title')}>
+        <section className="container" id="toolArea" aria-label={t('title')}>
           <div className="tool-area">
             <ToolSection />
           </div>
         </section>
 
-        <section className="seo-content" id="seoContent" aria-label="About this tool">
+        <section className="seo-content" id="seoContent" aria-label={t('seoContentLabel')}>
           <div className="container">
-            <div className="seo-section">
-              <h2>{t('seoHowTitle')}</h2>
-              <p>{t('seoHowDesc1')}</p>
-              <p>{t('seoHowDesc2')}</p>
-            </div>
+            <HowToUseSection />
+            <UseCasesSection />
+            <HowItWorksSection />
 
             <div className="seo-section">
               <h2>{t('seoWhyTitle')}</h2>
               <p>{t('seoWhyDesc')}</p>
-            </div>
-
-            <div className="seo-section">
-              <h2>{t('seoUseTitle')}</h2>
-              <ul>
-                {[1, 2, 3, 4, 5].map((index) => (
-                  <li key={index}>{t(`seoUse${index}` as never)}</li>
-                ))}
-              </ul>
             </div>
 
             <FaqSection />

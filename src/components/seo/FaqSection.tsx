@@ -13,7 +13,7 @@ export function FaqSection() {
   return (
     <div className="seo-section">
       <h2>{t('seoFaqTitle')}</h2>
-      {[1, 2, 3, 4].map((i) => (
+      {Array.from({ length: 6 }, (_, i) => i + 1).map((i) => (
         <div key={i} className={cn('faq-item', openIndex === i && 'open')}>
           <button
             className="faq-question"
