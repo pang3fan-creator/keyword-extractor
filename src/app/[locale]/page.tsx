@@ -75,14 +75,9 @@ export default async function HomePage() {
 
         <section className="seo-content" id="seoContent" aria-label={t('seoContentLabel')}>
           <div className="container">
+            <HowItWorksSection />
             <HowToUseSection />
             <UseCasesSection />
-            <HowItWorksSection />
-
-            <div className="seo-section">
-              <h2>{t('seoWhyTitle')}</h2>
-              <p>{t('seoWhyDesc')}</p>
-            </div>
 
             <FaqSection />
 
