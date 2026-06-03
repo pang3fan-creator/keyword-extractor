@@ -26,36 +26,31 @@ Hero（不变）
 模块 1: How to Use（新增）
 ├── H2 标题
 ├── 3 步骤（Step 1 / Step 2 / Step 3）
-├── HowTo Schema
-└── 字数目标: ~200 词
+├── HowTo Schema（可选）
+└── 字数目标: ~150 词
 
 模块 2: Use Cases（扩充）
 ├── H2 标题
 ├── 4 个用户画像（H3）
-└── 字数目标: ~300 词
+└── 字数目标: ~250 词
 
 模块 3: How It Works（扩充）
 ├── H2 标题
 ├── 3 个技术原理（H3）
-└── 字数目标: ~300 词
+└── 字数目标: ~200 词
 
 模块 4: Why It Matters（保留精简）
 ├── H2 标题
 ├── 1 段概括
 └── 字数目标: ~80 词
 
-模块 5: FAQ（扩到 8 个）
+模块 5: FAQ（扩到 6 个）
 ├── H2 标题
-├── 4 个现有 + 4 个新增
+├── 4 个现有 + 2 个新增
 ├── FAQPage Schema（更新）
-└── 字数目标: ~250 词
+└── 字数目标: ~200 词
 
-模块 6: 内链模块（新增）
-├── H2 标题
-├── 4 个功能落地页卡片
-└── 字数目标: ~100 词
-
-模块 7: Bottom CTA（保留）
+模块 6: Bottom CTA（保留）
 └── 字数目标: ~30 词
 ```
 
@@ -70,7 +65,7 @@ Hero（不变）
 | Step | 标题 | 说明要点 |
 |------|------|---------|
 | Step 1 | Paste your text or enter a webpage URL | Text tab 粘贴内容 / URL tab 输入网址 |
-| Step 2 | Click "Extract Keywords" | TF-IDF 分析 / 过滤停用词 / 识别 bigram/trigram |
+| Step 2 | Click "Extract Keywords" | 词频分析 / 过滤停用词 / 识别 bigram/trigram |
 | Step 3 | Review, filter, and export your results | 筛选视图 / 排序 / CSV 导出 / 复制 |
 
 ### 覆盖关键词
@@ -79,13 +74,12 @@ Hero（不变）
 | `extract keywords from text` | 500 |
 | `extract keywords from url` | 500 |
 | `keyword extraction online` | 50 |
-| `free keyword extractor` | 50 |
 
 ### Schema
-新增 `HowTo` JSON-LD（三步对应三个 HowToStep）
+可新增 `HowTo` JSON-LD（三步对应三个 HowToStep），但非必须
 
 ### 字数目标
-~200 词
+~150 词
 
 ---
 
@@ -107,7 +101,7 @@ Hero（不变）
 4 个 H3 用卡片式布局（Grid 2×2），每个卡片含图标 + 标题 + 2-3 句描述
 
 ### 字数目标
-~300 词（每个 H3 约 70-80 词）
+~250 词（每个 H3 约 60 词）
 
 ---
 
@@ -120,19 +114,22 @@ Hero（不变）
 
 | H3 | 技术原理 | 说明要点 |
 |----|---------|---------|
-| Statistical Text Analysis | TF-IDF 词频统计 | 过滤停用词 / 按频率+相关性排序 |
-| Multi-Word Phrase Detection | Bigram/Trigram 短语检测 | 长尾关键词发现 |
-| URL Content Extraction | URL 内容抓取 | 遵守 robots.txt / 提取正文 |
+| Word Frequency Analysis | 词频统计 | 统计每个词出现次数 / 计算密度百分比 |
+| Stop-Word Filtering | 停用词过滤 | 过滤常见词（the, is, at...） |
+| Multi-Word Phrase Detection | 短语检测 | 识别 2 词短语（bigram）和 3 词短语（trigram） |
 
 ### 覆盖关键词
 | 关键词 | 搜索量 |
 |--------|--------|
 | `website keyword extractor` | 500 |
 | `keyword extraction online` | 50 |
-| `keyword extraction nlp` | 50 |
+| `keywords extractor` | 500 |
+
+### ⚠️ 注意
+**不要写 TF-IDF**。后端实际是词频统计 + 停用词过滤 + density + bigram/trigram，不是 TF-IDF。
 
 ### 字数目标
-~300 词（每个 H3 约 100 词）
+~200 词（每个 H3 约 65 词）
 
 ---
 
@@ -149,7 +146,7 @@ Hero（不变）
 
 ---
 
-## 模块 5 — FAQ（扩到 8 个）
+## 模块 5 — FAQ（扩到 6 个）
 
 ### H2 标题
 `Frequently Asked Questions About Keyword Extraction`
@@ -163,41 +160,21 @@ Hero（不变）
 | 3 | Can I extract keywords from any website? |
 | 4 | What formats can I download the results in? |
 
-### 新增 4 个
+### 新增 2 个
 
 | # | 问题主题 | 覆盖关键词 |
 |---|---------|-----------|
-| 5 | Can I extract keywords from a website for free? | `extract keywords from website free` |
-| 6 | What's the difference between regular and AI keyword extraction? | `ai keyword extraction` |
-| 7 | Do I need to sign up to use the keyword extractor? | `keywords extractor` |
-| 8 | What is the maximum text length supported? | - |
+| 5 | What's the difference between regular and AI keyword extraction? | `ai keyword extraction` |
+| 6 | Do I need to sign up to use the keyword extractor? | `keywords extractor` |
 
 ### Schema
-更新 `FAQPage` JSON-LD（mainEntity 从 4 扩到 8）
+更新 `FAQPage` JSON-LD（mainEntity 从 4 扩到 6）
+
+### ⚠️ 注意
+避免与现有 FAQ 重复。不要新增 "Can I extract keywords from a website for free?"（与 #1 重复）。
 
 ### 字数目标
-~250 词（每个 FAQ 约 30-35 词）
-
----
-
-## 模块 6 — 内链模块（新增）
-
-### H2 标题建议
-`Try These Keyword Extraction Tools`
-
-### 结构（4 个卡片）
-
-| 卡片标题 | 链接 | 覆盖关键词 |
-|---------|------|-----------|
-| Extract Keywords from Text | `/extract-keywords-from-text` | `extract keywords from text` |
-| Extract Keywords from URL | `/extract-keywords-from-url` | `extract keywords from url` |
-| YouTube Keyword Extractor | `/youtube-keyword-extractor` | `youtube keyword extractor` |
-| PDF Keyword Extractor | `/extract-keywords-from-pdf` | `extract keywords from pdf` |
-
-> ⚡ 落地页尚未建立，链接暂时指向 `#` 或首页锚点
-
-### 字数目标
-~100 词（每个卡片标题 + 一句简短说明）
+~200 词（每个 FAQ 约 30-35 词）
 
 ---
 
@@ -206,12 +183,14 @@ Hero（不变）
 | Schema | 状态 | 改动 |
 |--------|------|------|
 | WebApplication | ✅ 已有 | 保留 |
-| FAQPage | ✅ 已有 | mainEntity 从 4 扩到 8 |
+| FAQPage | ✅ 已有 | mainEntity 从 4 扩到 6 |
 | Organization | ❌ 新增 | 品牌实体识别 |
-| WebSite | ❌ 新增 | 站点识别 + 搜索动作 |
-| HowTo | ❌ 新增 | 三步操作指南 |
+| HowTo | ⚠️ 可选 | 三步操作指南（非必须） |
 
-### Organization + WebSite Schema 结构
+### ⚠️ 不要加 WebSite SearchAction
+项目目前没有站内搜索功能，`SearchAction` Schema 不真实，建议暂不加。
+
+### Organization Schema 结构
 
 ```json
 {
@@ -220,20 +199,6 @@ Hero（不变）
   "name": "ExtractKeywords",
   "url": "https://extractkeywords.com",
   "logo": "https://extractkeywords.com/logo.png"
-}
-```
-
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "ExtractKeywords",
-  "url": "https://extractkeywords.com",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://extractkeywords.com/?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
 }
 ```
 
@@ -252,7 +217,6 @@ Hero（不变）
     "seoHowToUseStep2Desc": "...",
     "seoHowToUseStep3Title": "...",
     "seoHowToUseStep3Desc": "...",
-    "seoHowToUseCta": "...",
 
     // 模块 2: Use Cases（替换现有 seoUse1-5）
     "seoUseSeoTitle": "...",
@@ -267,31 +231,16 @@ Hero（不变）
     // 模块 3: How It Works（扩充）
     "seoHowStatsTitle": "...",
     "seoHowStatsDesc": "...",
+    "seoHowFilterTitle": "...",
+    "seoHowFilterDesc": "...",
     "seoHowPhraseTitle": "...",
     "seoHowPhraseDesc": "...",
-    "seoHowUrlTitle": "...",
-    "seoHowUrlDesc": "...",
 
-    // 模块 5: FAQ 新增 4 个
+    // 模块 5: FAQ 新增 2 个
     "seoFaq5Q": "...",
     "seoFaq5A": "...",
     "seoFaq6Q": "...",
-    "seoFaq6A": "...",
-    "seoFaq7Q": "...",
-    "seoFaq7A": "...",
-    "seoFaq8Q": "...",
-    "seoFaq8A": "...",
-
-    // 模块 6: 内链模块
-    "seoToolsTitle": "...",
-    "seoToolText": "...",
-    "seoToolTextDesc": "...",
-    "seoToolUrl": "...",
-    "seoToolUrlDesc": "...",
-    "seoToolYoutube": "...",
-    "seoToolYoutubeDesc": "...",
-    "seoToolPdf": "...",
-    "seoToolPdfDesc": "..."
+    "seoFaq6A": "..."
   }
 }
 ```
@@ -309,10 +258,9 @@ Hero (不变)
 ↓
 SEO 内容区
 ├── Use Cases（移到 How It Works 之前）
-├── How It Works（扩充）
+├── How It Works（扩充，不含 TF-IDF）
 ├── Why It Matters（保留精简）
-├── FAQ（扩到 8 个）
-├── 【新增】内链模块
+├── FAQ（扩到 6 个）
 └── Bottom CTA（保留）
 ```
 
@@ -322,9 +270,9 @@ SEO 内容区
 
 | 文件 | 改动内容 |
 |------|---------|
-| `messages/en.json` | 新增 ~25 个翻译 key |
-| `FaqSection.tsx` | 从 4 扩到 8 个 FAQ |
-| `page.tsx` | 重排模块顺序 + 新增 How to Use + 内链模块 + 追加 Schema |
+| `messages/en.json` | 新增 ~18 个翻译 key |
+| `FaqSection.tsx` | 从 4 扩到 6 个 FAQ |
+| `page.tsx` | 重排模块顺序 + 新增 How to Use + 追加 Organization Schema |
 
 ---
 
@@ -333,15 +281,14 @@ SEO 内容区
 | 关键词 | 搜索量 | 出现模块 |
 |--------|--------|---------|
 | `extract keywords` | 5,000 | H1 + 多处正文 |
-| `extract keywords from text` | 500 | How to Use + 内链 |
-| `extract keywords from url` | 500 | How to Use + 内链 |
+| `extract keywords from text` | 500 | How to Use |
+| `extract keywords from url` | 500 | How to Use |
 | `website keyword extractor` | 500 | How It Works H2 + Use Cases |
 | `find keywords in text` | 500 | Use Cases |
-| `keywords extractor` | 500 | FAQ |
-| `extract keywords from website free` | 50 | FAQ #5 |
-| `ai keyword extraction` | 50 | FAQ #6 |
+| `keywords extractor` | 500 | FAQ #6 |
+| `ai keyword extraction` | 50 | FAQ #5 |
 | `seo keyword extractor` | 50 | Use Cases |
-| `keyword extraction nlp` | 50 | How It Works + Use Cases |
+| `keyword extraction nlp` | 50 | Use Cases |
 
 ---
 
@@ -349,12 +296,35 @@ SEO 内容区
 
 | 模块 | 字数 |
 |------|------|
-| How to Use | ~200 |
-| Use Cases | ~300 |
-| How It Works | ~300 |
+| How to Use | ~150 |
+| Use Cases | ~250 |
+| How It Works | ~200 |
 | Why It Matters | ~80 |
-| FAQ | ~250 |
-| 内链模块 | ~100 |
-| **总计** | **~1,230 词** |
+| FAQ | ~200 |
+| **总计** | **~880 词** |
 
-加上 Hero + 工具区现有内容，首页总词数约 **1,600 词** ✅
+加上 Hero + 工具区现有内容，首页总词数约 **1,100 词** ✅
+
+---
+
+## ⚠️ 待确认事项
+
+### 免费版字符限制不一致
+
+| 文档 | 免费版限制 |
+|------|-----------|
+| PRICING.md | 5,000 字符 |
+| API 实际 | 50,000 字符 |
+
+**需要主人确认最终值**，确保 FAQ 和文案与后端行为一致。
+
+---
+
+## ❌ 不做的事
+
+| 项目 | 原因 |
+|------|------|
+| 内链模块 | 落地页尚未建立，放 `#` 对 SEO 无价值 |
+| WebSite SearchAction | 项目无站内搜索功能，Schema 不真实 |
+| FAQ 扩到 8 个 | 容易与现有内容重复，6 个足够 |
+| TF-IDF 表述 | 后端实际不是 TF-IDF |
