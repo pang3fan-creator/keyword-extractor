@@ -15,7 +15,7 @@ export default async function HowItWorksSection() {
           <div
             key={key}
             className={cn(
-              'border-border hover:border-primary rounded-xl border p-6 text-center transition hover:shadow-sm',
+              'border-border hover:border-primary flex flex-col items-center rounded-xl border p-6 text-center transition hover:shadow-sm',
             )}
           >
             <div className="bg-primary text-primary-foreground mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full text-lg">

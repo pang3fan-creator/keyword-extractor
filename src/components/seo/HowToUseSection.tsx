@@ -11,7 +11,7 @@ export default async function HowToUseSection() {
         {steps.map((step, i) => (
           <div
             key={step}
-            className="relative w-full flex-1 text-center"
+            className="relative flex w-full flex-1 flex-col items-center text-center"
             aria-label={t('seoHowToUseStepLabel', { step })}
           >
             <div className="bg-accent text-primary mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full text-xl">

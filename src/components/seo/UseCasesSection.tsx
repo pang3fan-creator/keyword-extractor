@@ -104,7 +104,7 @@ export default async function UseCasesSection() {
             <div
               key={key}
               className={cn(
-                'border-border hover:border-primary rounded-xl border p-6 text-center transition hover:shadow-sm',
+                'border-border hover:border-primary flex flex-col items-center rounded-xl border p-6 text-center transition hover:shadow-sm',
                 i === 0 && 'border-primary',
               )}
             >
