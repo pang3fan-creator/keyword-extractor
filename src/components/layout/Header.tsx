@@ -33,47 +33,49 @@ export function Header() {
   }, [menuOpen]);
 
   return (
-    <header>
-      <div className="inner">
-        <Logo />
+    <>
+      <header>
+        <div className="inner">
+          <Logo />
 
-        <nav className="nav-center" aria-label={t('centerNavigation')}>
-          {CENTER_LINKS.map((item) => (
-            <Link key={item.key} href={item.href}>
-              {t(item.key)}
+          <nav className="nav-center" aria-label={t('centerNavigation')}>
+            {CENTER_LINKS.map((item) => (
+              <Link key={item.key} href={item.href}>
+                {t(item.key)}
+              </Link>
+            ))}
+          </nav>
+
+          <nav className="nav-right" aria-label={t('mainNavigation')}>
+            <ThemeToggle />
+            <Link href="/sign-in" className="btn-login">
+              {t('logIn')}
             </Link>
-          ))}
-        </nav>
+            <Link href="/sign-up" className="btn-signup">
+              {t('signUp')}
+            </Link>
+          </nav>
 
-        <nav className="nav-right" aria-label={t('mainNavigation')}>
-          <ThemeToggle />
-          <Link href="/sign-in" className="btn-login">
-            {t('logIn')}
-          </Link>
-          <Link href="/sign-up" className="btn-signup">
-            {t('signUp')}
-          </Link>
-        </nav>
-
-        <button
-          type="button"
-          className="hamburger"
-          aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((open) => !open)}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            aria-hidden="true"
+          <button
+            type="button"
+            className="hamburger"
+            aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            {menuOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
-          </svg>
-        </button>
-      </div>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
+              {menuOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
+            </svg>
+          </button>
+        </div>
+      </header>
 
       <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
         {CENTER_LINKS.map((item) => (
@@ -112,6 +114,6 @@ export function Header() {
           {t('signUp')}
         </Link>
       </div>
-    </header>
+    </>
   );
 }

@@ -22,6 +22,7 @@ npm run dev          # 启动开发服务器 (http://localhost:3000)
 npm run build        # 生产环境构建
 npm run start        # 启动生产服务器
 npm run lint         # 代码检查
+npm run test         # 运行 vitest 测试
 ```
 
 ## 端口清理
@@ -81,6 +82,29 @@ npm run lint         # 代码检查
 - **删除/移动页面文件时 Turbopack 可能 panic**（`Cell no longer exists in directory_tree_to_loader_tree`）
 - 清除缓存: `rm -rf .next/cache` 后重新 `npm run build`
 - 严重时 `rm -rf .next` 冷重启
+
+### 动态 className 合并
+
+- **必须用 `cn()` 函数**，不要用模板字面量拼接（如 `` `clsA${cond ? ' clsB' : ''}` ``）—— 会产生 `class="clsAclsB"` 无空格合并，导致 CSS 选择器不命中
+- `import { cn } from '@/lib/utils';` → `className={cn('base', cond && 'active')}`
+
+### 字体体系
+
+- `next/font/google` 生成唯一字体名，只能通过 `className`（`<html className={inter.className}>`）级联
+- **不要在 `globals.css` 中用 `font-family: var(--font)` 引用**，CSS 变量拿不到 next/font 生成的唯一名；JetBrains Mono 通过 `variable="--font-mono"` 可用
+
+### 设计 HTML 权威性
+
+- 用户提供的 HTML 文件是视觉效果的最高权威，CSS 变量名需语义映射而非按名字直接翻译：
+  - HTML `--accent`（主色） → shadcn `--primary`
+  - HTML `--accent-light`（浅底） → shadcn `--accent`
+  - HTML `--surface` → shadcn `--card`
+
+### Tab 切换视觉跳动
+
+- **两个独立根因**，需同时处理：
+  1. 面板区：禁止 `display: none/block` 切换 → 用 CSS Grid `grid-area: 1/1` 叠加 + `visibility: hidden/visible`，三个面板共享同一单元格高度
+  2. 按钮头：`.tab-btn` 始终 `border: 1px solid transparent`，`.active` 只改 `border-color`，禁止改 `border` 简写（会导致盒子尺寸变化 → 兄弟元素位移）
 
 ### 主题系统（暗色模式）
 

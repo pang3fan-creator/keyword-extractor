@@ -26,7 +26,7 @@ Hero（不变）
 模块 1: How to Use（新增）
 ├── H2 标题
 ├── 3 步骤（Step 1 / Step 2 / Step 3）
-├── HowTo Schema（可选）
+├── HowTo Schema（暂不做，后续可选）
 └── 字数目标: ~150 词
 
 模块 2: Use Cases（扩充）
@@ -76,7 +76,7 @@ Hero（不变）
 | `keyword extraction online` | 50 |
 
 ### Schema
-可新增 `HowTo` JSON-LD（三步对应三个 HowToStep），但非必须
+本轮暂不新增 `HowTo` JSON-LD。首页优先保持 `WebApplication` + `FAQPage` + `Organization`，HowTo 可在后续内容更教程化时再评估。
 
 ### 字数目标
 ~150 词
@@ -110,13 +110,21 @@ Hero（不变）
 ### H2 标题建议
 `How the Website Keyword Extractor Works`
 
-### 结构（3 个 H3）
+### 结构（3 个 H3 + URL 说明）
 
 | H3 | 技术原理 | 说明要点 |
 |----|---------|---------|
 | Word Frequency Analysis | 词频统计 | 统计每个词出现次数 / 计算密度百分比 |
 | Stop-Word Filtering | 停用词过滤 | 过滤常见词（the, is, at...） |
 | Multi-Word Phrase Detection | 短语检测 | 识别 2 词短语（bigram）和 3 词短语（trigram） |
+
+### URL 抓取说明（必须自然带到）
+由于首页 H1 包含 `Text or URL`，How It Works 需要用 1-2 句说明 URL 模式：
+- 抓取公开可访问的 HTML 页面；
+- 遵守 robots.txt；
+- 先提取正文内容，再复用同一套关键词分析逻辑。
+
+不要把 URL 抓取写成单独复杂模块，避免让内容过长；放在 How It Works 开头或结尾段即可。
 
 ### 覆盖关键词
 | 关键词 | 搜索量 |
@@ -167,6 +175,12 @@ Hero（不变）
 | 5 | What's the difference between regular and AI keyword extraction? | `ai keyword extraction` |
 | 6 | Do I need to sign up to use the keyword extractor? | `keywords extractor` |
 
+### FAQ #5 AI 表述边界
+AI 后端当前尚未实现，FAQ #5 不要写成已经可用的承诺。建议答案表达：
+- regular keyword extraction is available now；
+- AI semantic extraction is planned / reserved for Pro；
+- current free Text and URL modes still work without signup。
+
 ### Schema
 更新 `FAQPage` JSON-LD（mainEntity 从 4 扩到 6）
 
@@ -185,7 +199,7 @@ Hero（不变）
 | WebApplication | ✅ 已有 | 保留 |
 | FAQPage | ✅ 已有 | mainEntity 从 4 扩到 6 |
 | Organization | ❌ 新增 | 品牌实体识别 |
-| HowTo | ⚠️ 可选 | 三步操作指南（非必须） |
+| HowTo | ⏳ 暂不做 | 后续内容更教程化时再评估 |
 
 ### ⚠️ 不要加 WebSite SearchAction
 项目目前没有站内搜索功能，`SearchAction` Schema 不真实，建议暂不加。
@@ -197,10 +211,11 @@ Hero（不变）
   "@context": "https://schema.org",
   "@type": "Organization",
   "name": "ExtractKeywords",
-  "url": "https://extractkeywords.com",
-  "logo": "https://extractkeywords.com/logo.png"
+  "url": "https://extractkeywords.com"
 }
 ```
+
+> 说明：暂不写 `logo` 字段，除非项目中已经有真实可访问的 logo 图片 URL。
 
 ---
 
@@ -235,6 +250,7 @@ Hero（不变）
     "seoHowFilterDesc": "...",
     "seoHowPhraseTitle": "...",
     "seoHowPhraseDesc": "...",
+    "seoHowUrlNote": "...",
 
     // 模块 5: FAQ 新增 2 个
     "seoFaq5Q": "...",
@@ -272,7 +288,16 @@ SEO 内容区
 |------|---------|
 | `messages/en.json` | 新增 ~18 个翻译 key |
 | `FaqSection.tsx` | 从 4 扩到 6 个 FAQ |
-| `page.tsx` | 重排模块顺序 + 新增 How to Use + 追加 Organization Schema |
+| `page.tsx` | 重排模块顺序 + 新增 How to Use + 追加 Organization Schema + 更新 FAQPage Schema |
+
+### 实施约束（给生成器/Agent）
+- 所有新增用户可见文本、aria-label、Schema 文案都必须写入 `messages/en.json`，组件只引用翻译 key。
+- 不修改 Hero 和 ToolSection 的功能逻辑，只在工具区下方扩充 SEO 内容。
+- 不新增 Pricing / Privacy / Terms / 落地页 / 登录 / 支付 / AI 后端。
+- 不新增 `WebSite SearchAction`，不新增 `HowTo` Schema。
+- FAQ #5 不得暗示 AI 功能已经可用；只能写 planned / reserved for Pro / coming later 这类谨慎表述。
+- 不要写 TF-IDF、semantic analysis、AI-powered analysis 来描述当前免费 Text/URL 提取逻辑。
+- 不要链接到尚未建立的落地页，也不要使用 `#` 作为 SEO 内链占位。
 
 ---
 
@@ -319,5 +344,6 @@ SEO 内容区
 |------|------|
 | 内链模块 | 落地页尚未建立，放 `#` 对 SEO 无价值 |
 | WebSite SearchAction | 项目无站内搜索功能，Schema 不真实 |
+| HowTo Schema | 首页是工具页，不是纯教程页；后续可再评估 |
 | FAQ 扩到 8 个 | 容易与现有内容重复，6 个足够 |
 | TF-IDF 表述 | 后端实际不是 TF-IDF |

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, JetBrains_Mono } from 'next/font/google';
+import { getLocale } from 'next-intl/server';
 import messages from '../../messages/en.json';
 import './globals.css';
 
@@ -42,14 +43,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
   return (
     <html
-      lang="en"
+      lang={locale}
       className={`${inter.className} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
