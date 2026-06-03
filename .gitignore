@@ -5,6 +5,7 @@
 /.omc
 /.codex
 /.superpowers
+/.opencode
 
 # dependencies
 /node_modules
@@ -57,3 +58,10 @@ next-env.d.ts
 
 # 临时素材
 /2-gitignore/
+
+opencode.json
+
+/docs/
+
+
+

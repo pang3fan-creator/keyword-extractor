@@ -8,7 +8,7 @@ export function FaqSection() {
 
   return (
     <div>
-      <h2 className="mb-8 text-center text-2xl font-bold sm:text-3xl">
+      <h2 className="mb-8 text-center text-2xl font-bold text-foreground sm:text-3xl">
         {t('seoFaqTitle')}
       </h2>
       <Accordion className="mx-auto max-w-2xl">

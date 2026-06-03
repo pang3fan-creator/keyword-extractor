@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/Button';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { Button } from '@/components/ui/button';
 import { Logo } from './Logo';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
@@ -16,11 +16,11 @@ export function Header() {
         <nav className="flex items-center gap-4">
           <Link
             href="/pricing"
-            className="text-sm font-medium text-muted transition-colors hover:text-foreground"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('pricing')}
           </Link>
-          <Button variant="secondary" size="sm" asChild>
+          <Button size="sm" asChild>
             <Link href="/sign-in">{t('login')}</Link>
           </Button>
           <ThemeToggle />
