@@ -1,15 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Download, FileText, Link as LinkIcon, Lock, Sparkles, Check, Copy } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import type { ExtractionResult, Phrase } from '@/types';
 
 interface KeywordItem {
@@ -19,8 +12,119 @@ interface KeywordItem {
 }
 
 const PAGE_SIZE = 20;
-
 type ResultFilter = 'all' | '1word' | '2word' | '3word';
+
+function TextIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2 4h12M2 8h12M2 12h8" />
+    </svg>
+  );
+}
+
+function UrlIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M8 5.5a3.5 3.5 0 0 1 5 0l1 1a3.5 3.5 0 0 1 0 5" />
+      <path d="M8 10.5a3.5 3.5 0 0 1-5 0l-1-1a3.5 3.5 0 0 1 0-5" />
+      <circle cx="8" cy="8" r="1.5" />
+    </svg>
+  );
+}
+
+function AiIcon() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M8 1v2M8 13v2M2.5 2.5l1.5 1.5M12 12l1.5 1.5M1 8h2M13 8h2M3.5 12.5l1-1M11.5 4.5l1-1" />
+      <circle cx="8" cy="8" r="3" />
+    </svg>
+  );
+}
+
+function CsvIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M7 1v8M4 7l3 3 3-3M2 11v2h10v-2" />
+    </svg>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="1" width="9" height="11" rx="1.5" />
+      <path d="M2 4v8.5A1.5 1.5 0 0 0 3.5 14h6" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M2 7l3 3 7-7" />
+    </svg>
+  );
+}
 
 export function ToolSection() {
   const t = useTranslations('home');
@@ -79,10 +183,14 @@ export function ToolSection() {
     setBigrams((result.bigrams ?? []).map(phraseToItem));
     setTrigrams((result.trigrams ?? []).map(phraseToItem));
     setResultFilter('all');
+    setUrlError('');
   };
 
   const handleExtract = async () => {
-    if (activeTab === 'url' && !validateUrl(urlInput)) return;
+    if (activeTab === 'ai') return;
+    if (activeTab === 'url') {
+      if (!validateUrl(urlInput)) return;
+    }
     if (activeTab === 'text' && !textInput.trim()) return;
 
     setLoading(true);
@@ -90,9 +198,13 @@ export function ToolSection() {
 
     try {
       const endpoint = activeTab === 'url' ? '/api/extract/url' : '/api/extract/text';
-      const body = activeTab === 'url'
-        ? { url: normalizeUrl(urlInput), options: { includeBigrams: true, includeTrigrams: true } }
-        : { text: textInput, options: { includeBigrams: true, includeTrigrams: true } };
+      const body =
+        activeTab === 'url'
+          ? {
+              url: normalizeUrl(urlInput),
+              options: { includeBigrams: true, includeTrigrams: true },
+            }
+          : { text: textInput, options: { includeBigrams: true, includeTrigrams: true } };
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -108,7 +220,9 @@ export function ToolSection() {
       }
 
       applyExtractionResult(payload as ExtractionResult);
-      requestAnimationFrame(() => resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      requestAnimationFrame(() =>
+        resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      );
     } catch {
       setUrlError(t('extractFailed'));
       setResults([]);
@@ -117,16 +231,14 @@ export function ToolSection() {
     }
   };
 
-  const allResults = [
-    ...(results ?? []),
-    ...bigrams,
-    ...trigrams,
-  ];
+  const allResults = [...(results ?? []), ...bigrams, ...trigrams];
 
   const handleCopy = async () => {
     if (!results) return;
     const rows = [`${t('tableKeyword')}\t${t('tableCount')}\t${t('tableDensity')}`];
-    allResults.forEach((item) => rows.push(`${item.word}\t${item.count}\t${item.density}%`));
+    allResults.forEach((item) =>
+      rows.push(`${item.word}\t${item.count}\t${item.density.toFixed(1)}%`),
+    );
     await navigator.clipboard.writeText(rows.join('\n'));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -135,7 +247,9 @@ export function ToolSection() {
   const handleDownloadCsv = () => {
     if (!results) return;
     const rows = [[t('tableKeyword'), t('tableCount'), t('tableDensity')]];
-    allResults.forEach((item) => rows.push([item.word, String(item.count), `${item.density}%`]));
+    allResults.forEach((item) =>
+      rows.push([item.word, String(item.count), `${item.density.toFixed(1)}%`]),
+    );
     const csv = rows
       .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
       .join('\n');
@@ -158,9 +272,16 @@ export function ToolSection() {
 
   const sortedResults = [...filteredResults].sort((a, b) => {
     let va: string | number, vb: string | number;
-    if (sortField === 'word') { va = a.word; vb = b.word; }
-    else if (sortField === 'density') { va = a.density; vb = b.density; }
-    else { va = a.count; vb = b.count; }
+    if (sortField === 'word') {
+      va = a.word;
+      vb = b.word;
+    } else if (sortField === 'density') {
+      va = a.density;
+      vb = b.density;
+    } else {
+      va = a.count;
+      vb = b.count;
+    }
     if (typeof va === 'string' && typeof vb === 'string') {
       return sortDir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     }
@@ -172,222 +293,268 @@ export function ToolSection() {
   const paginatedResults = sortedResults.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const handleSortHeader = (field: string, defaultDir: 'asc' | 'desc') => {
-    if (sortField === field) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setSortField(field); setSortDir(defaultDir); }
+    if (sortField === field) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
+    else {
+      setSortField(field);
+      setSortDir(defaultDir);
+    }
   };
 
-  const sortIcon = (field: string) =>
-    sortField === field ? (sortDir === 'asc' ? ' \u2191' : ' \u2193') : '';
-
   return (
-    <div className="rounded-[14px] border border-border bg-background p-4 shadow-[0_1px_4px_hsl(0_0%_0%/0.04)] sm:p-6" ref={resultsRef}>
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="mb-5 h-auto w-full justify-start gap-1 overflow-x-auto rounded-none border-b border-border bg-transparent p-0 max-[480px]:grid max-[480px]:grid-cols-1">
-          <TabsTrigger value="text" className="gap-2 rounded-b-none border border-transparent px-5 py-2.5 data-[state=active]:border-border data-[state=active]:border-b-background data-[state=active]:shadow-none max-[480px]:rounded-md max-[480px]:data-[state=active]:border-primary">
-            <FileText className="h-4 w-4" aria-hidden="true" />
-            {t('tabText')}
-          </TabsTrigger>
-          <TabsTrigger value="url" className="gap-2 rounded-b-none border border-transparent px-5 py-2.5 data-[state=active]:border-border data-[state=active]:border-b-background data-[state=active]:shadow-none max-[480px]:rounded-md max-[480px]:data-[state=active]:border-primary">
-            <LinkIcon className="h-4 w-4" aria-hidden="true" />
-            {t('tabUrl')}
-          </TabsTrigger>
-          <TabsTrigger value="ai" disabled>
-            <Sparkles className="h-4 w-4" aria-hidden="true" />
-            {t('tabAi')}
-            <Lock className="h-3.5 w-3.5 opacity-50" aria-label={t('locked')} />
-            <Badge variant="default" className="ml-1.5 bg-amber-500 text-white hover:bg-amber-500">{t('proBadge')}</Badge>
-          </TabsTrigger>
-        </TabsList>
+    <div ref={resultsRef}>
+      {/* Tabs */}
+      <div className="tabs" role="tablist">
+        <button
+          className={cn('tab-btn', activeTab === 'text' && 'active')}
+          role="tab"
+          aria-selected={activeTab === 'text'}
+          onClick={() => setActiveTab('text')}
+          type="button"
+        >
+          <TextIcon />
+          {t('tabText')}
+        </button>
+        <button
+          className={cn('tab-btn', activeTab === 'url' && 'active')}
+          role="tab"
+          aria-selected={activeTab === 'url'}
+          onClick={() => setActiveTab('url')}
+          type="button"
+        >
+          <UrlIcon />
+          {t('tabUrl')}
+        </button>
+        <button className="tab-btn" role="tab" aria-selected={false} disabled type="button">
+          <AiIcon />
+          {t('tabAi')} <span className="lock-icon">&#x1F512;</span>{' '}
+          <span className="pro-badge">{t('proBadge')}</span>
+        </button>
+      </div>
 
-        <TabsContent value="text" className="mt-4 space-y-4">
-          <div className="relative">
-            <Textarea
-              placeholder={t('placeholderText')}
-              aria-label={t('textInputLabel')}
-              value={textInput}
-              onChange={(e) => setTextInput(e.target.value)}
-              spellCheck={false}
-              className="h-[250px] resize-y border-[1.5px] p-4 text-[15px] leading-relaxed"
-            />
-            <span className="pointer-events-none absolute right-3 bottom-3 text-xs text-muted-foreground">
-              {t('characters', { count: charCount.toLocaleString() })}
-            </span>
-          </div>
-          <Button onClick={handleExtract} disabled={loading || !textInput.trim()} className="mx-auto flex h-12 w-full max-w-[300px] text-base">
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" />
-                {t('extracting')}
-              </span>
-            ) : t('extract')}
-          </Button>
-        </TabsContent>
+      {/* Tab Content: Text */}
+      <div className={cn('tab-content', activeTab === 'text' && 'active')}>
+        <div className="input-group">
+          <textarea
+            id="textInput"
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            placeholder={t('placeholderText')}
+            spellCheck={false}
+            aria-label={t('textInputLabel')}
+          />
+          <div className="char-count">{t('characters', { count: charCount.toLocaleString() })}</div>
+        </div>
+      </div>
 
-        <TabsContent value="url" className="mt-4 space-y-4">
-          <div className={cn('flex items-center rounded-md border-[1.5px] border-input bg-background transition-colors focus-within:border-ring', urlError && 'border-destructive')}>
-            <span className="ps-3 pe-1 font-mono text-sm text-muted-foreground">https://</span>
-            <Input
+      {/* Tab Content: URL */}
+      <div className={cn('tab-content', activeTab === 'url' && 'active')}>
+        <div className="input-group">
+          <div className={cn('url-input-wrap', urlError && 'error')}>
+            <span className="url-scheme">https://</span>
+            <input
               type="text"
-              placeholder={t('placeholderUrl')}
-              aria-label={t('urlInputLabel')}
               value={urlInput}
-              aria-invalid={!!urlError}
-              onBlur={(e) => validateUrl(e.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter') void handleExtract();
-              }}
               onChange={(e) => {
                 setUrlInput(e.target.value.replace(/^https?:\/\//i, ''));
                 if (urlError) setUrlError('');
               }}
-              className="border-0 bg-transparent ps-1 shadow-none focus-visible:ring-0"
+              onBlur={(e) => validateUrl(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleExtract();
+              }}
+              placeholder={t('placeholderUrl')}
+              aria-label={t('urlInputLabel')}
             />
           </div>
-          {urlError && <p className="text-sm text-destructive">{urlError}</p>}
-          <Button onClick={handleExtract} disabled={loading || !urlInput.trim()} className="mx-auto flex h-12 w-full max-w-[300px] text-base">
-            {loading ? t('extracting') : t('extract')}
-          </Button>
-        </TabsContent>
-
-        <TabsContent value="ai" className="mt-4 space-y-4">
-          <div className="flex items-center gap-2 rounded-md bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-700 dark:text-amber-300">
-            <Lock className="h-4 w-4" aria-hidden="true" />
-            {t('aiLockedBanner')}
-            <span className="ms-auto font-bold text-amber-600 dark:text-amber-300">{t('proBadge')}</span>
+          <div className={cn('url-error', urlError && 'visible')}>
+            {urlError || t('invalidUrl')}
           </div>
-          <div className="relative">
-            <Textarea
-              placeholder={t('placeholderText')}
-              aria-label={t('aiInputLabel')}
-              disabled
-              value={t('aiSampleText')}
-              className="h-[250px] resize-y opacity-50"
-            />
-            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-md bg-background/85 p-6 text-center backdrop-blur-sm">
-              <Lock className="h-9 w-9 text-muted-foreground/60" aria-hidden="true" />
-              <p className="max-w-xs text-sm text-muted-foreground">{t('aiLockedDesc')}</p>
-              <Button type="button" className="bg-amber-500 text-white hover:bg-amber-500/90">
-                {t('upgradeToPro')}
-              </Button>
-            </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
 
-      {results && results.length > 0 && (
-        <div className="mt-8 border-t border-border pt-6">
-          <div className="mb-4 flex flex-wrap items-center justify-center gap-3">
-            <h2 className="text-center text-base font-semibold text-foreground">
-              {t('resultsTitle', { count: sortedResults.length })}
-            </h2>
+      {/* Tab Content: AI (locked) */}
+      <div className={cn('tab-content', activeTab === 'ai' && 'active')}>
+        <div className="ai-locked-banner">
+          &#x1F512; {t('aiLockedBanner')}
+          <span style={{ fontWeight: 700, color: 'var(--pro)', marginLeft: 'auto' }}>
+            {t('proBadge')}
+          </span>
+        </div>
+        <div className="ai-overlay">
+          <textarea
+            placeholder={t('placeholderText')}
+            spellCheck={false}
+            disabled
+            value={t('aiSampleText')}
+            aria-label={t('aiInputLabel')}
+            style={{ opacity: 0.5 }}
+          />
+          <div className="ai-lock">
+            <div className="lock-icon-big">&#x1F512;</div>
+            <p>{t('aiLockedDesc')}</p>
+            <button className="btn-upgrade" type="button">
+              {t('upgradeToPro')}
+            </button>
           </div>
+        </div>
+      </div>
 
-          <div className="mb-3 flex flex-wrap gap-1.5">
-            {(['all', '1word', '2word', '3word'] as const).map((f) => (
-              <button
-                key={f}
-                onClick={() => setResultFilter(f)}
-                className={cn(
-                  'rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors',
-                  resultFilter === f ? 'border-primary bg-primary text-primary-foreground' : 'border-border text-muted-foreground hover:border-primary hover:text-primary'
-                )}
-              >
-                {t(f === 'all' ? 'filterAll' : f === '1word' ? 'filterOneWord' : f === '2word' ? 'filterTwoWord' : 'filterThreeWord')}
-              </button>
-            ))}
-          </div>
+      {/* Extract Button */}
+      <button
+        className={cn('btn-extract', loading && 'loading')}
+        disabled={
+          loading ||
+          activeTab === 'ai' ||
+          (activeTab === 'text' && !textInput.trim()) ||
+          (activeTab === 'url' && !urlInput.trim())
+        }
+        onClick={handleExtract}
+        type="button"
+      >
+        <span className="btn-text">{t('extract')}</span>
+        <span className="spinner" />
+      </button>
 
-          <div className="mb-4 flex flex-wrap gap-2">
-            <Button variant="outline" size="sm" onClick={handleDownloadCsv} aria-label={t('downloadCsvLabel')}>
-              <Download className="h-3.5 w-3.5" aria-hidden="true" />
-              {t('downloadCsv')}
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleCopy} aria-label={t('copyClipboardLabel')}>
-              {copied ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Copy className="h-3.5 w-3.5" aria-hidden="true" />}
-              {copied ? t('copied') : t('copyClipboard')}
-            </Button>
-          </div>
+      {/* Results */}
+      <div className={cn('results', results && results.length > 0 && 'visible')}>
+        <div className="results-header">
+          <h2>{t('resultsTitle', { count: sortedResults.length })}</h2>
+        </div>
 
-          <Table className="rounded-lg border border-border [&_td]:px-4 [&_td]:py-2.5 [&_td]:font-mono [&_td]:text-xs [&_th]:px-4 [&_th]:font-mono [&_th]:text-xs [&_th]:uppercase [&_th]:tracking-normal">
-            <caption className="caption-bottom mt-2 text-left text-xs text-muted-foreground">
+        <div className="filter-chips">
+          {(['all', '1word', '2word', '3word'] as const).map((f) => (
+            <button
+              key={f}
+              className={cn('filter-chip', resultFilter === f && 'active')}
+              onClick={() => setResultFilter(f)}
+              type="button"
+            >
+              {t(
+                f === 'all'
+                  ? 'filterAll'
+                  : f === '1word'
+                    ? 'filterOneWord'
+                    : f === '2word'
+                      ? 'filterTwoWord'
+                      : 'filterThreeWord',
+              )}
+            </button>
+          ))}
+        </div>
+
+        <div className="results-actions">
+          <button onClick={handleDownloadCsv} aria-label={t('downloadCsvLabel')} type="button">
+            <CsvIcon />
+            {t('downloadCsv')}
+          </button>
+          <button onClick={handleCopy} aria-label={t('copyClipboardLabel')} type="button">
+            {copied ? <CheckIcon /> : <CopyIcon />}
+            {copied ? t('copied') : t('copyClipboard')}
+          </button>
+        </div>
+
+        <div className="table-wrap">
+          <table>
+            <caption
+              style={{
+                captionSide: 'bottom',
+                marginTop: 8,
+                fontSize: 12,
+                color: 'var(--muted-foreground)',
+                textAlign: 'left',
+              }}
+            >
               {t('tableCaption')}
             </caption>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="cursor-pointer select-none" onClick={() => handleSortHeader('word', 'asc')}>
-                  {t('tableKeyword')}{sortIcon('word')}
-                </TableHead>
-                <TableHead className="cursor-pointer select-none text-right" onClick={() => handleSortHeader('count', 'desc')}>
-                  {t('tableCount')}{sortIcon('count')}
-                </TableHead>
-                <TableHead className="cursor-pointer select-none text-right" onClick={() => handleSortHeader('density', 'desc')}>
-                  {t('tableDensity')}{sortIcon('density')}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+            <thead>
+              <tr>
+                <th
+                  data-sort="word"
+                  className={sortField === 'word' ? 'sorted' : ''}
+                  onClick={() => handleSortHeader('word', 'asc')}
+                >
+                  {t('tableKeyword')}{' '}
+                  <span className="sort-arrow">
+                    {sortField === 'word' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
+                  </span>
+                </th>
+                <th
+                  data-sort="count"
+                  className={sortField === 'count' ? 'sorted' : ''}
+                  onClick={() => handleSortHeader('count', 'desc')}
+                >
+                  {t('tableCount')}{' '}
+                  <span className="sort-arrow">
+                    {sortField === 'count' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
+                  </span>
+                </th>
+                <th
+                  data-sort="density"
+                  className={sortField === 'density' ? 'sorted' : ''}
+                  onClick={() => handleSortHeader('density', 'desc')}
+                >
+                  {t('tableDensity')}{' '}
+                  <span className="sort-arrow">
+                    {sortField === 'density' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
               {paginatedResults.map((item) => (
-                <TableRow key={item.word}>
-                  <TableCell className="font-medium">{item.word}</TableCell>
-                  <TableCell className="text-right tabular-nums">{item.count}</TableCell>
-                  <TableCell className="text-right tabular-nums">{item.density}%</TableCell>
-                </TableRow>
+                <tr key={item.word}>
+                  <td>{item.word}</td>
+                  <td>{item.count}</td>
+                  <td>{item.density.toFixed(1)}%</td>
+                </tr>
               ))}
-            </TableBody>
-          </Table>
-
-          {totalPages > 1 && (
-            <div className="flex flex-col items-center gap-2 pt-2">
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(1)} disabled={safePage <= 1} aria-label={t('pageFirst')}>
-                  {'\u00ab'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={safePage <= 1} aria-label={t('pagePrevious')}>
-                  {'\u2039'}
-                </Button>
-                <div className="flex items-center gap-1">
-                  {(() => {
-                    const pages: (number | 'e')[] = [];
-                    if (totalPages <= 7) {
-                      for (let i = 1; i <= totalPages; i++) pages.push(i);
-                    } else {
-                      pages.push(1);
-                      if (safePage > 3) pages.push('e');
-                      for (let i = Math.max(2, safePage - 1); i <= Math.min(totalPages - 1, safePage + 1); i++) pages.push(i);
-                      if (safePage < totalPages - 2) pages.push('e');
-                      pages.push(totalPages);
-                    }
-                    return pages.map((p, idx) =>
-                      p === 'e'
-                        ? <span key={`e-${idx}`} className="px-0.5 text-sm text-muted-foreground">{'\u2026'}</span>
-                        : <button key={p} onClick={() => setCurrentPage(p)} className={cn('h-8 w-8 rounded-md text-sm font-medium transition-colors', p === safePage ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:bg-muted')}>{p}</button>
-                    );
-                  })()}
-                </div>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} disabled={safePage >= totalPages} aria-label={t('pageNext')}>
-                  {'\u203a'}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(totalPages)} disabled={safePage >= totalPages} aria-label={t('pageLast')}>
-                  {'\u00bb'}
-                </Button>
-              </div>
-              <span className="text-xs text-muted-foreground">
-                {t('pageOf', { current: safePage, total: totalPages })}
-              </span>
-            </div>
-          )}
+            </tbody>
+          </table>
         </div>
-      )}
 
+        <div className="pagination">
+          <button
+            type="button"
+            aria-label={t('pageFirst')}
+            disabled={safePage <= 1}
+            onClick={() => setCurrentPage(1)}
+          >
+            &laquo;
+          </button>
+          <button
+            type="button"
+            aria-label={t('pagePrevious')}
+            disabled={safePage <= 1}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          >
+            &lsaquo;
+          </button>
+          <span className="page-info">{t('pageOf', { current: safePage, total: totalPages })}</span>
+          <button
+            type="button"
+            aria-label={t('pageNext')}
+            disabled={safePage >= totalPages}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          >
+            &rsaquo;
+          </button>
+          <button
+            type="button"
+            aria-label={t('pageLast')}
+            disabled={safePage >= totalPages}
+            onClick={() => setCurrentPage(totalPages)}
+          >
+            &raquo;
+          </button>
+        </div>
+      </div>
+
+      {/* Empty results */}
       {results && results.length === 0 && (
-        <div className="mt-8 rounded-lg border border-border bg-muted/30 px-4 py-8 text-center text-sm text-muted-foreground">
-          {urlError || t('noKeywordsFound')}
-        </div>
-      )}
-
-      {!results && (
-        <div className="mt-8 rounded-lg border border-dashed border-border px-4 py-12 text-center">
-          <p className="text-sm text-muted-foreground">{t('noResults')}</p>
+        <div className="results visible">
+          <div className="results-header">
+            <h2 style={{ color: 'var(--muted-foreground)' }}>{t('noKeywordsFound')}</h2>
+          </div>
         </div>
       )}
     </div>

@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
@@ -34,78 +33,85 @@ export function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl">
-      <div className="relative mx-auto flex h-[60px] max-w-6xl items-center justify-between px-3 sm:px-6">
-        <Logo className="text-xl font-extrabold tracking-normal" />
+    <header>
+      <div className="inner">
+        <Logo />
 
-        <nav
-          aria-label={t('centerNavigation')}
-          className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex"
-        >
+        <nav className="nav-center" aria-label={t('centerNavigation')}>
           {CENTER_LINKS.map((item) => (
-            <Link
-              key={item.key}
-              href={item.href}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground hover:no-underline"
-            >
+            <Link key={item.key} href={item.href}>
               {t(item.key)}
             </Link>
           ))}
         </nav>
 
-        <nav aria-label={t('mainNavigation')} className="hidden items-center gap-2 md:flex">
+        <nav className="nav-right" aria-label={t('mainNavigation')}>
           <ThemeToggle />
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/sign-in">{t('logIn')}</Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/sign-up">{t('signUp')}</Link>
-          </Button>
+          <Link href="/sign-in" className="btn-login">
+            {t('logIn')}
+          </Link>
+          <Link href="/sign-up" className="btn-signup">
+            {t('signUp')}
+          </Link>
         </nav>
 
         <button
           type="button"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:border-primary md:hidden"
+          className="hamburger"
           aria-label={menuOpen ? t('closeMenu') : t('openMenu')}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
         >
-          {menuOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            aria-hidden="true"
+          >
+            {menuOpen ? <path d="M18 6L6 18M6 6l12 12" /> : <path d="M4 6h16M4 12h16M4 18h16" />}
+          </svg>
         </button>
       </div>
 
-      {menuOpen && (
-        <div className="fixed inset-x-0 top-[60px] z-50 flex min-h-[calc(100dvh-60px)] flex-col bg-background/95 px-6 py-6 backdrop-blur-xl md:hidden">
-          <nav aria-label={t('mainNavigation')} className="flex flex-col">
-            {CENTER_LINKS.map((item) => (
-              <Link
-                key={item.key}
-                href={item.href}
-                onClick={() => setMenuOpen(false)}
-                className="border-b border-border py-3.5 text-lg font-medium text-foreground transition-colors hover:text-primary hover:no-underline"
-              >
-                {t(item.key)}
-              </Link>
-            ))}
-            <div className="flex items-center gap-3 border-b border-border py-3.5">
-              <span className="text-sm font-medium text-muted-foreground">{themeT('theme')}</span>
-              <ThemeToggle className="h-10 w-10" />
-            </div>
-            <Link
-              href="/sign-in"
-              onClick={() => setMenuOpen(false)}
-              className="py-3.5 text-lg font-semibold text-foreground transition-colors hover:text-primary hover:no-underline"
-            >
-              {t('logIn')}
-            </Link>
-            <Button asChild className="mt-2 h-12">
-              <Link href="/sign-up" onClick={() => setMenuOpen(false)}>
-                {t('signUp')}
-              </Link>
-            </Button>
-          </nav>
+      <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
+        {CENTER_LINKS.map((item) => (
+          <Link key={item.key} href={item.href} onClick={() => setMenuOpen(false)}>
+            {t(item.key)}
+          </Link>
+        ))}
+        <div className="mobile-theme-row">
+          <span style={{ fontSize: 14, color: 'var(--muted-foreground)', fontWeight: 500 }}>
+            {themeT('theme')}
+          </span>
+          <ThemeToggle />
         </div>
-      )}
+        <Link
+          href="/sign-in"
+          onClick={() => setMenuOpen(false)}
+          style={{ border: 'none', fontWeight: 600 }}
+        >
+          {t('logIn')}
+        </Link>
+        <Link
+          href="/sign-up"
+          onClick={() => setMenuOpen(false)}
+          style={{
+            display: 'block',
+            textAlign: 'center',
+            marginTop: 8,
+            padding: 14,
+            borderRadius: 10,
+            background: 'var(--primary)',
+            color: '#fff',
+            fontWeight: 600,
+            border: 'none',
+          }}
+        >
+          {t('signUp')}
+        </Link>
+      </div>
     </header>
   );
 }

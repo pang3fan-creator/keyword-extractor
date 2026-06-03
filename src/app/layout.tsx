@@ -1,16 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import messages from "../../messages/en.json";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Inter, JetBrains_Mono } from 'next/font/google';
+import messages from '../../messages/en.json';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -22,22 +23,22 @@ export const metadata: Metadata = {
   openGraph: {
     title: messages.metadata.openGraphTitle,
     description: messages.metadata.openGraphDescription,
-    url: "https://extractkeywords.com",
+    url: 'https://extractkeywords.com',
     siteName: messages.metadata.siteName,
-    type: "website",
+    type: 'website',
     images: [
       {
-        url: "https://extractkeywords.com/og-image.png",
+        url: 'https://extractkeywords.com/og-image.png',
         width: 1200,
         height: 630,
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: 'summary_large_image',
     title: messages.metadata.openGraphTitle,
     description: messages.metadata.openGraphDescription,
-    images: ["https://extractkeywords.com/og-image.png"],
+    images: ['https://extractkeywords.com/og-image.png'],
   },
 };
 
@@ -49,7 +50,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={`${inter.className} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -59,9 +60,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-background font-sans text-foreground antialiased">
-        {children}
-      </body>
+      <body className="bg-background text-foreground min-h-screen antialiased">{children}</body>
     </html>
   );
 }
