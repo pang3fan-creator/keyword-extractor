@@ -119,7 +119,52 @@ describe('fetchURLContent', () => {
 
     await expect(fetchURLContent('https://example.com/file.pdf')).resolves.toEqual({
       success: false,
+      errorCode: 'NON_HTML_CONTENT',
       error: 'Only HTML pages can be extracted.',
     });
+  });
+
+  it('rejects HTML pages with no readable content', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('<html><head><title>Empty</title></head><body><script>noise</script></body></html>', {
+          headers: { 'content-type': 'text/html' },
+          status: 200,
+        }),
+      ),
+    );
+
+    await expect(fetchURLContent('https://example.com/empty')).resolves.toEqual({
+      success: false,
+      errorCode: 'EMPTY_CONTENT',
+      error: 'No readable page content found.',
+    });
+  });
+
+  it('returns a timeout error code when fetching takes too long', async () => {
+    vi.useFakeTimers();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((_url: string, init?: RequestInit) => {
+        return new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => {
+            const error = new Error('The operation was aborted');
+            error.name = 'AbortError';
+            reject(error);
+          });
+        });
+      }),
+    );
+
+    const promise = fetchURLContent('https://example.com/slow', { timeoutMs: 10 });
+    await vi.advanceTimersByTimeAsync(10);
+
+    await expect(promise).resolves.toEqual({
+      success: false,
+      errorCode: 'FETCH_TIMEOUT',
+      error: 'URL fetch timed out.',
+    });
+    vi.useRealTimers();
   });
 });

@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { API_ERROR_MESSAGES, type APIErrorCode } from './api-errors';
 
 const DEFAULT_TIMEOUT_MS = 10_000;
 const DEFAULT_MAX_REDIRECTS = 3;
@@ -18,6 +19,7 @@ export type FetchURLContentResult =
     }
   | {
       success: false;
+      errorCode: APIErrorCode;
       error: string;
     };
 
@@ -43,17 +45,25 @@ export async function fetchURLContent(
 
     const contentType = responseInfo.response.headers.get('content-type') ?? '';
     if (!isHtmlContentType(contentType)) {
-      return { success: false, error: 'Only HTML pages can be extracted.' };
+      return fetchError('NON_HTML_CONTENT');
     }
 
     const html = await readResponseText(responseInfo.response, options.maxBytes ?? DEFAULT_MAX_BYTES);
     const { title, content } = extractHtmlContent(html);
+    if (!content) {
+      return fetchError('EMPTY_CONTENT');
+    }
 
     return { success: true, title, content };
   } catch (error) {
+    if (error instanceof URLFetchError) {
+      return fetchError(error.errorCode, error.message);
+    }
+
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unable to fetch URL content.',
+      errorCode: 'FETCH_FAILED',
+      error: error instanceof Error ? error.message : API_ERROR_MESSAGES.FETCH_FAILED,
     };
   }
 }
@@ -64,15 +74,15 @@ function validateUrl(url: string): URL {
   try {
     parsedUrl = new URL(url);
   } catch {
-    throw new Error('A valid URL is required.');
+    throw new URLFetchError('INVALID_URL');
   }
 
   if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
-    throw new Error('A valid URL is required.');
+    throw new URLFetchError('INVALID_URL');
   }
 
   if (isPrivateOrLocalHost(parsedUrl.hostname)) {
-    throw new Error('A valid URL is required.');
+    throw new URLFetchError('INVALID_URL');
   }
 
   return parsedUrl;
@@ -89,7 +99,7 @@ async function fetchWithRedirects(
 
     if (!isRedirectResponse(response)) {
       if (!response.ok) {
-        throw new Error(`URL returned HTTP ${response.status}.`);
+        throw new URLFetchError('FETCH_FAILED', `URL returned HTTP ${response.status}.`);
       }
 
       return { response, url: currentUrl };
@@ -97,13 +107,13 @@ async function fetchWithRedirects(
 
     const location = response.headers.get('location');
     if (!location) {
-      throw new Error('Redirect response is missing a Location header.');
+      throw new URLFetchError('FETCH_FAILED', 'Redirect response is missing a Location header.');
     }
 
     currentUrl = validateUrl(new URL(location, currentUrl).href);
   }
 
-  throw new Error('Too many redirects.');
+  throw new URLFetchError('FETCH_FAILED', 'Too many redirects.');
 }
 
 async function fetchOnce(url: URL, timeoutMs: number) {
@@ -117,10 +127,10 @@ async function fetchOnce(url: URL, timeoutMs: number) {
     });
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
-      throw new Error('URL fetch timed out.');
+      throw new URLFetchError('FETCH_TIMEOUT');
     }
 
-    throw new Error('Unable to fetch URL content.');
+    throw new URLFetchError('FETCH_FAILED');
   } finally {
     clearTimeout(timeout);
   }
@@ -138,12 +148,12 @@ function isHtmlContentType(contentType: string) {
 async function readResponseText(response: Response, maxBytes: number) {
   const contentLength = response.headers.get('content-length');
   if (contentLength && Number(contentLength) > maxBytes) {
-    throw new Error('URL content is too large.');
+    throw new URLFetchError('FETCH_FAILED', 'URL content is too large.');
   }
 
   const bytes = await response.arrayBuffer();
   if (bytes.byteLength > maxBytes) {
-    throw new Error('URL content is too large.');
+    throw new URLFetchError('FETCH_FAILED', 'URL content is too large.');
   }
 
   return new TextDecoder().decode(bytes);
@@ -197,6 +207,19 @@ function findContentRoot($: cheerio.CheerioAPI) {
 
 function normalizeText(text: string) {
   return text.replace(/\s+/g, ' ').trim();
+}
+
+function fetchError(errorCode: APIErrorCode, error = API_ERROR_MESSAGES[errorCode]) {
+  return { success: false as const, errorCode, error };
+}
+
+class URLFetchError extends Error {
+  constructor(
+    public readonly errorCode: APIErrorCode,
+    message = API_ERROR_MESSAGES[errorCode],
+  ) {
+    super(message);
+  }
 }
 
 function isPrivateOrLocalHost(hostname: string) {

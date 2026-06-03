@@ -13,6 +13,30 @@ interface KeywordItem {
 
 const PAGE_SIZE = 20;
 type ResultFilter = 'all' | '1word' | '2word' | '3word';
+type APIErrorCode =
+  | 'INVALID_JSON'
+  | 'TEXT_REQUIRED'
+  | 'TEXT_TOO_LONG'
+  | 'INVALID_URL'
+  | 'ROBOTS_BLOCKED'
+  | 'FETCH_TIMEOUT'
+  | 'FETCH_FAILED'
+  | 'NON_HTML_CONTENT'
+  | 'EMPTY_CONTENT'
+  | 'RATE_LIMIT_EXCEEDED';
+
+const ERROR_TRANSLATION_KEYS: Record<APIErrorCode, string> = {
+  INVALID_JSON: 'errors.invalidJson',
+  TEXT_REQUIRED: 'errors.textRequired',
+  TEXT_TOO_LONG: 'errors.textTooLong',
+  INVALID_URL: 'errors.invalidUrl',
+  ROBOTS_BLOCKED: 'errors.robotsBlocked',
+  FETCH_TIMEOUT: 'errors.fetchTimeout',
+  FETCH_FAILED: 'errors.fetchFailed',
+  NON_HTML_CONTENT: 'errors.nonHtmlContent',
+  EMPTY_CONTENT: 'errors.emptyContent',
+  RATE_LIMIT_EXCEEDED: 'errors.rateLimitExceeded',
+};
 
 function TextIcon() {
   return (
@@ -186,6 +210,20 @@ export function ToolSection() {
     setUrlError('');
   };
 
+  const getTranslatedError = (payload: unknown) => {
+    if (
+      payload &&
+      typeof payload === 'object' &&
+      'errorCode' in payload &&
+      typeof payload.errorCode === 'string' &&
+      payload.errorCode in ERROR_TRANSLATION_KEYS
+    ) {
+      return t(ERROR_TRANSLATION_KEYS[payload.errorCode as APIErrorCode] as never);
+    }
+
+    return t('extractFailed');
+  };
+
   const handleExtract = async () => {
     if (activeTab === 'ai') return;
     if (activeTab === 'url') {
@@ -213,8 +251,7 @@ export function ToolSection() {
       const payload = await response.json();
 
       if (!response.ok) {
-        const message = typeof payload.error === 'string' ? payload.error : t('extractFailed');
-        setUrlError(message);
+        setUrlError(getTranslatedError(payload));
         setResults([]);
         return;
       }
@@ -342,7 +379,9 @@ export function ToolSection() {
             spellCheck={false}
             aria-label={t('textInputLabel')}
           />
-          <div className="char-count">{t('characters', { count: charCount.toLocaleString() })}</div>
+          <div className="char-count">
+            {t('characters', { count: charCount.toLocaleString() })}
+          </div>
         </div>
       </div>
 
@@ -414,6 +453,12 @@ export function ToolSection() {
         <span className="btn-text">{t('extract')}</span>
         <span className="spinner" />
       </button>
+
+      {activeTab !== 'url' && (
+        <div className={cn('url-error', urlError && 'visible')}>
+          {urlError || t('extractFailed')}
+        </div>
+      )}
 
       {/* Results */}
       <div className={cn('results', results && results.length > 0 && 'visible')}>

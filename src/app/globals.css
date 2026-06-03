@@ -371,7 +371,7 @@ header .inner {
   font-size: 14px;
   font-weight: 500;
   padding: 10px 20px;
-  border: 0;
+  border: 1px solid transparent;
   background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
@@ -391,7 +391,7 @@ header .inner {
   color: var(--primary);
   font-weight: 600;
   background: var(--card);
-  border: 1px solid var(--border);
+  border-color: var(--border);
   border-bottom-color: var(--card);
 }
 .tab-btn:disabled {
@@ -997,7 +997,7 @@ footer ul li a:hover {
     justify-content: center;
   }
   .tab-btn.active {
-    border: 1px solid var(--primary);
+    border-color: var(--primary);
     border-bottom-color: var(--primary);
   }
   footer .inner {

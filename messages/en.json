@@ -70,6 +70,18 @@
     "seoCtaDesc": "Ready to extract keywords from your content?",
     "seoCtaButton": "Try the Keyword Extraction Tool",
     "invalidUrl": "Please enter a valid URL",
+    "errors": {
+      "invalidJson": "The request could not be read. Please try again.",
+      "textRequired": "Please enter some text before extracting keywords.",
+      "textTooLong": "Text must be 50,000 characters or fewer.",
+      "invalidUrl": "Please enter a valid URL.",
+      "robotsBlocked": "This page blocks automated extraction with robots.txt.",
+      "fetchTimeout": "The page took too long to respond. Please try again or paste the text directly.",
+      "fetchFailed": "Unable to fetch this page. Please check the URL or paste the text directly.",
+      "nonHtmlContent": "Only HTML web pages can be extracted.",
+      "emptyContent": "No readable page content was found. Try pasting the text directly.",
+      "rateLimitExceeded": "Daily free extraction limit reached. Please try again tomorrow."
+    },
     "filterOneWord": "1-word",
     "filterTwoWord": "2-word",
     "filterThreeWord": "3-word",
