@@ -12,7 +12,7 @@ export function FaqSection() {
         {t('seoFaqTitle')}
       </h2>
       <Accordion className="mx-auto max-w-2xl">
-        {[1, 2, 3, 4, 5, 6].map((i) => (
+        {[1, 2, 3, 4].map((i) => (
           <AccordionItem key={i} value={`faq-${i}`}>
             <AccordionTrigger className="text-left text-sm font-medium hover:no-underline">
               {t(`seoFaq${i}Q` as never)}

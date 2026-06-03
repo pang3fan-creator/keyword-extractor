@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import messages from "../../messages/en.json";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -14,17 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | ExtractKeywords",
-    default: "Free Online Keyword Extraction Tool | ExtractKeywords",
+    template: messages.metadata.titleTemplate,
+    default: `${messages.metadata.titleDefault} | ${messages.metadata.siteName}`,
   },
-  description:
-    "Free online keyword extraction tool. Extract keywords from text or URL instantly. No signup required. Download results as CSV.",
+  description: messages.metadata.description,
   openGraph: {
-    title: "ExtractKeywords — Free Online Keyword Extraction Tool",
-    description:
-      "Extract keywords from text or URL instantly. No signup required.",
+    title: messages.metadata.openGraphTitle,
+    description: messages.metadata.openGraphDescription,
     url: "https://extractkeywords.com",
-    siteName: "ExtractKeywords",
+    siteName: messages.metadata.siteName,
     type: "website",
     images: [
       {
@@ -36,9 +35,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ExtractKeywords — Free Online Keyword Extraction Tool",
-    description:
-      "Extract keywords from text or URL instantly. No signup required.",
+    title: messages.metadata.openGraphTitle,
+    description: messages.metadata.openGraphDescription,
     images: ["https://extractkeywords.com/og-image.png"],
   },
 };
