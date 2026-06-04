@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 
@@ -17,7 +19,9 @@ export function Footer() {
           <h4>{t('product')}</h4>
           <ul>
             <li>
-              <Link href="/pricing">{t('pricing')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('pricing')}
+              </Link>
             </li>
           </ul>
         </div>
@@ -25,10 +29,14 @@ export function Footer() {
           <h4>{t('resources')}</h4>
           <ul>
             <li>
-              <Link href="/blog">{t('blog')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('blog')}
+              </Link>
             </li>
             <li>
-              <Link href="/guides">{t('guides')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('guides')}
+              </Link>
             </li>
           </ul>
         </div>
@@ -36,13 +44,19 @@ export function Footer() {
           <h4>{t('legal')}</h4>
           <ul>
             <li>
-              <Link href="/privacy">{t('privacy')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('privacy')}
+              </Link>
             </li>
             <li>
-              <Link href="/terms">{t('terms')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('terms')}
+              </Link>
             </li>
             <li>
-              <Link href="/contact">{t('contact')}</Link>
+              <Link href="#" onClick={(e) => e.preventDefault()}>
+                {t('contact')}
+              </Link>
             </li>
           </ul>
         </div>

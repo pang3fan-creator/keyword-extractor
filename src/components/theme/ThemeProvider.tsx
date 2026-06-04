@@ -37,6 +37,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     };
 
     if (theme === 'system') {
+      localStorage.setItem('theme', 'system');
       const mq = window.matchMedia('(prefers-color-scheme: dark)');
       applyTheme(mq.matches);
       const handler = (e: MediaQueryListEvent) => applyTheme(e.matches);

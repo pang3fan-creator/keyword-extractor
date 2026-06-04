@@ -39,19 +39,25 @@ export function Header() {
           <Logo />
 
           <nav className="nav-center" aria-label={t('centerNavigation')}>
-            {CENTER_LINKS.map((item) => (
-              <Link key={item.key} href={item.href}>
-                {t(item.key)}
-              </Link>
-            ))}
+            {CENTER_LINKS.map((item) =>
+              item.href === '/' ? (
+                <Link key={item.key} href={item.href}>
+                  {t(item.key)}
+                </Link>
+              ) : (
+                <Link key={item.key} href="#" onClick={(e) => e.preventDefault()}>
+                  {t(item.key)}
+                </Link>
+              ),
+            )}
           </nav>
 
           <nav className="nav-right" aria-label={t('mainNavigation')}>
             <ThemeToggle />
-            <Link href="/sign-in" className="btn-login">
+            <Link href="#" className="btn-login" onClick={(e) => e.preventDefault()}>
               {t('logIn')}
             </Link>
-            <Link href="/sign-up" className="btn-signup">
+            <Link href="#" className="btn-signup" onClick={(e) => e.preventDefault()}>
               {t('signUp')}
             </Link>
           </nav>
@@ -78,11 +84,24 @@ export function Header() {
       </header>
 
       <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
-        {CENTER_LINKS.map((item) => (
-          <Link key={item.key} href={item.href} onClick={() => setMenuOpen(false)}>
-            {t(item.key)}
-          </Link>
-        ))}
+        {CENTER_LINKS.map((item) =>
+          item.href === '/' ? (
+            <Link key={item.key} href={item.href} onClick={() => setMenuOpen(false)}>
+              {t(item.key)}
+            </Link>
+          ) : (
+            <Link
+              key={item.key}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen(false);
+              }}
+            >
+              {t(item.key)}
+            </Link>
+          ),
+        )}
         <div className="mobile-theme-row">
           <span style={{ fontSize: 14, color: 'var(--muted-foreground)', fontWeight: 500 }}>
             {themeT('theme')}
@@ -90,15 +109,21 @@ export function Header() {
           <ThemeToggle />
         </div>
         <Link
-          href="/sign-in"
-          onClick={() => setMenuOpen(false)}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setMenuOpen(false);
+          }}
           style={{ border: 'none', fontWeight: 600 }}
         >
           {t('logIn')}
         </Link>
         <Link
-          href="/sign-up"
-          onClick={() => setMenuOpen(false)}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setMenuOpen(false);
+          }}
           style={{
             display: 'block',
             textAlign: 'center',

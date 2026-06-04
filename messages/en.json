@@ -147,5 +147,12 @@
     "terms": "Terms",
     "contact": "Contact",
     "copyright": "© 2026 ExtractKeywords. All rights reserved."
+  },
+  "notFound": {
+    "subtitle": "Page Not Found",
+    "title": "Page Not Found",
+    "desc": "The link you followed may be broken, the page may have been moved, or the address might contain a typo.",
+    "goHome": "Home",
+    "goBack": "Go back"
   }
 }

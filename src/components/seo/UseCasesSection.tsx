@@ -1,5 +1,4 @@
 import { getTranslations } from 'next-intl/server';
-import { cn } from '@/lib/utils';
 
 const USE_CASE_KEYS = ['Seo', 'Content', 'Academic', 'Marketing'] as const;
 
@@ -98,15 +97,12 @@ export default async function UseCasesSection() {
       <h2 id="use-cases-title">{t('seoUseTitle')}</h2>
       <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-center">{t('seoWhyDesc')}</p>
       <div className="grid gap-6 md:grid-cols-2">
-        {USE_CASE_KEYS.map((key, i) => {
+        {USE_CASE_KEYS.map((key) => {
           const Icon = ICONS[key];
           return (
             <div
               key={key}
-              className={cn(
-                'border-border hover:border-primary flex flex-col items-center rounded-xl border p-6 text-center transition hover:shadow-sm',
-                i === 0 && 'border-primary',
-              )}
+              className="border-border hover:border-primary flex flex-col items-center rounded-xl border p-6 text-center transition hover:shadow-sm"
             >
               <div className="bg-accent text-primary mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg">
                 <Icon />
