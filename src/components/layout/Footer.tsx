@@ -44,7 +44,7 @@ export function Footer() {
           <h4>{t('legal')}</h4>
           <ul>
             <li>
-              <Link href="#" onClick={(e) => e.preventDefault()}>
+              <Link href="/privacy">
                 {t('privacy')}
               </Link>
             </li>

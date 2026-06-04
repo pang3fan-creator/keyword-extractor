@@ -122,6 +122,202 @@
     "seoInsightBlock": "Research shows that multi-word phrases account for roughly 70% of all search queries, while common stop words make up approximately 40% of written English text. That's why effective keyword extraction combines stop-word filtering with bigram and trigram detection \u2014 to surface the terms that match how people actually search.",
     "lastUpdated": "Last updated: June 2026"
   },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: January 1, 2026",
+    "articleLabel": "Privacy policy details",
+    "highlightLabel": "Key commitment:",
+    "highlightText": "Free extraction requests are processed only to return results for the current request. We do not store pasted text, fetched page content, submitted URLs, or extracted results.",
+    "backHome": "Back to Home",
+    "metadata": {
+      "title": "Privacy Policy",
+      "description": "ExtractKeywords privacy policy: how we collect, use, and protect data when you use our free keyword extraction tool.",
+      "openGraphTitle": "Privacy Policy | ExtractKeywords",
+      "openGraphDescription": "Learn how ExtractKeywords handles data for free text and URL keyword extraction.",
+      "schemaName": "Privacy Policy",
+      "schemaDescription": "ExtractKeywords privacy policy: how we collect, use, and protect data."
+    },
+    "sections": {
+      "overview": {
+        "title": "Overview",
+        "paragraphs": [
+          "ExtractKeywords is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect information when you use our keyword extraction tool.",
+          "By using ExtractKeywords, you agree to the practices described in this policy. If you do not agree, please discontinue use of our service."
+        ]
+      },
+      "information": {
+        "title": "Information We Collect",
+        "paragraphs": []
+      },
+      "usage": {
+        "title": "How We Use Information",
+        "paragraphs": [
+          "The information we collect is used for the following purposes:"
+        ],
+        "list": [
+          {
+            "label": "Provide tool functionality —",
+            "text": "Process text or URL content for the current extraction request and return keyword results."
+          },
+          {
+            "label": "Improve the service —",
+            "text": "Analyze anonymous usage patterns to optimize the interface and performance."
+          },
+          {
+            "label": "Customer support —",
+            "text": "Respond to questions and requests you send to us."
+          },
+          {
+            "label": "Future account features —",
+            "text": "Manage account preferences if account-based features are enabled later."
+          },
+          {
+            "label": "Compliance —",
+            "text": "Comply with applicable laws and regulations."
+          }
+        ]
+      },
+      "cookies": {
+        "title": "Cookies & Local Storage",
+        "paragraphs": [
+          "We use cookies and browser local storage to a minimal extent:"
+        ],
+        "list": [
+          {
+            "label": "Theme preference —",
+            "text": "Remember your light, dark, or system theme selection."
+          },
+          {
+            "label": "Session state —",
+            "text": "Maintain login state if account features are enabled later."
+          },
+          {
+            "label": "Analytics —",
+            "text": "Collect anonymous page visit statistics without personally identifiable information."
+          }
+        ]
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "paragraphs": [
+          "We may use third-party services that process limited data to provide or improve the product.",
+          "Each third-party service maintains its own privacy policy. We encourage you to review those policies for more information."
+        ]
+      },
+      "security": {
+        "title": "Data Security",
+        "paragraphs": [
+          "We implement reasonable technical and organizational measures to protect your data:"
+        ],
+        "list": [
+          {
+            "text": "All communications are encrypted over HTTPS."
+          },
+          {
+            "text": "Free extraction input and results are not stored after the request is processed."
+          },
+          {
+            "text": "If account features are enabled later, passwords will be hashed and never stored in plaintext."
+          },
+          {
+            "text": "We maintain dependencies and review security-sensitive extraction code."
+          }
+        ]
+      },
+      "rights": {
+        "title": "Your Rights",
+        "paragraphs": [
+          "Under applicable data protection laws, you may have the following rights:"
+        ],
+        "list": [
+          {
+            "label": "Right to be informed —",
+            "text": "Know how we process your data."
+          },
+          {
+            "label": "Right of access —",
+            "text": "Request a copy of personal data we hold about you."
+          },
+          {
+            "label": "Right to rectification —",
+            "text": "Request correction of inaccurate personal data."
+          },
+          {
+            "label": "Right to erasure —",
+            "text": "Request deletion of your personal data."
+          },
+          {
+            "label": "Right to restrict processing —",
+            "text": "Limit how we process your data under certain conditions."
+          },
+          {
+            "label": "Right to data portability —",
+            "text": "Receive your data in a structured, commonly used format."
+          },
+          {
+            "label": "Right to object —",
+            "text": "Object to processing based on legitimate interests."
+          }
+        ]
+      },
+      "contact": {
+        "title": "Contact Us",
+        "paragraphs": [
+          "If you have questions about this Privacy Policy or wish to exercise your data rights, please reach out:"
+        ],
+        "list": [
+          {
+            "label": "Email:",
+            "text": "privacy@extractkeywords.com",
+            "href": "mailto:privacy@extractkeywords.com"
+          },
+          {
+            "text": "We respond to data privacy requests within 30 days where required by applicable law."
+          }
+        ]
+      },
+      "changes": {
+        "title": "Policy Changes",
+        "paragraphs": [
+          "We may update this Privacy Policy from time to time. Material changes will be announced through our website or an in-tool notice.",
+          "Continued use of ExtractKeywords after changes constitutes acceptance of the updated policy."
+        ]
+      }
+    },
+    "tables": {
+      "informationTable": {
+        "headers": ["Data Type", "How Collected", "Purpose"],
+        "rows": [
+          {
+            "cells": ["Text content you input", "Pasted text or URL fetch", "Processed for the current extraction request; not stored after results are returned"]
+          },
+          {
+            "cells": ["Submitted URLs and fetched page content", "URL extraction mode", "Fetch publicly accessible HTML and extract readable text for the current request"]
+          },
+          {
+            "cells": ["Usage data", "Anonymous analytics", "Improve product experience and performance"]
+          },
+          {
+            "cells": ["Account information", "If registration features are enabled later", "Manage account settings and future paid plan access"]
+          }
+        ]
+      },
+      "thirdPartyTable": {
+        "headers": ["Service", "Purpose", "Data Type"],
+        "rows": [
+          {
+            "cells": ["Google Fonts", "Provide Inter and JetBrains Mono fonts", "IP address as part of a standard web request"]
+          },
+          {
+            "cells": ["Analytics provider", "Measure anonymous page visits and feature usage", "Aggregated usage data without submitted extraction content"]
+          },
+          {
+            "cells": ["Future payment provider", "Process paid plan payments if paid plans are enabled", "Payment information handled by the provider; we do not store full card numbers"]
+          }
+        ]
+      }
+    }
+  },
   "nav": {
     "home": "Home",
     "pricing": "Pricing",

@@ -26,12 +26,12 @@ export default async function NotFound() {
         >
           {t('title')}
         </h1>
-        <p className="text-muted-foreground text-[15px] leading-relaxed">{t('desc')}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">{t('desc')}</p>
         <div className="flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/"
-            className="bg-primary inline-flex items-center gap-2 rounded-lg text-[15px] font-medium no-underline transition hover:-translate-y-px hover:opacity-85 active:translate-y-0"
-            style={{ color: '#fff', padding: '12px 28px' }}
+            className="bg-primary text-primary-foreground inline-flex items-center gap-1.5 rounded-lg text-sm font-medium no-underline transition hover:-translate-y-px hover:opacity-85 active:translate-y-0"
+            style={{ padding: '12px 28px' }}
           >
             <svg
               width="16"

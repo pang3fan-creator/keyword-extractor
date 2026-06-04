@@ -25,7 +25,7 @@ npm run test
 ## Key Paths
 
 - Home: `src/app/[locale]/page.tsx`
-- Root fallback: `src/app/page.tsx`
+- 404: `src/app/not-found.tsx`
 - Layout/i18n: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`, `src/proxy.ts`
 - UI: `src/components/ui/`, `src/components/layout/`, `src/components/extractor/`, `src/components/seo/`, `src/components/theme/`
 - Extraction backend: `src/lib/keyword-extractor.ts`, `src/lib/url-fetcher.ts`, `src/lib/robots-checker.ts`, `src/lib/rate-limiter.ts`
@@ -45,7 +45,7 @@ npm run test
 ## next-intl / Routing
 
 - Next.js 16 用 `proxy.ts`，不要新增 `middleware.ts`。
-- `/` 由 `app/page.tsx` 兜底；`/[locale]` 负责本地化首页。
+- `localePrefix: 'as-needed'` 下 `/` 即默认 locale，由 `[locale]/page.tsx` 直接处理，不要新增 `app/page.tsx`。
 - 不要在 `[locale]` 下创建 `en/` 文件夹。
 - 非 locale 路径如 `/auth/*` 要在 proxy matcher 排除，并提供自己的 root layout。
 - 拼本地化 URL 用 `buildUrl(locale, "/path")` from `@/lib/url`，不要手写 `/${locale}/path`。
@@ -56,12 +56,24 @@ npm run test
 - FOUC 脚本放 `<head>` 内直接 `<script dangerouslySetInnerHTML>`。
 - ThemeProvider 初始 state 固定为 `'system'`；localStorage 读取放 `useEffect`。
 - 用户提供的 HTML 是视觉权威；CSS 变量按语义映射，不按名字硬翻。
+- HTML design drafts are visual authority: extract and preserve layout CSS values before translating to React/Tailwind.
 
 ## Tool UI Gotchas
 
 - Tab 面板避免高度跳动：用 CSS Grid 同格叠放 + `visibility`，不要 `display: none/block`。
 - `.tab-btn` 始终保留 `border: 1px solid transparent`；active 只改 `border-color`。
 - 卡片内容居中用 `flex flex-col items-center text-center`，不要只写 `text-center`。
+
+## CSS 陷阱
+
+- `globals.css` 中无 `@layer` 包裹的规则（如 `a { color: var(--primary); }`）优先级高于 Tailwind `@layer utilities`，会覆盖 `text-*` 类。用内联 `style={}` 兜底。
+- Tailwind spacing utilities can be overridden by unlayered `globals.css` reset; verify computed padding/margins, use scoped classes when exact HTML CSS must survive.
+- When migrating HTML mockups, do not replace native tables/forms with shadcn components unless browser screenshots confirm matching behavior.
+- For HTML-to-Next UI migrations, validate desktop/mobile screenshots plus computed styles for key spacing (`padding`, `margin`, `width`, `border-radius`).
+
+## 404 / not-found
+
+- Root `not-found.tsx` 不在 `NextIntlClientProvider` 内，client 子组件不能用 `useTranslations()` → 用 prop 传 label。
 
 ## SEO Rules
 

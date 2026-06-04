@@ -4,7 +4,7 @@ export function GoBackButton({ label }: { label: string }) {
   return (
     <button
       type="button"
-      className="border-border bg-card hover:border-muted-foreground hover:bg-background inline-flex items-center gap-1.5 rounded-lg border text-[15px] font-medium transition"
+      className="border-border bg-card hover:border-muted-foreground hover:bg-background inline-flex items-center gap-1.5 rounded-lg border text-sm font-medium transition"
       style={{ color: 'var(--foreground)', padding: '12px 24px' }}
       onClick={() => window.history.back()}
     >

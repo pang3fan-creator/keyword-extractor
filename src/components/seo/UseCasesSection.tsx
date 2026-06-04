@@ -102,13 +102,17 @@ export default async function UseCasesSection() {
           return (
             <div
               key={key}
-              className="border-border hover:border-primary flex flex-col items-center rounded-xl border p-6 text-center transition hover:shadow-sm"
+              className="seo-feature-card border-border hover:border-primary flex flex-col items-center rounded-[12px] border p-3 text-center transition hover:shadow-sm"
             >
-              <div className="bg-accent text-primary mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-lg">
+              <div className="seo-feature-badge bg-accent text-primary mx-auto flex h-10 w-10 items-center justify-center rounded-lg">
                 <Icon />
               </div>
-              <h3 className="mb-2 text-lg font-semibold">{t(`seoUse${key}Title` as never)}</h3>
-              <p className="text-muted-foreground text-sm">{t(`seoUse${key}Desc` as never)}</p>
+              <h3 className="seo-feature-heading text-lg font-semibold">
+                {t(`seoUse${key}Title` as never)}
+              </h3>
+              <p className="seo-feature-body text-muted-foreground text-sm">
+                {t(`seoUse${key}Desc` as never)}
+              </p>
             </div>
           );
         })}

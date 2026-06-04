@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
@@ -11,7 +12,7 @@ const CENTER_LINKS = [
   { href: '/', key: 'home' },
   { href: '/pricing', key: 'pricing' },
   { href: '/blog', key: 'blog' },
-  { href: '/privacy', key: 'privacy' },
+  { href: '/privacy', key: 'privacy', enabled: true },
   { href: '/terms', key: 'terms' },
   { href: '/about', key: 'about' },
 ] as const;
@@ -19,6 +20,7 @@ const CENTER_LINKS = [
 export function Header() {
   const t = useTranslations('nav');
   const themeT = useTranslations('theme');
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -39,17 +41,25 @@ export function Header() {
           <Logo />
 
           <nav className="nav-center" aria-label={t('centerNavigation')}>
-            {CENTER_LINKS.map((item) =>
-              item.href === '/' ? (
-                <Link key={item.key} href={item.href}>
+            {CENTER_LINKS.map((item) => {
+              const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
+              const isActive = item.href !== '/' && pathname.endsWith(item.href);
+
+              return isEnabled ? (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  style={isActive ? { color: 'var(--primary)', fontWeight: 600 } : undefined}
+                  aria-current={isActive ? 'page' : undefined}
+                >
                   {t(item.key)}
                 </Link>
               ) : (
                 <Link key={item.key} href="#" onClick={(e) => e.preventDefault()}>
                   {t(item.key)}
                 </Link>
-              ),
-            )}
+              );
+            })}
           </nav>
 
           <nav className="nav-right" aria-label={t('mainNavigation')}>
@@ -84,9 +94,18 @@ export function Header() {
       </header>
 
       <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
-        {CENTER_LINKS.map((item) =>
-          item.href === '/' ? (
-            <Link key={item.key} href={item.href} onClick={() => setMenuOpen(false)}>
+        {CENTER_LINKS.map((item) => {
+          const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
+          const isActive = item.href !== '/' && pathname.endsWith(item.href);
+
+          return isEnabled ? (
+            <Link
+              key={item.key}
+              href={item.href}
+              style={isActive ? { color: 'var(--primary)', fontWeight: 600 } : undefined}
+              aria-current={isActive ? 'page' : undefined}
+              onClick={() => setMenuOpen(false)}
+            >
               {t(item.key)}
             </Link>
           ) : (
@@ -100,8 +119,8 @@ export function Header() {
             >
               {t(item.key)}
             </Link>
-          ),
-        )}
+          );
+        })}
         <div className="mobile-theme-row">
           <span style={{ fontSize: 14, color: 'var(--muted-foreground)', fontWeight: 500 }}>
             {themeT('theme')}
@@ -131,7 +150,7 @@ export function Header() {
             padding: 14,
             borderRadius: 10,
             background: 'var(--primary)',
-            color: '#fff',
+            color: 'var(--primary-foreground)',
             fontWeight: 600,
             border: 'none',
           }}
