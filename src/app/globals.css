@@ -896,6 +896,22 @@ tr:hover td {
   font-weight: 600;
 }
 
+.seo-insight-block {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 28px;
+  background: oklch(from var(--primary) l c h / 0.06);
+  border: 1px solid oklch(from var(--primary) l c h / 0.15);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.seo-insight-block p {
+  font-size: 14px;
+  color: var(--foreground);
+  line-height: 1.7;
+  margin: 0;
+}
+
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--border);

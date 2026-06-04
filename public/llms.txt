@@ -1,0 +1,16 @@
+# ExtractKeywords
+> Free online keyword extraction tool. Extract keywords from text or URL instantly. No signup required.
+
+## What We Do
+- Extract keywords from text via word frequency analysis, stop-word filtering, and multi-word phrase detection (bigrams & trigrams)
+- Extract keywords from any public URL — paste a link and get results without copying text manually
+- Download results as CSV or copy to clipboard
+- All features above are free, no signup required
+- AI-powered semantic extraction planned for future Pro plan
+
+## Key Pages
+- Home: https://extractkeywords.com
+
+## Technical
+- robots.txt: https://extractkeywords.com/robots.txt
+- sitemap.xml: https://extractkeywords.com/sitemap.xml

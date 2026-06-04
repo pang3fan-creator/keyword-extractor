@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "titleDefault": "Free Online Keyword Extraction Tool",
+    "titleDefault": "Extract Keywords from Text & URL \u2014 Free",
     "titleTemplate": "%s | ExtractKeywords",
-    "description": "Free online keyword extraction tool. Extract keywords from text or URL instantly. No signup required. Download results as CSV.",
-    "openGraphTitle": "ExtractKeywords — Free Online Keyword Extraction Tool",
+    "description": "Free online keyword extraction tool. Extract keywords from text or URL instantly. No signup required. Download results as CSV. Supports bigrams & trigrams.",
+    "openGraphTitle": "ExtractKeywords \u2014 Extract Keywords from Text & URL \u2014 Free",
     "openGraphDescription": "Extract keywords from text or URL instantly. No signup required.",
     "siteName": "ExtractKeywords"
   },
@@ -52,7 +52,7 @@
     "seoWhy2": "Competitor Analysis — Understand what keywords competitors target",
     "seoWhy3": "Content Strategy — Plan your content around high-value keywords",
     "seoWhy4": "Market Research — Discover trending topics in your niche",
-    "seoUseTitle": "Use Cases",
+    "seoUseTitle": "Keyword Extraction Use Cases",
 
     "seoFaqTitle": "Frequently Asked Questions",
     "seoFaq1Q": "Is this tool really free?",
@@ -118,7 +118,9 @@
     "pagePrevious": "Previous page",
     "pageNext": "Next page",
     "pageFirst": "First page",
-    "pageLast": "Last page"
+    "pageLast": "Last page",
+    "seoInsightBlock": "Research shows that multi-word phrases account for roughly 70% of all search queries, while common stop words make up approximately 40% of written English text. That's why effective keyword extraction combines stop-word filtering with bigram and trigram detection \u2014 to surface the terms that match how people actually search.",
+    "lastUpdated": "Last updated: June 2026"
   },
   "nav": {
     "home": "Home",

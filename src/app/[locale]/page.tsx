@@ -11,35 +11,53 @@ export default async function HomePage() {
   const t = await getTranslations('home');
   const metadataT = await getTranslations('metadata');
 
-  const organizationJsonLd = {
+  const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Organization',
-    name: metadataT('siteName'),
-    url: 'https://extractkeywords.com',
-  };
-
-  const webApplicationJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: metadataT('siteName'),
-    url: 'https://extractkeywords.com',
-    description: metadataT('openGraphDescription'),
-    applicationCategory: 'UtilityApplication',
-    operatingSystem: 'All',
-    browserRequirements: 'Requires JavaScript',
-  };
-
-  const faqJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: Array.from({ length: 6 }, (_, i) => i + 1).map((index) => ({
-      '@type': 'Question',
-      name: t(`seoFaq${index}Q` as never),
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: t(`seoFaq${index}A` as never),
+    '@graph': [
+      {
+        '@type': 'Organization',
+        name: metadataT('siteName'),
+        url: 'https://extractkeywords.com',
+        description: metadataT('description'),
+        logo: 'https://extractkeywords.com/og-image.png',
       },
-    })),
+      {
+        '@type': 'WebApplication',
+        name: metadataT('siteName'),
+        url: 'https://extractkeywords.com',
+        description: metadataT('openGraphDescription'),
+        applicationCategory: 'UtilityApplication',
+        operatingSystem: 'All',
+        browserRequirements: 'Requires JavaScript',
+        offers: [
+          {
+            '@type': 'Offer',
+            name: 'Free',
+            price: '0',
+            priceCurrency: 'USD',
+            description: t('seoFaq1A'),
+          },
+          {
+            '@type': 'Offer',
+            name: 'Pro',
+            price: '9.99',
+            priceCurrency: 'USD',
+            description: t('seoFaq5A'),
+          },
+        ],
+      },
+      {
+        '@type': 'FAQPage',
+        mainEntity: Array.from({ length: 6 }, (_, i) => i + 1).map((index) => ({
+          '@type': 'Question',
+          name: t(`seoFaq${index}Q` as never),
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: t(`seoFaq${index}A` as never),
+          },
+        })),
+      },
+    ],
   };
 
   return (
@@ -49,15 +67,7 @@ export default async function HomePage() {
       <main className="flex-1">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webApplicationJsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
         <section className="hero">
@@ -79,12 +89,18 @@ export default async function HomePage() {
             <HowToUseSection />
             <UseCasesSection />
 
+            <div className="seo-insight-block">
+              <p>{t('seoInsightBlock')}</p>
+            </div>
+
             <FaqSection />
 
             <div className="bottom-cta">
               <p>{t('seoCtaDesc')}</p>
               <a href="#toolArea">{t('seoCtaButton')} &rarr;</a>
             </div>
+
+            <p className="text-muted-foreground mt-8 text-center text-xs">{t('lastUpdated')}</p>
           </div>
         </section>
       </main>
