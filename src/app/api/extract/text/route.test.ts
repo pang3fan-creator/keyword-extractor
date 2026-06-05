@@ -45,7 +45,7 @@ describe('POST /api/extract/text', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       errorCode: 'TEXT_TOO_LONG',
-      error: 'Text must be 50,000 characters or fewer.',
+      error: 'Text must be 10,000 characters or fewer.',
     });
   });
 

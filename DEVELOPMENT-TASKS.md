@@ -5,9 +5,9 @@
 | Phase | 内容 | 预计工时 | 优先级 | 状态 |
 |-------|------|---------|--------|------|
 | Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
-| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中（免费后端基本完成） |
-| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | 🔄 进行中 |
-| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 进行中 |
+| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中（免费工具主链路已完成） |
+| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | ⏳ 未开始 |
+| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 进行中（页面主体已完成，内容仍在打磨） |
 | Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
 
 **MVP 上线范围：Phase 0-3**
@@ -26,7 +26,10 @@
 **输入：** Task 0.4 完成
 
 **已完成：**
-- `src/app/layout.tsx`, `page.tsx`, `[locale]/layout.tsx`, `[locale]/page.tsx`, `globals.css`
+- `src/app/layout.tsx`, `[locale]/layout.tsx`, `[locale]/page.tsx`, `globals.css`
+- `src/app/[locale]/about/page.tsx` ✓
+- `src/app/[locale]/privacy/page.tsx` ✓
+- `src/app/[locale]/terms/page.tsx` ✓
 - `src/components/ui/` — Button, Input, Tabs, Table ✓
 - `src/components/layout/` — Header, Footer, Logo ✓（额外）
 - `src/components/theme/` — ThemeProvider, ThemeToggle（额外）
@@ -35,11 +38,10 @@
 - `src/i18n/routing.ts`, `request.ts`, `proxy.ts`（额外）
 
 **未完成/缺失：**
-- `src/app/pricing/page.tsx` ❌（目录存在，文件缺失）
-- `src/app/privacy/page.tsx` ❌（目录存在，文件缺失）
-- `src/app/terms/page.tsx` ❌（目录存在，文件缺失）
+- `src/app/[locale]/pricing/page.tsx` ❌
 - `src/components/extractor/` — 逻辑全部内联在 `ToolSection.tsx` 中，无独立组件文件
 - `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `robots-checker.ts` ✅
+- `src/lib/rate-limiter.ts` ✅（额外）
 - `src/lib/ai-extractor.ts` ❌（AI 功能未开始）
 
 ---
@@ -283,9 +285,9 @@ export async function POST(request: Request) {
 }
 ```
 
-**验证：** API 测试通过
+**验证：** 路由测试已覆盖，当前测试口径需与 10,000 字符限制保持一致
 
-> ✅ 已实现 `src/app/api/extract/text/route.ts`。接收 `{ text, options }`，空文本返回 400，超过 50,000 字符返回 400，成功返回 `ExtractionResult`。已添加 API route 测试。
+> ✅ 已实现 `src/app/api/extract/text/route.ts`。接收 `{ text, options }`，统一返回 `{ errorCode, error }` 错误结构；空文本返回 400，超过 10,000 字符返回 400，成功返回 `ExtractionResult`。已接入轻量内存限流并添加 API route 测试。
 
 ---
 
@@ -308,11 +310,11 @@ export async function POST(request: Request) {
 }
 ```
 
-> ✅ 已实现 `src/app/api/extract/url/route.ts`。接收 `{ url, options }`，先做 URL 安全校验，再检查 robots.txt，抓取 HTML 后复用 `extractKeywords`，返回 `sourceUrl`、`pageTitle`、`totalWords`、`uniqueKeywords`、`keywords`、`bigrams`、`trigrams`。已添加 API route 测试。使用次数限制仍未实现。
+> ✅ 已实现 `src/app/api/extract/url/route.ts`。接收 `{ url, options }`，先做 URL 安全校验，再检查 robots.txt，抓取 HTML 后复用 `extractKeywords`，返回 `sourceUrl`、`pageTitle`、`totalWords`、`uniqueKeywords`、`keywords`、`bigrams`、`trigrams`。统一返回 `{ errorCode, error }` 错误结构，已接入轻量内存限流并添加 API route 测试。
 
 ---
 
-### Task 1.11: 创建使用次数限制逻辑 ❌ 未开始
+### Task 1.11: 创建使用次数限制逻辑 ✅ 已完成（MVP 版本）
 
 **输入：** 请求信息
 
@@ -338,13 +340,16 @@ async function incrementRateLimit(
 ```
 
 **实现要点：**
-- Cookie 读取/设置
-- IP 记录（Supabase）
-- 每日重置逻辑
+- 内存 `Map` 记录请求次数
+- 优先使用 `x-forwarded-for` / `x-real-ip`
+- 按 UTC 次日零点重置
+- 同时保护 `/api/extract/text` 和 `/api/extract/url`
+
+> ✅ 已实现 MVP 级轻量内存限流。默认每 IP 每日 50 次免费提取，超限返回 `429` 与 `RATE_LIMIT_EXCEEDED`。当前方案仅用于单实例/单进程保护，不保证多实例全局一致。
 
 ---
 
-## Phase 2: 用户系统 + 支付 🔄
+## Phase 2: 用户系统 + 支付 ⏳
 
 ### Task 2.1: 集成 Clerk 认证 ❌ 未开始
 
@@ -381,7 +386,7 @@ export function Header() {
 - Pricing 链接
 - 登录按钮 / 用户头像下拉
 
-> ⚠️ 已实现基本布局（Logo + nav + Login 链接 + ThemeToggle），但缺少 Clerk 认证集成（无用户头像下拉、无 Auth 绑定）。
+> ⚠️ 已实现基本布局（Logo + nav + ThemeToggle + 预留认证入口），但缺少 Clerk 认证集成（无用户头像下拉、无 Auth 绑定）。
 
 ---
 
@@ -470,7 +475,7 @@ export async function POST(request: Request) {
 
 **输入：** 无
 
-**文件：** `src/app/pricing/page.tsx`
+**文件：** `src/app/[locale]/pricing/page.tsx`
 
 **功能：**
 - 价格对比表
@@ -528,7 +533,7 @@ function usePermissions() {
 
 **输入：** 无
 
-**文件：** `src/app/page.tsx`
+**文件：** `src/app/[locale]/page.tsx`
 
 **功能：**
 - Hero 区域（H1 + 副标题）
@@ -536,27 +541,27 @@ function usePermissions() {
 - SEO 内容区
 - CTA
 
-> ✅ 首页完整实现。Hero + ToolSection（Text/URL/AI Tab） + how-it-works + why-it-matters + use-cases + FAQ + CTA，全部从 i18n 翻译文件驱动。
+> ✅ 首页完整实现。Hero + ToolSection（Text/URL/AI Tab） + how-it-works + how-to-use + use-cases + FAQ + CTA，全部从 i18n 翻译文件驱动。
 
 ---
 
-### Task 3.2: 创建 SEO 内容组件 ⚠️ 内联实现
+### Task 3.2: 创建 SEO 内容组件 ✅ 已完成
 
 **输入：** 无
 
 **文件：** `src/components/seo/`
 
 **组件列表：**
-- `how-it-works.tsx` - 3 步流程
-- `why-it-matters.tsx` - 价值说明
-- `use-cases.tsx` - 使用场景
-- `faq.tsx` - 常见问题
+- `HowItWorksSection.tsx` - 3 步流程
+- `HowToUseSection.tsx` - 操作步骤
+- `UseCasesSection.tsx` - 使用场景
+- `FaqSection.tsx` - 常见问题
 
-> ⚠️ 所有 SEO 内容（how-it-works / why-it-matters / use-cases / FAQ）直接在 `[locale]/page.tsx` 中内联渲染，未创建 `src/components/seo/` 独立组件。
+> ✅ 已拆分为 `src/components/seo/` 下独立组件，并已完成首页接线。当前仍在持续微调 spacing、内容层级和 SEO 文案细节。
 
 ---
 
-### Task 3.3: 添加 Schema.org 结构化数据 ❌ 未开始
+### Task 3.3: 添加 Schema.org 结构化数据 ⚠️ 部分完成
 
 **输入：** 无
 
@@ -567,13 +572,15 @@ function usePermissions() {
 - FAQPage Schema
 - BreadcrumbList Schema
 
+> ⚠️ 首页、Privacy、Terms 已注入 JSON-LD，但尚未抽成统一 `schema.tsx` 组件，也未补 BreadcrumbList 等更完整结构。
+
 ---
 
-### Task 3.4: 创建 Privacy Policy 页面 ❌ 未开始（目录存在，文件缺失）
+### Task 3.4: 创建 Privacy Policy 页面 ✅ 已完成
 
 **输入：** 无
 
-**文件：** `src/app/privacy/page.tsx`
+**文件：** `src/app/[locale]/privacy/page.tsx`
 
 **内容：**
 - 数据收集说明
@@ -581,13 +588,15 @@ function usePermissions() {
 - 第三方服务
 - 用户权利
 
+> ✅ 已迁移为 Next.js + next-intl 页面，含 Header/Footer、metadata、canonical/alternates、JSON-LD、隐私正文和表格结构；文案已按当前真实后端行为修正。
+
 ---
 
-### Task 3.5: 创建 Terms of Service 页面 ❌ 未开始（目录存在，文件缺失）
+### Task 3.5: 创建 Terms of Service 页面 ✅ 已完成
 
 **输入：** 无
 
-**文件：** `src/app/terms/page.tsx`
+**文件：** `src/app/[locale]/terms/page.tsx`
 
 **内容：**
 - 使用条款
@@ -595,24 +604,29 @@ function usePermissions() {
 - 免责声明
 - 知识产权
 
+> ✅ 已迁移为 Next.js + next-intl 页面，复用 Privacy 文档页布局模式，含 metadata、canonical/alternates 与 JSON-LD。
+
 ---
 
-### Task 3.6: 创建 robots.txt ❌ 未开始
+### Task 3.6: 创建 robots.txt ✅ 已完成
 
 **输入：** 无
 
-**文件：** `public/robots.txt`
+**文件：** `src/app/robots.ts`
 
 ```
 User-agent: *
 Allow: /
+Disallow: /api/
 
 Sitemap: https://extractkeywords.com/sitemap.xml
 ```
 
+> ✅ 已使用 Next.js metadata route 生成 robots，并补充对常见 AI crawler 的规则声明。
+
 ---
 
-### Task 3.7: 创建 sitemap.xml ❌ 未开始
+### Task 3.7: 创建 sitemap.xml ✅ 已完成
 
 **输入：** 无
 
@@ -621,6 +635,8 @@ Sitemap: https://extractkeywords.com/sitemap.xml
 **功能：**
 - 动态生成 sitemap
 - 包含所有静态页面
+
+> ✅ 已实现，当前包含 `/`、`/privacy`、`/terms`、`/about`，并输出 locale alternates。
 
 ---
 
@@ -650,6 +666,8 @@ export const metadata: Metadata = {
   },
 };
 ```
+
+> ⚠️ 根 `layout.tsx`、首页、Privacy、Terms 均已配置 metadata；但根布局仍采用静态导入 `messages/en.json` 作为默认文案，尚未做完整 locale 动态化。
 
 ---
 
@@ -780,7 +798,7 @@ test: 添加单元测试
 - [x] URL 提取功能正常
 - [x] 2词/3词短语分析正常
 - [ ] CSV 导出正常
-- [ ] 使用次数限制生效
+- [x] 使用次数限制生效
 
 ### Phase 2 验收
 
@@ -791,10 +809,10 @@ test: 添加单元测试
 
 ### Phase 3 验收
 
-- [ ] 首页渲染正常
+- [x] 首页渲染正常
 - [ ] SEO 内容完整
 - [ ] Schema.org 正确
-- [ ] robots.txt/sitemap.xml 可访问
+- [x] robots.txt/sitemap.xml 可访问
 
 ---
 
