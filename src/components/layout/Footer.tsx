@@ -50,7 +50,25 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="footer-bottom">{t('copyright')}</div>
+      <div className="footer-bottom">
+        <p>{t('copyright')}</p>
+        <a
+          href="https://dang.ai"
+          target="_blank"
+          rel="dofollow noopener"
+          className="mt-4 inline-block"
+          style={{ textDecoration: 'none' }}
+        >
+          <img
+            src="https://assets.dang.ai/badges/dang-verified-dark.png"
+            alt="Verified on DANG!"
+            width={130}
+            height={47}
+            className="block max-w-full"
+            style={{ height: 'auto', border: 0, outline: 'none' }}
+          />
+        </a>
+      </div>
     </footer>
   );
 }
