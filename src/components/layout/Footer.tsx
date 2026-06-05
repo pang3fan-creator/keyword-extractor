@@ -52,22 +52,38 @@ export function Footer() {
       </div>
       <div className="footer-bottom">
         <p>{t('copyright')}</p>
-        <a
-          href="https://dang.ai"
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          className="mt-4 inline-block"
-          style={{ textDecoration: 'none' }}
-        >
-          <img
-            src="https://assets.dang.ai/badges/dang-verified-dark.png"
-            alt="Verified on DANG!"
-            width={130}
-            height={47}
-            className="block max-w-full"
-            style={{ height: 'auto', border: 0, outline: 'none' }}
-          />
-        </a>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+          <a
+            href="https://dang.ai"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            style={{ textDecoration: 'none' }}
+          >
+            <img
+              src="https://assets.dang.ai/badges/dang-verified-dark.png"
+              alt="Verified on DANG!"
+              width={130}
+              height={47}
+              className="block max-w-full"
+              style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
+            />
+          </a>
+          <a
+            href="https://submitaitools.org"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            style={{ textDecoration: 'none' }}
+          >
+            <img
+              src="https://submitaitools.org/static_submitaitools/images/submitaitools.png"
+              alt="Submit AI Tools"
+              width={200}
+              height={60}
+              className="block max-w-full"
+              style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
+            />
+          </a>
+        </div>
       </div>
     </footer>
   );
