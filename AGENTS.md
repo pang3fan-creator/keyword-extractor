@@ -4,7 +4,7 @@
 
 - Next.js 16 App Router + React 19 + TypeScript
 - Tailwind CSS v4 + shadcn/ui v4 + HyperUI layout references
-- next-intl, Clerk, Cheerio, Vitest
+- next-intl, Cheerio, Vitest
 - Planned: DeepSeek AI, Supabase, Creem, Resend
 - Deploy: Vercel, domain `extractkeywords.com`
 
@@ -25,6 +25,9 @@ npm run test
 ## Key Paths
 
 - Home: `src/app/[locale]/page.tsx`
+- About: `src/app/[locale]/about/page.tsx`
+- Privacy: `src/app/[locale]/privacy/page.tsx`
+- Terms: `src/app/[locale]/terms/page.tsx`
 - 404: `src/app/not-found.tsx`
 - Layout/i18n: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`, `src/proxy.ts`
 - UI: `src/components/ui/`, `src/components/layout/`, `src/components/extractor/`, `src/components/seo/`, `src/components/theme/`
@@ -49,6 +52,24 @@ npm run test
 - 不要在 `[locale]` 下创建 `en/` 文件夹。
 - 非 locale 路径如 `/auth/*` 要在 proxy matcher 排除，并提供自己的 root layout。
 - 拼本地化 URL 用 `buildUrl(locale, "/path")` from `@/lib/url`，不要手写 `/${locale}/path`。
+
+## 常见坑
+
+- JSON 编辑后验证: `python3 -m json.tool messages/en.json`；大量嵌套数组/对象替换易遗留 orphan data
+- `.privacy-*` CSS 在 Privacy/Terms 两页的 inline `<style>` 中各有一份，改一处记得同步另一处
+- Home active 逻辑: `item.href === '/' ? pathname === '/' : pathname.endsWith(item.href)`；不要用 `CENTER_LINKS.some()` 方式
+- `seo-insight-block` 已全局废弃（CSS/组件/翻译全删），改用普通 `<p>` + Tailwind
+- 所有 `#fff` 必须用 `var(--primary-foreground)`；出现邮箱必须 `mailto:` 链接
+- Login/Signup 隐藏: `Header.tsx` 中 `const SHOW_AUTH = false` 控制，不改 DOM
+
+## 页面布局模式
+
+- Document 页 (Privacy/Terms): `.privacy-card` layout + 内联 `<style>` 块
+- Marketing 页 (About): homepage 风格，`seo-section` / `hero` 布局，无内联样式
+
+## Design System
+
+- `.interface-design/system.md` 为唯一设计系统参考
 
 ## Theme / CSS
 

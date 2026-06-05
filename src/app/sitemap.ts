@@ -5,6 +5,8 @@ import { buildUrl } from '@/lib/url';
 const pages = [
   { path: '/', priority: 1, changeFrequency: 'weekly' as const },
   { path: '/privacy', priority: 0.3, changeFrequency: 'yearly' as const },
+  { path: '/terms', priority: 0.3, changeFrequency: 'yearly' as const },
+  { path: '/about', priority: 0.4, changeFrequency: 'monthly' as const },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

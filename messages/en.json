@@ -63,7 +63,6 @@
     "seoFaq3A": "The URL mode can extract content from most publicly accessible web pages. Some sites with paywalls, login requirements, or anti-scraping measures may not be accessible. For best results, copy the text directly and use the Text tab.",
     "seoFaq4Q": "What formats can I download the results in?",
     "seoFaq4A": "Results can be downloaded as a CSV file (compatible with Excel and Google Sheets) or copied to your clipboard as tab-separated values for quick pasting into any application.",
-    "seoCtaDesc": "Ready to extract keywords from your content?",
     "seoCtaButton": "Try the Keyword Extraction Tool",
     "seoHowToUseTitle": "How to Extract Keywords from Text or URL in 3 Simple Steps",
     "seoHowToUseStepLabel": "Step {step}",
@@ -77,7 +76,7 @@
     "seoUseMarketingTitle": "For Digital Marketers",
     "seoUseMarketingDesc": "Audit landing pages and competitor websites by extracting keywords from web pages without manual review. Use the website keyword extractor to analyze any URL and understand the keyword profile of both your own pages and competitive targets.",
     "seoHowStatsTitle": "Word Frequency Analysis",
-    "seoHowStatsDesc": "The extractor counts how many times each word appears in your text and calculates density as a percentage of total word count. Higher-frequency words rank higher, giving you a clear picture of the dominant terms and themes in any body of text.",
+    "seoHowStatsDesc": "The extractor counts how many times each word appears in your text and calculates density as a percentage of total word count. Higher-frequency words rank higher, giving you a clear picture of the dominant terms and themes in any body of text. According to SEO industry research, multi-word phrases account for roughly 70% of all search queries, making phrase-level extraction essential for meaningful keyword analysis.",
     "seoHowFilterTitle": "Stop-Word Filtering",
     "seoHowFilterDesc": "Common English words like 'the,' 'is,' and 'at' carry little semantic meaning and are automatically removed using a built-in stop-word list. This ensures your results contain only meaningful terms, not filler words that appear frequently but add no SEO value.",
     "seoHowPhraseTitle": "Multi-Word Phrase Detection",
@@ -119,144 +118,109 @@
     "pageNext": "Next page",
     "pageFirst": "First page",
     "pageLast": "Last page",
-    "seoInsightBlock": "Research shows that multi-word phrases account for roughly 70% of all search queries, while common stop words make up approximately 40% of written English text. That's why effective keyword extraction combines stop-word filtering with bigram and trigram detection \u2014 to surface the terms that match how people actually search.",
-    "lastUpdated": "Last updated: June 2026"
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team"
   },
   "privacy": {
     "title": "Privacy Policy",
-    "lastUpdated": "Last updated: January 1, 2026",
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
     "articleLabel": "Privacy policy details",
     "highlightLabel": "Key commitment:",
-    "highlightText": "Free extraction requests are processed only to return results for the current request. We do not store pasted text, fetched page content, submitted URLs, or extracted results.",
+    "highlightText": "Free text and URL extraction requests are processed in real time and immediately discarded. We do not store pasted content, fetched page text, submitted URLs, or extracted results.",
     "backHome": "Back to Home",
     "metadata": {
       "title": "Privacy Policy",
-      "description": "ExtractKeywords privacy policy: how we collect, use, and protect data when you use our free keyword extraction tool.",
+      "description": "ExtractKeywords privacy policy: how we handle data for free keyword extraction. No account required, no cookies, no tracking.",
       "openGraphTitle": "Privacy Policy | ExtractKeywords",
-      "openGraphDescription": "Learn how ExtractKeywords handles data for free text and URL keyword extraction.",
+      "openGraphDescription": "How ExtractKeywords handles your data during free keyword extraction. No account, no cookies, no storage of submitted content.",
       "schemaName": "Privacy Policy",
-      "schemaDescription": "ExtractKeywords privacy policy: how we collect, use, and protect data."
+      "schemaDescription": "ExtractKeywords privacy policy: no account required, no cookies, no tracking. Submitted text and URL content are processed in real time and never stored."
     },
     "sections": {
       "overview": {
         "title": "Overview",
         "paragraphs": [
-          "ExtractKeywords is committed to protecting your privacy. This Privacy Policy explains how we collect, use, store, and protect information when you use our keyword extraction tool.",
-          "By using ExtractKeywords, you agree to the practices described in this policy. If you do not agree, please discontinue use of our service."
+          "ExtractKeywords is a free keyword extraction tool available at extractkeywords.com. No account or signup is required. You can paste text or enter a publicly accessible URL, and our tool generates keyword frequency, density, and phrase analysis results in real time.",
+          "This Privacy Policy describes what information we process, how we handle it, and your rights. By using ExtractKeywords, you agree to the practices described below."
         ]
       },
       "information": {
-        "title": "Information We Collect",
-        "paragraphs": []
+        "title": "Information We Process",
+        "paragraphs": [
+          "ExtractKeywords is designed to process data without storing it. Here is what we process and when:"
+        ]
       },
       "usage": {
         "title": "How We Use Information",
-        "paragraphs": [
-          "The information we collect is used for the following purposes:"
-        ],
+        "paragraphs": ["We process information only for these purposes:"],
         "list": [
           {
-            "label": "Provide tool functionality —",
-            "text": "Process text or URL content for the current extraction request and return keyword results."
+            "label": "Provide extraction results —",
+            "text": "Process pasted text or fetched URL content to generate keyword frequency, density, and phrase detection results for the current request. Results are displayed in your browser and not retained."
           },
           {
-            "label": "Improve the service —",
-            "text": "Analyze anonymous usage patterns to optimize the interface and performance."
+            "label": "Maintain and protect the service —",
+            "text": "Rate limiting, abuse monitoring, and anonymous server log analysis help us keep the tool available and secure for everyone."
           },
           {
-            "label": "Customer support —",
-            "text": "Respond to questions and requests you send to us."
-          },
-          {
-            "label": "Future account features —",
-            "text": "Manage account preferences if account-based features are enabled later."
-          },
-          {
-            "label": "Compliance —",
-            "text": "Comply with applicable laws and regulations."
+            "label": "Respond to support requests —",
+            "text": "If you contact us, we use your message content solely to address your inquiry."
           }
         ]
       },
       "cookies": {
         "title": "Cookies & Local Storage",
         "paragraphs": [
-          "We use cookies and browser local storage to a minimal extent:"
+          "ExtractKeywords does not use cookies. The only data stored on your device is your theme preference (light, dark, or system), which is saved to your browser's local storage. This is a functional necessity for a consistent user experience and contains no personal information. You can clear it at any time through your browser settings.",
+          "We do not use tracking cookies, analytics cookies, advertising cookies, or any third-party tracking technologies on this site. No data is shared with advertising networks, analytics providers, or social media platforms."
         ],
-        "list": [
-          {
-            "label": "Theme preference —",
-            "text": "Remember your light, dark, or system theme selection."
-          },
-          {
-            "label": "Session state —",
-            "text": "Maintain login state if account features are enabled later."
-          },
-          {
-            "label": "Analytics —",
-            "text": "Collect anonymous page visit statistics without personally identifiable information."
-          }
-        ]
+        "list": []
       },
       "thirdParty": {
         "title": "Third-Party Services",
-        "paragraphs": [
-          "We may use third-party services that process limited data to provide or improve the product.",
-          "Each third-party service maintains its own privacy policy. We encourage you to review those policies for more information."
-        ]
+        "paragraphs": ["ExtractKeywords relies on the following third-party services to operate:"]
       },
       "security": {
         "title": "Data Security",
         "paragraphs": [
-          "We implement reasonable technical and organizational measures to protect your data:"
+          "We implement the following measures to protect your data and maintain service availability:"
         ],
         "list": [
           {
-            "text": "All communications are encrypted over HTTPS."
+            "text": "All communication with our servers is encrypted over HTTPS."
           },
           {
-            "text": "Free extraction input and results are not stored after the request is processed."
+            "text": "Free extraction input and results are processed in real time and are not stored after the request completes."
           },
           {
-            "text": "If account features are enabled later, passwords will be hashed and never stored in plaintext."
+            "text": "URL extraction is sandboxed: only http/https schemes are accepted, private and internal IP ranges are blocked (SSRF protection), and fetched content is size-limited."
           },
           {
-            "text": "We maintain dependencies and review security-sensitive extraction code."
+            "text": "Rate limiting is applied to prevent abuse and ensure fair access for all users."
+          },
+          {
+            "text": "The free tier is capped at 10,000 characters per submission. Larger submissions are rejected before processing."
           }
         ]
       },
       "rights": {
         "title": "Your Rights",
-        "paragraphs": [
-          "Under applicable data protection laws, you may have the following rights:"
-        ],
+        "paragraphs": ["Under applicable data protection laws, you may have the right to:"],
         "list": [
           {
-            "label": "Right to be informed —",
-            "text": "Know how we process your data."
+            "label": "Be informed —",
+            "text": "This Privacy Policy explains what information we process and how."
           },
           {
-            "label": "Right of access —",
-            "text": "Request a copy of personal data we hold about you."
+            "label": "Access your data —",
+            "text": "Request confirmation of whether we hold any personal data relating to you."
           },
           {
-            "label": "Right to rectification —",
-            "text": "Request correction of inaccurate personal data."
+            "label": "Request erasure —",
+            "text": "Request deletion of any personal data we may hold about you (e.g., server logs)."
           },
           {
-            "label": "Right to erasure —",
-            "text": "Request deletion of your personal data."
-          },
-          {
-            "label": "Right to restrict processing —",
-            "text": "Limit how we process your data under certain conditions."
-          },
-          {
-            "label": "Right to data portability —",
-            "text": "Receive your data in a structured, commonly used format."
-          },
-          {
-            "label": "Right to object —",
-            "text": "Object to processing based on legitimate interests."
+            "label": "Lodge a complaint —",
+            "text": "File a complaint with your local data protection authority if you believe your rights have been violated."
           }
         ]
       },
@@ -268,55 +232,232 @@
         "list": [
           {
             "label": "Email:",
-            "text": "privacy@extractkeywords.com",
-            "href": "mailto:privacy@extractkeywords.com"
+            "text": "support@extractkeywords.com",
+            "href": "mailto:support@extractkeywords.com"
           },
           {
-            "text": "We respond to data privacy requests within 30 days where required by applicable law."
+            "text": "We make every effort to respond within 30 days where required by applicable law."
           }
         ]
       },
       "changes": {
         "title": "Policy Changes",
         "paragraphs": [
-          "We may update this Privacy Policy from time to time. Material changes will be announced through our website or an in-tool notice.",
-          "Continued use of ExtractKeywords after changes constitutes acceptance of the updated policy."
+          "We may update this Privacy Policy from time to time to reflect changes in our practices or for operational, legal, or regulatory reasons. When we make changes, we will update the \"Last updated\" date at the top of this page.",
+          "Continued use of ExtractKeywords after changes are posted constitutes acceptance of the updated policy."
         ]
       }
     },
     "tables": {
       "informationTable": {
-        "headers": ["Data Type", "How Collected", "Purpose"],
+        "headers": ["Data", "How It Is Handled", "Retention"],
         "rows": [
           {
-            "cells": ["Text content you input", "Pasted text or URL fetch", "Processed for the current extraction request; not stored after results are returned"]
+            "cells": [
+              "Text you paste",
+              "Processed in real time by the keyword extraction engine (word frequency, density, phrase detection). The raw text is not stored after results are returned to you.",
+              "None — discarded after processing"
+            ]
           },
           {
-            "cells": ["Submitted URLs and fetched page content", "URL extraction mode", "Fetch publicly accessible HTML and extract readable text for the current request"]
+            "cells": [
+              "URL you submit",
+              "The URL is fetched over HTTPS. Only publicly accessible HTML is retrieved. Response size is capped. Private/internal IP addresses are rejected. The fetched text is extracted and processed, then discarded.",
+              "None — discarded after processing"
+            ]
           },
           {
-            "cells": ["Usage data", "Anonymous analytics", "Improve product experience and performance"]
-          },
-          {
-            "cells": ["Account information", "If registration features are enabled later", "Manage account settings and future paid plan access"]
+            "cells": [
+              "Technical request data",
+              "Standard server logs (timestamp, request path, response status, approximate IP address) collected by Vercel as part of its hosting infrastructure.",
+              "Retained up to 30 days"
+            ]
           }
         ]
       },
       "thirdPartyTable": {
-        "headers": ["Service", "Purpose", "Data Type"],
+        "headers": ["Service", "Role", "Data Handling"],
         "rows": [
           {
-            "cells": ["Google Fonts", "Provide Inter and JetBrains Mono fonts", "IP address as part of a standard web request"]
+            "cells": [
+              "Vercel Inc.",
+              "Cloud hosting and content delivery. ExtractKeywords is deployed on Vercel's global edge network.",
+              "Vercel processes standard HTTP request data (IP address, request path, timestamp, response status) as part of its hosting infrastructure. Refer to Vercel's privacy policy for details."
+            ]
           },
           {
-            "cells": ["Analytics provider", "Measure anonymous page visits and feature usage", "Aggregated usage data without submitted extraction content"]
-          },
-          {
-            "cells": ["Future payment provider", "Process paid plan payments if paid plans are enabled", "Payment information handled by the provider; we do not store full card numbers"]
+            "cells": [
+              "Font files (Inter, JetBrains Mono)",
+              "Typeface rendering in the browser. Font files are self-hosted and served from the same domain as the application.",
+              "No external requests are made at runtime. Font files were downloaded at build time and are served directly by Vercel."
+            ]
           }
         ]
       }
     }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
+    "articleLabel": "Terms of Service details",
+    "backHome": "Back to Home",
+    "metadata": {
+      "title": "Terms of Service",
+      "description": "ExtractKeywords terms of service: rules and conditions for using our free keyword extraction tool.",
+      "openGraphTitle": "Terms of Service | ExtractKeywords",
+      "openGraphDescription": "Terms governing the use of ExtractKeywords free keyword extraction tool.",
+      "schemaName": "Terms of Service",
+      "schemaDescription": "ExtractKeywords terms of service for free keyword extraction."
+    },
+    "sections": {
+      "introduction": {
+        "title": "Introduction",
+        "paragraphs": [
+          "ExtractKeywords provides a free online keyword extraction service accessible at extractkeywords.com. These Terms of Service govern your use of the Service.",
+          "Please read these terms carefully before using the Service."
+        ]
+      },
+      "acceptance": {
+        "title": "Acceptance of Terms",
+        "paragraphs": [
+          "By accessing or using ExtractKeywords, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use the Service.",
+          "We may update these terms from time to time. Continued use of the Service after changes constitutes acceptance of the updated terms."
+        ]
+      },
+      "service": {
+        "title": "Service Description",
+        "paragraphs": [
+          "ExtractKeywords offers keyword extraction by analyzing text or URL content using word frequency analysis, stop-word filtering, and multi-word phrase detection. The Service is free to use. No account or payment is required.",
+          "The free tier is limited to 10,000 characters per submission. URL extraction works only on publicly accessible web pages and respects robots.txt directives. Only http and https URLs are accepted.",
+          "Extraction results are generated in real time and are not stored on our servers. The Service is intended for lawful purposes only."
+        ]
+      },
+      "eligibility": {
+        "title": "Eligibility",
+        "paragraphs": ["By using the Service, you represent and warrant that:"],
+        "list": [
+          {
+            "label": "Age —",
+            "text": "You are at least 13 years of age, or older if required by your country of residence."
+          },
+          {
+            "label": "Authority —",
+            "text": "You have the legal capacity to enter into these terms."
+          },
+          {
+            "label": "Compliance —",
+            "text": "You will use the Service in compliance with all applicable laws and regulations."
+          }
+        ]
+      },
+      "restrictions": {
+        "title": "Prohibited Uses",
+        "paragraphs": ["You agree not to:"],
+        "list": [
+          {
+            "label": "Automated access —",
+            "text": "Use bots, scrapers, or automated tools to access or extract data from the Service beyond normal usage."
+          },
+          {
+            "label": "Abusive content —",
+            "text": "Submit content that is illegal, harmful, or infringes on the rights of others."
+          },
+          {
+            "label": "Circumvention —",
+            "text": "Attempt to bypass rate limits, security measures, or technical restrictions of the Service."
+          },
+          {
+            "label": "Misrepresentation —",
+            "text": "Use the Service in a way that misrepresents the origin or nature of extracted content."
+          },
+          {
+            "label": "Rate limit abuse —",
+            "text": "Send excessive requests that disrupt the availability or performance of the Service for other users."
+          }
+        ]
+      },
+      "intellectualProperty": {
+        "title": "Intellectual Property",
+        "paragraphs": [
+          "The ExtractKeywords name, logo, and tool interface are owned by ExtractKeywords. The Service itself is provided for you to use — you may not copy, modify, or redistribute the tool or its underlying technology.",
+          "Content you submit for extraction remains yours. We do not claim ownership over the text, URLs, or extracted results you generate using the Service."
+        ]
+      },
+      "proFeatures": {
+        "title": "Pro Features",
+        "paragraphs": [
+          "AI-powered semantic extraction is planned as a paid Pro feature. When available, Pro will be offered at $9.99 per month or $99 per year. Payments will be processed by Creem Inc.",
+          "Details about Pro features, pricing, and availability will be announced when the feature launches."
+        ]
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "paragraphs": [
+          "ExtractKeywords is provided \"as is\" without warranties of any kind. To the fullest extent permitted by law:"
+        ],
+        "list": [
+          {
+            "text": "We disclaim all warranties regarding the accuracy, reliability, or availability of the Service."
+          },
+          {
+            "text": "We are not liable for any damages arising from your use of the Service."
+          },
+          {
+            "text": "The Service may be interrupted for maintenance, updates, or unforeseen circumstances."
+          },
+          {
+            "text": "We are not responsible for the accuracy, legality, or availability of content fetched from third-party websites via the URL extraction feature."
+          }
+        ]
+      },
+      "contact": {
+        "title": "Contact",
+        "paragraphs": [],
+        "list": [
+          {
+            "label": "Email:",
+            "text": "support@extractkeywords.com",
+            "href": "mailto:support@extractkeywords.com"
+          }
+        ]
+      },
+      "changes": {
+        "title": "Changes to Terms",
+        "paragraphs": [
+          "We reserve the right to modify these Terms of Service at any time. Changes will be posted on this page with an updated \"Last updated\" date.",
+          "Your continued use of ExtractKeywords after changes are posted constitutes acceptance of the modified terms."
+        ]
+      }
+    }
+  },
+  "about": {
+    "title": "About ExtractKeywords",
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
+    "backHome": "Back to Home",
+    "metadata": {
+      "title": "About",
+      "description": "Learn about ExtractKeywords — a free keyword extraction tool built for speed, privacy, and real-world SEO and content analysis.",
+      "openGraphTitle": "About | ExtractKeywords",
+      "openGraphDescription": "Learn about ExtractKeywords, the free online keyword extraction tool. No signup, no cookies.",
+      "schemaName": "About ExtractKeywords",
+      "schemaDescription": "ExtractKeywords is a free keyword extraction tool. No account required, no cookies, no tracking."
+    },
+    "heroTitle": "About",
+    "whatTitle": "What ExtractKeywords Is",
+    "whatDesc": "ExtractKeywords is a free online tool that analyzes text or webpage content to identify the most important keywords and phrases. Using word frequency analysis, stop-word filtering, keyword density calculations, and multi-word phrase detection (bigrams and trigrams), it surfaces the terms that best represent your content.",
+    "whatDesc2": "The tool is designed for SEO professionals, content creators, researchers, and digital marketers who need fast, reliable keyword extraction without account creation or feature-limited trials. Paste your text or enter a publicly accessible URL and get results instantly.",
+    "whatDesc3": "The free tier supports submissions of up to 10,000 characters. URL extraction is available for publicly accessible web pages and respects robots.txt directives. Only http and https URLs are accepted, with built-in SSRF protection.",
+    "principlesTitle": "Our Principles",
+    "principlesCardFreeTitle": "Free & Accessible",
+    "principlesCardFreeDesc": "The Text and URL extraction modes are completely free. No signup, no credit card, no account needed.",
+    "principlesCardPrivacyTitle": "Privacy First",
+    "principlesCardPrivacyDesc": "We do not use cookies or tracking scripts. Submitted content is processed in real time and discarded. Your data stays yours.",
+    "principlesCardPracticalTitle": "Built for Real Use",
+    "principlesCardPracticalDesc": "Keyword frequency, density, and phrase detection are designed for SEO professionals, content creators, researchers, and marketers.",
+    "whyTitle": "Why We Built It",
+    "whyDesc": "Keyword extraction is a well-understood technical problem: word frequency analysis, stop-word filtering, and n-gram detection are established algorithms. Yet most online tools wrap this functionality behind paywalls, mandatory account registration, or intrusive tracking.",
+    "whyDesc2": "ExtractKeywords was built to provide a clean, focused alternative: a tool that does one thing well and leaves no trace. No signup flow, no data retention, no analytics scripts. Paste your text, get your keywords, and move on.",
+    "backHome": "Back to Home"
   },
   "nav": {
     "home": "Home",
@@ -339,11 +480,10 @@
     "pricing": "Pricing",
     "resources": "Resources",
     "blog": "Blog",
-    "guides": "Guides",
     "legal": "Legal",
     "privacy": "Privacy",
     "terms": "Terms",
-    "contact": "Contact",
+    "about": "About",
     "copyright": "© 2026 ExtractKeywords. All rights reserved."
   },
   "notFound": {

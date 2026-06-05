@@ -11,6 +11,8 @@ export default async function HomePage() {
   const t = await getTranslations('home');
   const metadataT = await getTranslations('metadata');
 
+  const dateModified = new Date().toISOString().split('T')[0];
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@graph': [
@@ -20,6 +22,18 @@ export default async function HomePage() {
         url: 'https://extractkeywords.com',
         description: metadataT('description'),
         logo: 'https://extractkeywords.com/og-image.png',
+        contactPoint: {
+          '@type': 'ContactPoint',
+          email: 'support@extractkeywords.com',
+          contactType: 'customer support',
+        },
+      },
+      {
+        '@type': 'WebSite',
+        name: metadataT('siteName'),
+        url: 'https://extractkeywords.com',
+        description: metadataT('description'),
+        inLanguage: 'en',
       },
       {
         '@type': 'WebApplication',
@@ -29,20 +43,24 @@ export default async function HomePage() {
         applicationCategory: 'UtilityApplication',
         operatingSystem: 'All',
         browserRequirements: 'Requires JavaScript',
+        inLanguage: 'en',
+        dateModified,
         offers: [
           {
             '@type': 'Offer',
             name: 'Free',
             price: '0',
             priceCurrency: 'USD',
-            description: t('seoFaq1A'),
+            description: 'Text and URL keyword extraction up to 10,000 characters per submission.',
           },
           {
             '@type': 'Offer',
             name: 'Pro',
             price: '9.99',
             priceCurrency: 'USD',
-            description: t('seoFaq5A'),
+            description:
+              'AI-powered semantic extraction, higher limits, and priority access. Planned for future release.',
+            availability: 'https://schema.org/PreOrder',
           },
         ],
       },
@@ -89,18 +107,12 @@ export default async function HomePage() {
             <HowToUseSection />
             <UseCasesSection />
 
-            <div className="seo-insight-block">
-              <p>{t('seoInsightBlock')}</p>
-            </div>
-
             <FaqSection />
 
             <div className="bottom-cta">
-              <p>{t('seoCtaDesc')}</p>
               <a href="#toolArea">{t('seoCtaButton')} &rarr;</a>
+              <p className="text-muted-foreground mt-4 text-center text-xs">{t('lastUpdated')}</p>
             </div>
-
-            <p className="text-muted-foreground mt-8 text-center text-xs">{t('lastUpdated')}</p>
           </div>
         </section>
       </main>

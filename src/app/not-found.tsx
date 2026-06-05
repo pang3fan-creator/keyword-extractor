@@ -1,9 +1,24 @@
+import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { GoBackButton } from '@/components/ui/go-back-button';
 
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('notFound');
+  return {
+    title: t('title'),
+  };
+}
+
 export default async function NotFound() {
   const t = await getTranslations('notFound');
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: t('title'),
+    description: t('desc'),
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
@@ -11,6 +26,10 @@ export default async function NotFound() {
         className="flex flex-col items-center text-center"
         style={{ maxWidth: 520, gap: '2.5rem' }}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <div
           className="text-primary leading-none font-bold tracking-tight"
           style={{ fontSize: 'clamp(96px, 20vw, 160px)', letterSpacing: '-0.04em' }}

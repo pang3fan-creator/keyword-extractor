@@ -12,12 +12,10 @@ const CENTER_LINKS = [
   { href: '/', key: 'home' },
   { href: '/pricing', key: 'pricing' },
   { href: '/blog', key: 'blog' },
-  { href: '/privacy', key: 'privacy', enabled: true },
-  { href: '/terms', key: 'terms' },
-  { href: '/about', key: 'about' },
 ] as const;
 
 export function Header() {
+  const SHOW_AUTH = false;
   const t = useTranslations('nav');
   const themeT = useTranslations('theme');
   const pathname = usePathname();
@@ -43,7 +41,7 @@ export function Header() {
           <nav className="nav-center" aria-label={t('centerNavigation')}>
             {CENTER_LINKS.map((item) => {
               const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
-              const isActive = item.href !== '/' && pathname.endsWith(item.href);
+              const isActive = item.href === '/' ? pathname === '/' : pathname.endsWith(item.href);
 
               return isEnabled ? (
                 <Link
@@ -64,12 +62,16 @@ export function Header() {
 
           <nav className="nav-right" aria-label={t('mainNavigation')}>
             <ThemeToggle />
-            <Link href="#" className="btn-login" onClick={(e) => e.preventDefault()}>
-              {t('logIn')}
-            </Link>
-            <Link href="#" className="btn-signup" onClick={(e) => e.preventDefault()}>
-              {t('signUp')}
-            </Link>
+            {SHOW_AUTH && (
+              <>
+                <Link href="#" className="btn-login" onClick={(e) => e.preventDefault()}>
+                  {t('logIn')}
+                </Link>
+                <Link href="#" className="btn-signup" onClick={(e) => e.preventDefault()}>
+                  {t('signUp')}
+                </Link>
+              </>
+            )}
           </nav>
 
           <button
@@ -96,7 +98,7 @@ export function Header() {
       <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
         {CENTER_LINKS.map((item) => {
           const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
-          const isActive = item.href !== '/' && pathname.endsWith(item.href);
+          const isActive = item.href === '/' ? pathname === '/' : pathname.endsWith(item.href);
 
           return isEnabled ? (
             <Link
@@ -127,36 +129,40 @@ export function Header() {
           </span>
           <ThemeToggle />
         </div>
-        <Link
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setMenuOpen(false);
-          }}
-          style={{ border: 'none', fontWeight: 600 }}
-        >
-          {t('logIn')}
-        </Link>
-        <Link
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            setMenuOpen(false);
-          }}
-          style={{
-            display: 'block',
-            textAlign: 'center',
-            marginTop: 8,
-            padding: 14,
-            borderRadius: 10,
-            background: 'var(--primary)',
-            color: 'var(--primary-foreground)',
-            fontWeight: 600,
-            border: 'none',
-          }}
-        >
-          {t('signUp')}
-        </Link>
+        {SHOW_AUTH && (
+          <>
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen(false);
+              }}
+              style={{ border: 'none', fontWeight: 600 }}
+            >
+              {t('logIn')}
+            </Link>
+            <Link
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setMenuOpen(false);
+              }}
+              style={{
+                display: 'block',
+                textAlign: 'center',
+                marginTop: 8,
+                padding: 14,
+                borderRadius: 10,
+                background: 'var(--primary)',
+                color: 'var(--primary-foreground)',
+                fontWeight: 600,
+                border: 'none',
+              }}
+            >
+              {t('signUp')}
+            </Link>
+          </>
+        )}
       </div>
     </>
   );

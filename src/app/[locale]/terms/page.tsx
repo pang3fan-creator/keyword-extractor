@@ -2,15 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
   ArrowLeft,
-  Cookie,
-  Eye,
   FileText,
-  KeyRound,
-  Lock,
-  Mail,
-  Package,
   Shield,
+  Package,
   User,
+  Lock,
+  KeyRound,
+  Eye,
+  Mail,
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import { Header } from '@/components/layout/Header';
@@ -19,24 +18,25 @@ import { buildUrl } from '@/lib/url';
 import { cn } from '@/lib/utils';
 import { routing } from '@/i18n/routing';
 
-type PrivacyListItem = {
+type TermsListItem = {
   label?: string;
   text: string;
   href?: string;
 };
 
-type PrivacyTableRow = {
+type TermsTableRow = {
   cells: string[];
 };
 
 const sections = [
-  { key: 'overview', icon: Shield },
-  { key: 'information', icon: Package, table: 'informationTable', highlight: true },
-  { key: 'usage', icon: Eye, list: true },
-  { key: 'cookies', icon: Cookie, list: true },
-  { key: 'thirdParty', icon: KeyRound, table: 'thirdPartyTable' },
-  { key: 'security', icon: Lock, list: true },
-  { key: 'rights', icon: User, list: true },
+  { key: 'introduction', icon: FileText },
+  { key: 'acceptance', icon: Shield },
+  { key: 'service', icon: Package },
+  { key: 'eligibility', icon: User, list: true },
+  { key: 'restrictions', icon: Lock, list: true },
+  { key: 'intellectualProperty', icon: KeyRound },
+  { key: 'proFeatures', icon: Eye },
+  { key: 'liability', icon: FileText, list: true },
   { key: 'contact', icon: Mail, list: true },
   { key: 'changes', icon: FileText },
 ] as const;
@@ -56,16 +56,16 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations('privacy.metadata');
+  const t = await getTranslations('terms.metadata');
   const metadataT = await getTranslations('metadata');
-  const canonical = buildUrl(locale, '/privacy');
+  const canonical = buildUrl(locale, '/terms');
 
   return {
     title: t('title'),
     description: t('description'),
     alternates: {
       canonical,
-      languages: makeAlternates('/privacy'),
+      languages: makeAlternates('/terms'),
     },
     openGraph: {
       title: t('openGraphTitle'),
@@ -82,8 +82,8 @@ export async function generateMetadata({
   };
 }
 
-export default async function PrivacyPage() {
-  const t = await getTranslations('privacy');
+export default async function TermsPage() {
+  const t = await getTranslations('terms');
   const metadataT = await getTranslations('metadata');
 
   const jsonLd = {
@@ -91,7 +91,7 @@ export default async function PrivacyPage() {
     '@type': 'WebPage',
     name: t('metadata.schemaName'),
     description: t('metadata.schemaDescription'),
-    url: buildUrl(routing.defaultLocale, '/privacy'),
+    url: buildUrl(routing.defaultLocale, '/terms'),
     inLanguage: 'en',
     dateModified: new Date().toISOString().split('T')[0],
     isPartOf: {
@@ -255,53 +255,13 @@ export default async function PrivacyPage() {
                 .privacy-section-title {
                   font-size: 16px;
                 }
-                .privacy-table {
-                  table-layout: fixed;
-                }
-                .privacy-table th,
-                .privacy-table td {
-                  overflow-wrap: anywhere;
-                }
-                .privacy-table,
-                .privacy-table tbody,
-                .privacy-table tr,
-                .privacy-table td {
-                  display: block;
-                  width: 100%;
-                }
-                .privacy-table thead {
-                  display: none;
-                }
-                .privacy-table tr {
-                  border-bottom: 1px solid var(--border);
-                  padding: 8px 0;
-                }
-                .privacy-table tr:last-child {
-                  border-bottom: 0;
-                }
-                .privacy-table td {
-                  border-bottom: 0;
-                  display: grid;
-                  grid-template-columns: minmax(92px, 34%) 1fr;
-                  gap: 12px;
-                  padding: 8px 0;
-                }
-                .privacy-table td::before {
-                  content: attr(data-label);
-                  font-family: var(--font-mono);
-                  font-size: 12px;
-                  font-weight: 600;
-                  letter-spacing: 0.04em;
-                  text-transform: uppercase;
-                  color: var(--muted-foreground);
-                }
               }
             `,
           }}
         />
 
-        <section className="privacy-page-header" aria-labelledby="privacy-title">
-          <h1 id="privacy-title" className="privacy-page-title">
+        <section className="privacy-page-header" aria-labelledby="terms-title">
+          <h1 id="terms-title" className="privacy-page-title">
             {t('title')}
           </h1>
           <p className="privacy-page-meta">{t('lastUpdated')}</p>
@@ -312,15 +272,13 @@ export default async function PrivacyPage() {
             {sections.map((section) => {
               const Icon = section.icon;
               const list =
-                'list' in section
-                  ? (t.raw(`sections.${section.key}.list`) as PrivacyListItem[])
-                  : [];
+                'list' in section ? (t.raw(`sections.${section.key}.list`) as TermsListItem[]) : [];
               const paragraphs = t.raw(`sections.${section.key}.paragraphs`) as string[];
               const table =
                 'table' in section
                   ? (t.raw(`tables.${section.table}`) as {
                       headers: string[];
-                      rows: PrivacyTableRow[];
+                      rows: TermsTableRow[];
                     })
                   : null;
 
@@ -359,12 +317,6 @@ export default async function PrivacyPage() {
                           ))}
                         </tbody>
                       </table>
-                    </div>
-                  ) : null}
-
-                  {'highlight' in section ? (
-                    <div className="doc-highlight">
-                      <strong>{t('highlightLabel')}</strong> {t('highlightText')}
                     </div>
                   ) : null}
 

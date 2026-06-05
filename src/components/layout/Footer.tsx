@@ -33,30 +33,19 @@ export function Footer() {
                 {t('blog')}
               </Link>
             </li>
-            <li>
-              <Link href="#" onClick={(e) => e.preventDefault()}>
-                {t('guides')}
-              </Link>
-            </li>
           </ul>
         </div>
         <div>
           <h4>{t('legal')}</h4>
           <ul>
             <li>
-              <Link href="/privacy">
-                {t('privacy')}
-              </Link>
+              <Link href="/about">{t('about')}</Link>
             </li>
             <li>
-              <Link href="#" onClick={(e) => e.preventDefault()}>
-                {t('terms')}
-              </Link>
+              <Link href="/privacy">{t('privacy')}</Link>
             </li>
             <li>
-              <Link href="#" onClick={(e) => e.preventDefault()}>
-                {t('contact')}
-              </Link>
+              <Link href="/terms">{t('terms')}</Link>
             </li>
           </ul>
         </div>
