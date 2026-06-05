@@ -492,5 +492,15 @@
     "desc": "The link you followed may be broken, the page may have been moved, or the address might contain a typo.",
     "goHome": "Home",
     "goBack": "Go back"
+  },
+  "localeSwitcher": {
+    "label": "Switch language",
+    "locale": {
+      "en": "English",
+      "zh": "中文",
+      "ja": "日本語"
+    },
+    "current": "Current language: {locale}",
+    "switchTo": "Switch to {locale}"
   }
 }

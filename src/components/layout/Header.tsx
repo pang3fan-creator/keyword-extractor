@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
+import { LocaleSwitcher } from './LocaleSwitcher';
 import { ThemeToggle } from '../theme/ThemeToggle';
 
 const CENTER_LINKS = [
@@ -61,6 +62,7 @@ export function Header() {
           </nav>
 
           <nav className="nav-right" aria-label={t('mainNavigation')}>
+            <LocaleSwitcher />
             <ThemeToggle />
             {SHOW_AUTH && (
               <>
@@ -128,6 +130,9 @@ export function Header() {
             {themeT('theme')}
           </span>
           <ThemeToggle />
+        </div>
+        <div className="mobile-locale-row">
+          <LocaleSwitcher variant="list" />
         </div>
         {SHOW_AUTH && (
           <>
