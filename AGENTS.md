@@ -2,11 +2,12 @@
 
 ## Stack
 
-- Next.js 16 App Router + React 19 + TypeScript
-- Tailwind CSS v4 + shadcn/ui v4 + HyperUI layout references
+- `Next.js 16 App Router` + `React 19` + `TypeScript`
+- `Tailwind CSS v4` + `shadcn/ui v4` + `HyperUI layout references` + `lucide`
 - next-intl, Cheerio, Vitest
-- Planned: DeepSeek AI, Supabase, Creem, Resend
+- Planned: DeepSeek AI, Supabase, Creem
 - Deploy: Vercel, domain `extractkeywords.com`
+- Resend
 
 ## Commands
 
