@@ -55,7 +55,7 @@ export function Footer() {
         <a
           href="https://dang.ai"
           target="_blank"
-          rel="dofollow noopener"
+          rel="noopener noreferrer nofollow"
           className="mt-4 inline-block"
           style={{ textDecoration: 'none' }}
         >
