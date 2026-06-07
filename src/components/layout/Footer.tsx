@@ -116,6 +116,21 @@ export function Footer() {
             </li>
           </ul>
         </div>
+        <div>
+          <h4>{t('friends')}</h4>
+          <ul>
+            <li>
+              <a href="https://tryschedule.com/" target="_blank" rel="noopener noreferrer">
+                {t('trySchedule')}
+              </a>
+            </li>
+            <li>
+              <a href="https://heicpdf.to/" target="_blank" rel="noopener noreferrer">
+                {t('heicpdfTo')}
+              </a>
+            </li>
+          </ul>
+        </div>
       </div>
       <div className="footer-bottom">
         <p>{t('copyright')}</p>
