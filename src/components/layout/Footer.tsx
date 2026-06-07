@@ -98,6 +98,19 @@ export function Footer() {
               style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
             />
           </a>
+          <a
+            href="https://sellwithboost.com"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            style={{ textDecoration: 'none' }}
+          >
+            <img
+              src="https://sellwithboost.com/badge/listing.svg"
+              alt="Listed on Sell With boost"
+              className="block max-w-full"
+              style={{ height: 40, width: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
+            />
+          </a>
         </div>
       </div>
     </footer>
