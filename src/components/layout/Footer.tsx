@@ -11,6 +11,7 @@ const FOOTER_BADGES = [
     height: 47,
     altKey: 'badgeAlt.dang',
     imageClassName: 'footer-badge-image footer-badge-image--compact',
+    rel: undefined,
   },
   {
     href: 'https://submitaitools.org',
@@ -19,6 +20,7 @@ const FOOTER_BADGES = [
     height: 60,
     altKey: 'badgeAlt.submitAiTools',
     imageClassName: 'footer-badge-image',
+    rel: undefined,
   },
   {
     href: 'https://aiagentsdirectory.com/agent/extractkeywords',
@@ -27,6 +29,7 @@ const FOOTER_BADGES = [
     height: 50,
     altKey: 'badgeAlt.aiAgentsDirectory',
     imageClassName: 'footer-badge-image',
+    rel: undefined,
   },
   {
     href: 'https://sellwithboost.com',
@@ -35,6 +38,7 @@ const FOOTER_BADGES = [
     height: 40,
     altKey: 'badgeAlt.sellWithBoost',
     imageClassName: 'footer-badge-image footer-badge-image--short',
+    rel: undefined,
   },
   {
     href: 'https://pitchwall.co/product/extractkeywords?utm_source=badge',
@@ -43,6 +47,7 @@ const FOOTER_BADGES = [
     height: 60,
     altKey: 'badgeAlt.pitchWall',
     imageClassName: 'footer-badge-image',
+    rel: undefined,
   },
   {
     href: 'https://tooldirs.com',
@@ -51,6 +56,7 @@ const FOOTER_BADGES = [
     height: 54,
     altKey: 'badgeAlt.toolDirs',
     imageClassName: 'footer-badge-image',
+    rel: 'noopener noreferrer',
   },
 ] as const;
 
@@ -110,7 +116,7 @@ export function Footer() {
                 key={badge.href}
                 href={badge.href}
                 target="_blank"
-                rel="noopener noreferrer nofollow"
+                rel={badge.rel ?? 'noopener noreferrer nofollow'}
                 className="footer-badge-link"
                 aria-label={t(badge.altKey)}
               >
