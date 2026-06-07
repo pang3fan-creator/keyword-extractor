@@ -492,7 +492,8 @@
       "aiAgentsDirectory": "ExtractKeywords featured on AI Agents Directory",
       "sellWithBoost": "Listed on Sell With Boost",
       "pitchWall": "Featured on PitchWall",
-      "toolDirs": "Featured on ToolDirs"
+      "toolDirs": "Featured on ToolDirs",
+      "toolPilot": "Listed on ToolPilot"
     }
   },
   "notFound": {

@@ -50,6 +50,16 @@ const FOOTER_BADGES = [
     rel: undefined,
   },
   {
+    href: 'https://www.toolpilot.ai/',
+    imageSrc:
+      'https://www.toolpilot.ai/cdn/shop/files/tp-b-h_bec97d1a-5538-498b-8a26-77de74f90ed5_1692x468_crop_center.svg?v=1695882612',
+    width: 200,
+    height: 54,
+    altKey: 'badgeAlt.toolPilot',
+    imageClassName: 'footer-badge-image',
+    rel: undefined,
+  },
+  {
     href: 'https://tooldirs.com',
     imageSrc: 'https://tooldirs.com/badge/badge_light.svg',
     width: 200,

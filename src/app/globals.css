@@ -1003,15 +1003,20 @@ footer ul li a:hover {
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--border) 82%, transparent) transparent;
+  padding-bottom: 8px;
 }
 .footer-badge-track {
   display: flex;
-  flex-wrap: wrap;
+  width: max-content;
+  min-width: 100%;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
+  padding-inline: 2px;
 }
 .footer-badge-link {
   flex: 0 0 auto;
@@ -1021,6 +1026,7 @@ footer ul li a:hover {
   text-decoration: none;
   border-radius: 12px;
   scroll-snap-align: start;
+  min-width: max-content;
 }
 .footer-badge-image {
   display: block;
@@ -1087,19 +1093,8 @@ footer ul li a:hover {
   footer .brand-col {
     grid-column: 1 / -1;
   }
-  .footer-badge-rail {
-    padding-bottom: 8px;
-    scroll-snap-type: x proximity;
-  }
   .footer-badge-track {
-    width: max-content;
-    min-width: 100%;
-    flex-wrap: nowrap;
     justify-content: flex-start;
-    padding-inline: 2px;
-  }
-  .footer-badge-link {
-    min-width: max-content;
   }
 }
 
