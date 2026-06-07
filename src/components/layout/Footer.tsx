@@ -111,6 +111,21 @@ export function Footer() {
               style={{ height: 40, width: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
             />
           </a>
+          <a
+            href="https://pitchwall.co/product/extractkeywords?utm_source=badge"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            style={{ textDecoration: 'none', display: 'inline-flex' }}
+          >
+            <img
+              src="https://pitchwall.co/images/featured/pitchwall-light.png"
+              width={180}
+              height={60}
+              alt="Featured on PitchWall"
+              className="block max-w-full"
+              style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
+            />
+          </a>
         </div>
       </div>
     </footer>
