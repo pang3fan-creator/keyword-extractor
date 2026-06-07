@@ -484,7 +484,15 @@
     "privacy": "Privacy",
     "terms": "Terms",
     "about": "About",
-    "copyright": "© 2026 ExtractKeywords. All rights reserved."
+    "copyright": "© 2026 ExtractKeywords. All rights reserved.",
+    "badgeRailLabel": "Featured listings and directory badges",
+    "badgeAlt": {
+      "dang": "Verified on DANG!",
+      "submitAiTools": "Submit AI Tools",
+      "aiAgentsDirectory": "ExtractKeywords featured on AI Agents Directory",
+      "sellWithBoost": "Listed on Sell With Boost",
+      "pitchWall": "Featured on PitchWall"
+    }
   },
   "notFound": {
     "subtitle": "Page Not Found",

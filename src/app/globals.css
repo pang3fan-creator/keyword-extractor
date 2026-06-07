@@ -998,6 +998,55 @@ footer ul li a:hover {
   font-size: 13px;
   color: var(--muted-foreground);
 }
+.footer-badge-rail {
+  margin-top: 16px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--border) 82%, transparent) transparent;
+}
+.footer-badge-track {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.footer-badge-link {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 12px;
+  scroll-snap-align: start;
+}
+.footer-badge-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 0;
+  outline: none;
+  border-radius: 10px;
+}
+.footer-badge-image--compact {
+  width: 130px;
+}
+.footer-badge-image--short {
+  height: 40px;
+  width: auto;
+}
+.footer-badge-rail::-webkit-scrollbar {
+  height: 8px;
+}
+.footer-badge-rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+.footer-badge-rail::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border) 82%, transparent);
+}
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
@@ -1037,6 +1086,20 @@ footer ul li a:hover {
   }
   footer .brand-col {
     grid-column: 1 / -1;
+  }
+  .footer-badge-rail {
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+  }
+  .footer-badge-track {
+    width: max-content;
+    min-width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    padding-inline: 2px;
+  }
+  .footer-badge-link {
+    min-width: max-content;
   }
 }
 
