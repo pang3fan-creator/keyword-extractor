@@ -51,8 +51,7 @@ const FOOTER_BADGES = [
   },
   {
     href: 'https://www.toolpilot.ai/',
-    imageSrc:
-      'https://www.toolpilot.ai/cdn/shop/files/tp-b-h_bec97d1a-5538-498b-8a26-77de74f90ed5_1692x468_crop_center.svg?v=1695882612',
+    imageSrc: 'https://www.toolpilot.ai/cdn/shop/files/f-w_690x151_crop_center.png',
     width: 200,
     height: 54,
     altKey: 'badgeAlt.toolPilot',
