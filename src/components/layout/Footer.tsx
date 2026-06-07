@@ -44,6 +44,14 @@ const FOOTER_BADGES = [
     altKey: 'badgeAlt.pitchWall',
     imageClassName: 'footer-badge-image',
   },
+  {
+    href: 'https://tooldirs.com',
+    imageSrc: 'https://tooldirs.com/badge/badge_light.svg',
+    width: 200,
+    height: 54,
+    altKey: 'badgeAlt.toolDirs',
+    imageClassName: 'footer-badge-image',
+  },
 ] as const;
 
 export function Footer() {
