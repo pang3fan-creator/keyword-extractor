@@ -83,6 +83,21 @@ export function Footer() {
               style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
             />
           </a>
+          <a
+            href="https://aiagentsdirectory.com/agent/extractkeywords"
+            target="_blank"
+            rel="noopener noreferrer nofollow"
+            style={{ textDecoration: 'none' }}
+          >
+            <img
+              src="https://aiagentsdirectory.com/featured-badge.svg?v=2024"
+              alt="ExtractKeywords - Featured on AI Agents Directory"
+              width={200}
+              height={50}
+              className="block max-w-full"
+              style={{ height: 'auto', borderRadius: 10, border: 0, outline: 'none' }}
+            />
+          </a>
         </div>
       </div>
     </footer>
