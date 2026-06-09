@@ -30,10 +30,10 @@
 
 | 字段 | 当前（需改） | 改为 |
 |------|------------|------|
-| `metadata.titleDefault` | Extract Keywords from Text & URL | Keyword Extraction Tool — Extract Keywords Online Free |
-| `metadata.description` | (当前含 text or URL 暗示) | Free keyword extraction tool. Extract keywords from any text. No signup needed. |
-| `metadata.openGraphTitle` | 同上 | Keyword Extraction Tool — Extract Keywords Free |
-| `metadata.openGraphDescription` | 同上 | Free online keyword extraction tool. Get instant keyword analysis. No signup required. |
+| `metadata.titleDefault` | Extract Keywords from Text & URL | Keyword Extraction Tool — Free Online Keyword Analysis |
+| `metadata.description` | (当前含 text or URL 暗示) | Free keyword extraction tool for quick content analysis. Get instant keyword insights, density, and exportable results. No signup needed. |
+| `metadata.openGraphTitle` | 同上 | Keyword Extraction Tool — Free Keyword Analysis Online |
+| `metadata.openGraphDescription` | 同上 | Free online keyword extraction tool. Get instant keyword analysis and exportable results. No signup required. |
 
 **首页其他需要修改的文案**（在 `messages/en.json` 的 `home` namespace 中）：
 
@@ -42,6 +42,16 @@
 | Hero title | "Keyword Extractor" | 保持（宽泛词，没问题） |
 | H1 | "Extract keywords from **text or URL**" | 更父级表述，去掉 "text or URL" 直接暗示 |
 | Use Case 卡片 | "any webpage"、"URL extractor"、"**website keyword extractor**" | 改为通用表述，让出长尾关键词空间 |
+| `seoHowStep1Title` / `seoHowStep1Desc` | 直接写 "**Text tab**" / "**URL tab**" | 改为通用步骤，如 "Paste your content" / "Enter a URL" |
+| `seoHowToUseTitle` | "Text or URL" | 改为父级表述，如 "How to Use" |
+| `seoHowUrlNote` | 专讲 URL extraction / robots.txt | 删除或降级为通用提示，URL 细节留给 Website 变体页 |
+| `seoHowTextNote` | 如有 text 相关细节 | 同样降级，细节留给 Text 变体页 |
+
+**首页 WebApplication schema 同步降级**：当前 `WebApplication.offers` 在页面代码中硬编码 "Text and URL keyword extraction..."，既违反"Schema 文案来自 messages.json"的项目规则，也持续强化 Text/URL 信号。
+- 将 `WebApplication` 的 offer name、description、browserRequirements 等可见语义文案迁移到 `messages.en.json` 的 `home.schema` 字段
+- 改为父级表述，不再提 "Text or URL"
+
+**Footer tagline 同步降级**：当前全站 footer tagline 为 "Extract keywords from text or URL"，全站重复推送 Text/URL 信号。改为父级描述如 "Extract keywords with our free online tool."
 
 **首页 FAQ 改为通用问题**（与变体页 FAQ 完全无话题重叠）：
 
@@ -407,6 +417,11 @@ Description: Free text keyword extractor. Paste text and find keywords — best 
 - [ ] H1 从 "Extract keywords from text or URL" 改为更父级表述
 - [ ] `metadata.titleDefault` / `metadata.description` / OG 同步改为父级意图
 - [ ] `seoHowTitle` 改为 "How the Keyword Extraction Tool Works"
+- [ ] `seoHowStep1Title` / `seoHowStep1Desc` 改为通用步骤，不提"Text tab/URL tab"
+- [ ] `seoHowToUseTitle` 改为父级表述，不提"Text or URL"
+- [ ] `seoHowUrlNote` / `seoHowTextNote` 删除或降级为通用提示
+- [ ] 首页 WebApplication schema 去硬编码，offer name/description 迁至 messages.json，改为父级表述
+- [ ] Footer tagline 改为父级描述，不提"text or URL"
 - [ ] Hero 副标题去具体化
 - [ ] Use Cases 去掉精确长尾词（"website keyword extractor"、"URL extractor" 等）
 - [ ] 首页 FAQ 改为 5 个通用问题（free/export/AI planned/columns/privacy policy），与变体页无话题重叠
