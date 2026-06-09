@@ -62,6 +62,8 @@
   --ring: oklch(65% 0.18 260);
   --pro: oklch(80% 0.14 75);
   --pro-bg: oklch(28% 0.07 90);
+  --success: oklch(65% 0.15 145);
+  --error: oklch(65% 0.2 30);
   --sidebar-background: oklch(10% 6% 253);
   --sidebar-foreground: oklch(84% 5% 253);
   --sidebar-primary: oklch(98% 0 0);
@@ -991,6 +993,292 @@ tr:hover td {
 .privacy-back-link:hover {
   color: var(--primary);
   text-decoration: none;
+}
+
+/* ── Pricing cards ── */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+@media (min-width: 768px) {
+  .pricing-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.pricing-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.pricing-card-pro {
+  border-color: oklch(from var(--pro) l c h / 0.3);
+}
+.pricing-card .badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  width: fit-content;
+}
+.pricing-card .badge-pro {
+  background: var(--pro);
+  color: var(--primary-foreground);
+}
+.pricing-card .plan-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.pricing-card .plan-desc {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  margin-bottom: 20px;
+}
+.pricing-card .price-row {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+.pricing-card .price-free .amount {
+  font-size: 40px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.pricing-card .price-free .period {
+  font-size: 16px;
+  color: var(--muted-foreground);
+  margin-left: 4px;
+}
+.pricing-card .price-dual {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pricing-card .price-dual .price-line {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.pricing-card .price-dual .amount {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+.pricing-card .price-dual .period {
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.pricing-card .save {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--success);
+  background: oklch(from var(--success) l c h / 0.1);
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.pricing-card .cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: 0.15s;
+  text-align: center;
+  text-decoration: none;
+  font-family: inherit;
+  margin-top: auto;
+}
+.pricing-card .cta-primary {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.pricing-card .cta-primary:hover {
+  opacity: 0.85;
+  text-decoration: none;
+}
+.pricing-card .cta-disabled {
+  background: var(--border);
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+}
+.pricing-card .feature-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pricing-card .feature-list li {
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--foreground);
+}
+.pricing-card .feature-list li .icon {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+.pricing-icon-check {
+  color: var(--success);
+}
+.pricing-icon-muted {
+  color: var(--muted-foreground);
+  opacity: 0.5;
+}
+.pricing-icon-pro {
+  color: var(--pro);
+}
+.pricing-label-muted {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ── Comparison table ── */
+.comparison-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--card);
+}
+.comparison-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+.comparison-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.comparison-table th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  background: var(--background);
+  border-bottom: 2px solid var(--border);
+}
+.comparison-table th:first-child {
+  width: 44%;
+  border-radius: 14px 0 0 0;
+}
+.comparison-table th:last-child {
+  border-radius: 0 14px 0 0;
+}
+.comparison-table th:not(:first-child) {
+  text-align: center;
+  width: 28%;
+}
+.comparison-table th.pro-header {
+  background: oklch(from var(--pro) l c h / 0.14);
+  color: oklch(from var(--pro) calc(l * 0.65) c h);
+  border-bottom-color: oklch(from var(--pro) l c h / 0.3);
+  position: relative;
+}
+
+.comparison-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.comparison-table td:not(:first-child) {
+  text-align: center;
+}
+.comparison-table td:first-child {
+  font-weight: 500;
+}
+.comparison-table td.pro-cell {
+  background: oklch(from var(--pro) l c h / 0.03);
+}
+.comparison-table tr:last-child td {
+  border-bottom: 0;
+}
+.comparison-table tr:last-child td:first-child {
+  border-radius: 0 0 0 14px;
+}
+.comparison-table tr:last-child td:last-child {
+  border-radius: 0 0 14px 0;
+}
+.comparison-table tr:hover td {
+  background: oklch(from var(--accent) l c h / 0.03);
+}
+.comparison-table tr:hover td.pro-cell {
+  background: oklch(from var(--pro) l c h / 0.07);
+}
+.comparison-table .check {
+  color: var(--success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: oklch(from var(--success) l c h / 0.1);
+  font-size: 12px;
+  font-weight: 700;
+}
+.comparison-table .dash {
+  color: var(--muted-foreground);
+  opacity: 0.25;
+  font-size: 16px;
+}
+.comparison-table .cell-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+}
+.comparison-table .pro-label {
+  color: var(--pro);
+  font-weight: 600;
+}
+
+/* ── Pricing responsive ── */
+@media (max-width: 768px) {
+  .pricing-card {
+    padding: 24px;
+  }
+  .comparison-table-wrap {
+    max-width: 100%;
+  }
+  .comparison-table th {
+    padding: 12px 14px;
+    font-size: 11px;
+  }
+  .comparison-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+  .comparison-table th:first-child,
+  .comparison-table td:first-child {
+    width: auto;
+    min-width: 180px;
+  }
 }
 
 /* ── Footer ── */

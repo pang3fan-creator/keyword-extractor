@@ -12,7 +12,7 @@ import { ThemeToggle } from '../theme/ThemeToggle';
 
 const CENTER_LINKS = [
   { href: '/', key: 'home' },
-  { href: '/pricing', key: 'pricing' },
+  { href: '/pricing', key: 'pricing', enabled: true },
   { href: '/blog', key: 'blog' },
 ] as const;
 
@@ -65,8 +65,8 @@ export function Header() {
           <nav className="nav-right" aria-label={t('mainNavigation')}>
             <LocaleSwitcher />
             <ThemeToggle />
-            {isLoaded && (
-              isSignedIn ? (
+            {isLoaded &&
+              (isSignedIn ? (
                 <UserButton />
               ) : (
                 <>
@@ -81,8 +81,7 @@ export function Header() {
                     </button>
                   </SignUpButton>
                 </>
-              )
-            )}
+              ))}
           </nav>
 
           <button
@@ -143,26 +142,33 @@ export function Header() {
         <div className="mobile-locale-row">
           <LocaleSwitcher variant="list" />
         </div>
-        {isLoaded && (
-          isSignedIn ? (
+        {isLoaded &&
+          (isSignedIn ? (
             <div className="mobile-auth-row" aria-label={t('accountMenu')}>
               <UserButton />
             </div>
           ) : (
             <div className="mobile-auth-actions" aria-label={t('authActions')}>
               <SignInButton mode="modal">
-                <button type="button" className="mobile-auth-link" onClick={() => setMenuOpen(false)}>
+                <button
+                  type="button"
+                  className="mobile-auth-link"
+                  onClick={() => setMenuOpen(false)}
+                >
                   {t('logIn')}
                 </button>
               </SignInButton>
               <SignUpButton mode="modal">
-                <button type="button" className="mobile-auth-cta" onClick={() => setMenuOpen(false)}>
+                <button
+                  type="button"
+                  className="mobile-auth-cta"
+                  onClick={() => setMenuOpen(false)}
+                >
                   {t('signUp')}
                 </button>
               </SignUpButton>
             </div>
-          )
-        )}
+          ))}
       </div>
     </>
   );

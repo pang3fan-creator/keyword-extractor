@@ -14,10 +14,10 @@
 
 ## Pro (Planned)
 
-- Price: $9.99/month (billed monthly) | $99/year (billed annually) — planned
+- Price: $9.99/month (billed monthly) | $99.9/year (billed annually) — planned
 - Features (planned):
   - AI-powered semantic extraction (coming soon)
-  - Higher character limits (planned)
+  - Unlimited character limit (planned)
   - PDF keyword extraction (planned)
   - YouTube keyword extraction (planned)
   - 30-day extraction history (planned)

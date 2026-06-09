@@ -386,7 +386,7 @@
       "proFeatures": {
         "title": "Pro Features",
         "paragraphs": [
-          "AI-powered semantic extraction is planned as a paid Pro feature. When available, Pro will be offered at $9.99 per month or $99 per year. Payments will be processed by Creem Inc.",
+          "AI-powered semantic extraction is planned as a paid Pro feature. When available, Pro will be offered at $9.99 per month or $99.9 per year. Payments will be processed by Creem Inc.",
           "Details about Pro features, pricing, and availability will be announced when the feature launches."
         ]
       },
@@ -458,6 +458,130 @@
     "whyDesc": "Keyword extraction is a well-understood technical problem: word frequency analysis, stop-word filtering, and n-gram detection are established algorithms. Yet most online tools wrap this functionality behind paywalls, mandatory account registration, or intrusive tracking.",
     "whyDesc2": "ExtractKeywords was built to provide a clean, focused alternative: a tool that does one thing well and leaves no trace. No signup flow, no data retention, no analytics scripts. Paste your text, get your keywords, and move on.",
     "backHome": "Back to Home"
+  },
+  "pricing": {
+    "metadata": {
+      "title": "Pricing — Transparent Plans, Free and Pro",
+      "description": "ExtractKeywords pricing: free keyword extraction with no signup required, plus a planned Pro plan with unlimited characters, AI-powered analysis, PDF support.",
+      "openGraphTitle": "Pricing · ExtractKeywords",
+      "openGraphDescription": "Free keyword extraction and planned Pro plans. Start with no signup required.",
+      "twitterTitle": "Pricing · ExtractKeywords",
+      "twitterDescription": "Free keyword extraction and planned Pro plans. Start with no signup."
+    },
+    "hero": {
+      "title": "Simple, Transparent Pricing",
+      "subtitle": "Start free. Pro is planned for heavier workflows."
+    },
+    "aria": {
+      "pricingTable": "Pricing plans comparison",
+      "freeCard": "Free plan",
+      "proCard": "Pro plan",
+      "comparisonTable": "Feature comparison table",
+      "faqSection": "Frequently asked questions about pricing",
+      "proCta": "Coming Soon — Pro is planned for future release",
+      "freeFeatures": "Free plan features",
+      "proFeatures": "Pro plan features"
+    },
+    "cards": {
+      "free": {
+        "title": "Free",
+        "desc": "For quick keyword extraction",
+        "price": "$0",
+        "period": "forever",
+        "cta": "Get Started",
+        "features": [
+          "Text & URL keyword extraction",
+          "Bigram & trigram analysis",
+          "CSV download and clipboard copy",
+          "No signup required"
+        ]
+      },
+      "pro": {
+        "title": "Pro",
+        "desc": "For AI analysis and heavy workflows",
+        "badge": "Planned",
+        "priceMonthly": "$9.99",
+        "priceYearly": "$99.9",
+        "periodMonthly": "/month",
+        "periodYearly": "/year",
+        "saveLabel": "Save $20",
+        "cta": "Coming Soon",
+        "features": [
+          "Everything in Free",
+          "Unlimited character limit (planned)",
+          "AI-powered semantic extraction (coming soon)",
+          "PDF keyword extraction (planned)",
+          "YouTube keyword extraction (planned)",
+          "30-day extraction history (planned)",
+          "Priority support (planned)"
+        ]
+      }
+    },
+    "comparison": {
+      "title": "Compare Features",
+      "colFeature": "Feature",
+      "colFree": "Free",
+      "colPro": "Pro (planned)",
+      "caption": "Feature comparison between Free and Pro plans",
+      "included": "Included",
+      "notAvailable": "Not available",
+      "labelPlanned": "(planned)",
+      "labelComingSoon": "(coming soon)",
+      "unlimitedCell": "Unlimited",
+      "rows": [
+        { "feature": "Text keyword extraction", "free": true, "pro": true },
+        { "feature": "URL keyword extraction", "free": true, "pro": true },
+        { "feature": "Word frequency & density", "free": true, "pro": true },
+        { "feature": "Bigram & trigram detection", "free": true, "pro": true },
+        { "feature": "CSV download & clipboard copy", "free": true, "pro": true },
+        {
+          "feature": "Character limit per submission",
+          "free": "10,000 characters",
+          "pro": "Unlimited (planned)"
+        },
+        { "feature": "AI-powered semantic extraction", "free": false, "pro": "Coming soon" },
+        { "feature": "PDF keyword extraction", "free": false, "pro": "Planned" },
+        { "feature": "YouTube keyword extraction", "free": false, "pro": "Planned" },
+        { "feature": "30-day extraction history", "free": false, "pro": "Planned" },
+        { "feature": "Priority support", "free": false, "pro": "Planned" }
+      ]
+    },
+    "faqHeading": "Frequently Asked Questions",
+    "faq": [
+      {
+        "question": "Is there a Pro plan with more features?",
+        "answer": "Yes, a Pro plan is planned with unlimited character limits, AI-powered keyword extraction, PDF and YouTube extraction, 30-day history, and priority support. Final availability will be announced before launch."
+      },
+      {
+        "question": "How much will Pro cost?",
+        "answer": "Pro is planned at $9.99 per month or $99.9 per year (save $20). Exact pricing may change before launch. We'll announce final pricing closer to launch."
+      },
+      {
+        "question": "What features will Pro include?",
+        "answer": "Pro is planned to include: unlimited character limit per submission, AI-powered semantic keyword extraction, PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support. The final feature set will be confirmed closer to launch."
+      },
+      {
+        "question": "What is the free plan limit?",
+        "answer": "The free plan supports up to 10,000 characters per submission with text and URL keyword extraction, bigram and trigram analysis, CSV download, and clipboard copy. No account or signup required."
+      },
+      {
+        "question": "Do I need an account to use the tool?",
+        "answer": "No. The free Text and URL extraction modes work without any account or signup. An account may be needed for future Pro features."
+      }
+    ],
+    "cta": {
+      "title": "Not sure yet?",
+      "subtitle": "Start with the free plan — no signup, no credit card. Pro is planned for when you need more.",
+      "button": "Try It Free"
+    },
+    "schema": {
+      "productName": "ExtractKeywords Keyword Extractor",
+      "productDescription": "ExtractKeywords is a free keyword extraction tool with text and URL support. A Pro plan with unlimited extraction and AI-powered analysis is planned for future release.",
+      "freeOfferName": "Free Plan",
+      "freeOfferDescription": "Free keyword extraction with text and URL support, up to 10,000 characters.",
+      "proOfferName": "Pro Plan (Pre-Order)",
+      "proOfferDescription": "Pro plan for ExtractKeywords. Planned for future release with unlimited extraction, AI-powered semantic analysis, PDF and YouTube keyword extraction."
+    }
   },
   "nav": {
     "home": "Home",

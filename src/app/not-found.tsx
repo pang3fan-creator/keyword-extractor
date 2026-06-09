@@ -5,8 +5,22 @@ import { GoBackButton } from '@/components/ui/go-back-button';
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('notFound');
+  const metadataT = await getTranslations('metadata');
   return {
     title: t('title'),
+    description: t('desc'),
+    robots: { index: false },
+    openGraph: {
+      title: t('title'),
+      description: t('desc'),
+      siteName: metadataT('siteName'),
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary',
+      title: t('title'),
+      description: t('desc'),
+    },
   };
 }
 

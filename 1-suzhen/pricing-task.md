@@ -150,7 +150,7 @@
 | Header 导航 `/pricing` | 已有链接，`isEnabled` 为 false | `CENTER_LINKS` 中 `/pricing` 加 `enabled: true`，blog 保持禁用 |
 | Footer 导航 `Pricing` | `href="#"` 阻止跳转 | 改为真实链接 `/pricing` |
 | `/pricing` 页面 | **不存在** | 新建 `src/app/[locale]/pricing/page.tsx` |
-| `public/pricing.md` | Pro features 只列了 AI / 更高限制 / 优先 / 无限流 | 同步补全 planned features（PDF、YouTube、30天历史），或页面收窄到与它一致 — **以页面计划为准，同步更新 public/pricing.md** |
+| `public/pricing.md` | 已基本同步 planned features | 实施时继续保持与页面计划一致 |
 | Creem 支付 | 未接入 | **本次不做** |
 | Clerk 用户系统 | 已接入 | Pricing v1 页面不显示登录状态差异，不嵌入 user button |
 
@@ -169,7 +169,7 @@ H1: Simple, Transparent Pricing
 **Free 卡片：**
 - 标题：Free
 - 价格：$0 / forever
-- 特点：3-4 项核心权益
+- 特点：4 项核心权益，包含 no signup required
 - CTA：**Get Started** → 可点击，链接到首页 `/#toolArea`
 - 无高亮标签
 
@@ -251,7 +251,8 @@ H1: Simple, Transparent Pricing
         "features": [
           "Text & URL keyword extraction",
           "Bigram & trigram analysis",
-          "CSV download and clipboard copy"
+          "CSV download and clipboard copy",
+          "No signup required"
         ]
       },
       "pro": {
@@ -318,7 +319,7 @@ H1: Simple, Transparent Pricing
       "button": "Try It Free"
     },
     "schema": {
-      "productName": "ExtractKeywords Pro Plan",
+      "productName": "ExtractKeywords Keyword Extractor",
       "productDescription": "Pro plan for ExtractKeywords — planned for future release with unlimited extraction, AI-powered analysis, PDF and YouTube support.",
       "freeOfferName": "Free Plan",
       "freeOfferDescription": "Free keyword extraction with text and URL support, up to 10,000 characters.",

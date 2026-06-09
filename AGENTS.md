@@ -27,6 +27,7 @@ npm run test
 
 - Home: `src/app/[locale]/page.tsx`
 - About: `src/app/[locale]/about/page.tsx`
+- Pricing: `src/app/[locale]/pricing/page.tsx`
 - Privacy: `src/app/[locale]/privacy/page.tsx`
 - Terms: `src/app/[locale]/terms/page.tsx`
 - 404: `src/app/not-found.tsx`
@@ -36,6 +37,7 @@ npm run test
 - API: `src/app/api/extract/text/route.ts`, `src/app/api/extract/url/route.ts`
 - i18n text: `messages/en.json`
 - Docs/plans: `PRD.md`, `DEVELOPMENT-TASKS.md`, `1-suzhen/`
+- Public: `public/pricing.md`, `public/llms.txt`
 
 ## Project Rules
 
@@ -61,12 +63,21 @@ npm run test
 - Home active 逻辑: `item.href === '/' ? pathname === '/' : pathname.endsWith(item.href)`；不要用 `CENTER_LINKS.some()` 方式
 - `seo-insight-block` 已全局废弃（CSS/组件/翻译全删），改用普通 `<p>` + Tailwind
 - 所有 `#fff` 必须用 `var(--primary-foreground)`；出现邮箱必须 `mailto:` 链接
-- Login/Signup 隐藏: `Header.tsx` 中 `const SHOW_AUTH = false` 控制，不改 DOM
+- Login/Signup 由 Clerk `useAuth().isLoaded`/`isSignedIn` 控制；Pricing v1 不显示登录状态差异
 
 ## 页面布局模式
 
 - Document 页 (Privacy/Terms): `.privacy-card` layout + 内联 `<style>` 块
 - Marketing 页 (About): homepage 风格，`seo-section` / `hero` 布局，无内联样式
+
+## HTML 设计稿
+
+- 用户的设计稿放在 `2-gitignore/设计UI/` 目录，写页面前必须先读取设计稿
+- HTML 设计稿是视觉权威；先理解设计才能写代码
+
+## 状态/逻辑模式
+
+- 禁止用展示文案驱动逻辑（如 `str === 'Coming soon'`、`includes('(planned)')`）。用代码常量/查询表驱动，翻译文件只放展示文本
 
 ## Design System
 
@@ -99,7 +110,7 @@ npm run test
 
 ## SEO Rules
 
-- 新页面需覆盖 metadata/schema/sitemap/llms.txt；meta description <=160 chars。
+- 新页面需覆盖 metadata/schema/sitemap/llms.txt；meta description <=160 chars。建议使用 `gen-seo-page` skill 生成 page skeleton。
 - 首页 SEO 内容不要写：TF-IDF, inverse document frequency, natural language processing, contextual relevance, semantic analysis。
 - 正确免费算法描述：word frequency, stop-word filtering, keyword density, multi-word phrase detection (bigrams/trigrams)。
 - AI 未上线时不要写：is available, is a Pro feature, will be available, AI Pro mode uses。
@@ -125,6 +136,7 @@ npm run test
 
 - Turbopack/cache weirdness after layout/page moves: `rm -rf .next/cache`; severe cases `rm -rf .next`.
 - `agent-browser screenshot [path]`; valid flags include `--full` and `--annotate`, not `--full-page` or `--viewport`.
+- `agent-browser click` 不总是触发 React 合成事件。对 React `onClick` handler 改用 `agent-browser focus` + `agent-browser press Enter`。
 
 ## Git Safety
 
