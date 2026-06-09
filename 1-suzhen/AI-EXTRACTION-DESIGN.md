@@ -10,7 +10,7 @@
 |--------|----------|---------|
 | **方法** | 词频统计 | 语义理解 |
 | **结果** | 高频词 | 核心主题词 |
-| **适用** | 长文本 | 任意长度 |
+| **适用** | 长文本 | 中短文本（≤20,000 字符） |
 | **速度** | < 1 秒 | 3-5 秒 |
 | **权限** | 免费 | Pro 付费 |
 
@@ -71,6 +71,7 @@ AI 提取: SEO services (0.95, topic), keyword research (0.89, service),
 
 ### 3.1 表格结构
 
+**桌面端**：
 ```
 ┌─────────────────────────────────────────────────────┐
 │  Keyword          Relevance         Category        │
@@ -83,6 +84,46 @@ AI 提取: SEO services (0.95, topic), keyword research (0.89, service),
 └─────────────────────────────────────────────────────┘
 
           ✨ 1,847 AI extractions remaining this month
+```
+
+**移动端**（< 640px）：
+- 改为 stacked row 布局，每行显示一个关键词卡片
+- 隐藏 Relevance 进度条，只保留数值
+- 卡片结构：
+```
+┌─────────────────────────────┐
+│ SEO services         [topic]│
+│ Relevance: 0.95             │
+└─────────────────────────────┘
+```
+
+**移动端 CSS**：
+```css
+@media (max-width: 640px) {
+  .ai-results-table {
+    display: none;
+  }
+  .ai-results-cards {
+    display: block;
+  }
+  .ai-keyword-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px;
+    margin-bottom: 8px;
+  }
+  .ai-keyword-card .keyword {
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .ai-keyword-card .meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    font-size: 13px;
+  }
+}
 ```
 
 ### 3.2 Relevance 进度条
@@ -181,6 +222,19 @@ Pro 用户有月配额（2000 次），结果区底部显示：
 - AI 输入单独设 20,000，因 AI 成本和上下文更敏感
 - AI 仅 Pro 可用
 
+**需同步修改的文件**（当前项目仍是 100,000 字符）：
+
+| 文件 | 修改内容 |
+|------|----------|
+| `src/lib/entitlements.ts` | 将 Pro 字符限制从 100,000 改为 50,000 |
+| `messages/en.json` | 更新字符限制相关的提示文案 |
+| `DEVELOPMENT-TASKS.md` | 更新任务中的字符限制说明 |
+| `src/app/[locale]/terms/page.tsx` | 更新 Terms 中的字符限制说明 |
+| `src/app/[locale]/pricing/page.tsx` | 更新 Pricing 页面的字符限制展示 |
+| `public/pricing.md` | 更新公开 pricing 文档 |
+| `public/llms.txt` | 更新 LLM 可读的站点描述 |
+| 相关测试文件 | 更新测试用例中的字符限制值 |
+
 ---
 
 ## 五、后端规划
@@ -202,7 +256,7 @@ keywords and phrases from the following text. Focus on:
 3. Action words and concepts
 4. Named entities (products, brands, etc.)
 
-Return a JSON array with keywords sorted by importance.
+Return a JSON object with keywords sorted by relevance.
 Maximum 20 keywords.
 
 Text: {user_input}
@@ -214,7 +268,29 @@ Output format:
     ...
   ]
 }
+
+Category must be one of: topic, service, industry, entity
+Relevance must be between 0 and 1
 ```
+
+**后端 Schema 校验**：
+```typescript
+const AI_KEYWORD_SCHEMA = z.object({
+  keyword: z.string().min(1).max(100),
+  relevance: z.number().min(0).max(1),
+  category: z.enum(['topic', 'service', 'industry', 'entity']),
+});
+
+const AI_RESPONSE_SCHEMA = z.object({
+  keywords: z.array(AI_KEYWORD_SCHEMA).max(20),
+});
+```
+
+**校验规则**：
+- `keyword`：非空字符串，最大 100 字符
+- `relevance`：0-1 之间的数值，超出范围则 clamp
+- `category`：仅允许四个枚举值，其他值默认为 `topic`
+- `keywords` 数组：最多 20 个元素
 
 ### 5.3 API 设计
 
@@ -232,7 +308,20 @@ Output format:
 {
   "keywords": [
     { "keyword": "...", "relevance": 0.95, "category": "topic" }
-  ]
+  ],
+  "usage": {
+    "remaining": 1847,
+    "limit": 2000,
+    "resetAt": "2026-07-01T00:00:00Z"
+  }
+}
+```
+
+**错误响应**：
+```json
+{
+  "errorCode": "AI_LIMIT_REACHED",
+  "error": "AI limit reached this month"
 }
 ```
 
@@ -251,6 +340,29 @@ Output format:
 | 响应时间 | 3-5 秒 |
 | 超时设置 | 15 秒 |
 | 月配额 | 2,000 次（内部限制） |
+
+### 5.4-A API 错误码
+
+**新增错误码（纳入 `src/lib/api-errors.ts`）**：
+
+| 错误码 | HTTP 状态 | 说明 |
+|--------|-----------|------|
+| `PRO_REQUIRED` | 403 | 需要 Pro 订阅才能使用 AI 功能 |
+| `AI_LIMIT_REACHED` | 429 | 当月 AI 配额已用尽 |
+| `AI_TIMEOUT` | 504 | AI 提取超时（15 秒） |
+| `AI_FAILED` | 502 | AI 提取失败（模型错误） |
+| `AI_CONFIG_MISSING` | 500 | AI 服务配置缺失（API Key 未配置） |
+
+**前端错误码映射**：
+```typescript
+const AI_ERROR_TRANSLATION_KEYS: Record<AIAPIErrorCode, string> = {
+  PRO_REQUIRED: 'errors.proRequired',
+  AI_LIMIT_REACHED: 'errors.aiLimitReached',
+  AI_TIMEOUT: 'errors.aiTimeout',
+  AI_FAILED: 'errors.aiFailed',
+  AI_CONFIG_MISSING: 'errors.aiConfigMissing',
+};
+```
 
 ### 5.5 AI 配额数据库
 
@@ -276,7 +388,52 @@ create index idx_ai_usage_user_month on public.ai_usage (clerk_user_id, month);
 - AI 调用失败（超时、错误）不扣次数
 - 每月 1 号重置（新建当月记录）
 
-**可选审计表（MVP 可不做）**：
+**并发安全**：
+- 使用 Supabase RPC 或 SQL transaction 做原子扣减
+- 避免"同时检查都有额度，最后超扣"的问题
+
+**原子扣减示例（Supabase RPC）**：
+```sql
+create or replace function decrement_ai_quota(
+  p_user_id text,
+  p_month text
+) returns json as $$
+declare
+  v_current_count integer;
+  v_limit integer := 2000;
+begin
+  -- 获取当前计数（加锁）
+  select count into v_current_count
+  from ai_usage
+  where clerk_user_id = p_user_id and month = p_month
+  for update;
+
+  -- 不存在则创建
+  if v_current_count is null then
+    insert into ai_usage (clerk_user_id, month, count)
+    values (p_user_id, p_month, 0);
+    v_current_count := 0;
+  end if;
+
+  -- 检查配额
+  if v_current_count >= v_limit then
+    return json_build_object('success', false, 'reason', 'limit_reached');
+  end if;
+
+  -- 原子扣减
+  update ai_usage
+  set count = count + 1, updated_at = now()
+  where clerk_user_id = p_user_id and month = p_month;
+
+  return json_build_object(
+    'success', true,
+    'remaining', v_limit - v_current_count - 1
+  );
+end;
+$$ language plpgsql;
+```
+
+**审计表（建议 MVP 做）**：
 
 ```sql
 create table public.ai_usage_events (
@@ -319,6 +476,34 @@ create table public.ai_usage_events (
 
 ---
 
+## 六-A、隐私与条款更新
+
+**AI 功能涉及第三方数据处理，需更新以下文档**：
+
+| 文件 | 更新内容 |
+|------|----------|
+| `src/app/[locale]/privacy/page.tsx` | 说明 AI 提取功能会将用户输入发送给第三方 AI provider（DeepSeek/通义千问），明确是否存储输入/结果 |
+| `src/app/[locale]/terms/page.tsx` | 补充 AI 功能使用条款，包括配额限制、服务可用性免责 |
+| `src/app/[locale]/pricing/page.tsx` | FAQ 中说明 AI 提取的隐私处理方式 |
+
+**隐私声明要点**：
+- 明确告知用户：AI 提取功能会将提交的文本发送给第三方 AI 服务提供商
+- 数据存储策略：输入文本和提取结果是否存储、存储时长
+- 第三方处理：列出 AI provider（DeepSeek/通义千问）及其隐私政策链接
+- 用户控制：用户可选择使用普通提取（本地处理）而非 AI 提取
+
+**建议文案**（Privacy 页面新增段落）：
+```
+AI Semantic Extraction: When you use our AI-powered keyword extraction 
+feature, your submitted text is sent to our AI service provider 
+(DeepSeek or Alibaba Tongyi Qianwen) for processing. We do not store 
+your input text or extraction results after processing. You may choose 
+to use our basic extraction feature, which processes your text locally 
+without third-party involvement.
+```
+
+---
+
 ## 七、代码改动清单
 
 | 文件 | 改动类型 | 说明 |
@@ -346,3 +531,4 @@ create table public.ai_usage_events (
 |------|------|
 | 2026-06-09 | 初版，整理前端设计、后端规划、实现要点 |
 | 2026-06-09 | 根据审核意见修订：字符限制、Gated Tab 模式、不自动降级、AI 配额数据库 |
+| 2026-06-09 | 第二轮修订：修复"任意长度"矛盾、补充字符限制同步清单、隐私条款更新、并发安全原子扣减、API 配额返回、错误码定义、Prompt schema 校验、移动端表格设计 |
