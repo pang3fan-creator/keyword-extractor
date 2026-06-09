@@ -5,7 +5,8 @@
 - `Next.js 16 App Router` + `React 19` + `TypeScript`
 - `Tailwind CSS v4` + `shadcn/ui v4` + `HyperUI layout references` + `lucide`
 - next-intl, Cheerio, Vitest
-- Planned: DeepSeek AI, Supabase, Creem
+- Planned: DeepSeek AI
+- Billing/storage: Clerk + Creem + Supabase
 - Deploy: Vercel, domain `extractkeywords.com`
 - Resend
 
@@ -37,6 +38,7 @@ npm run test
 - Schema helpers: `src/lib/schema.ts`
 - Extraction backend: `src/lib/keyword-extractor.ts`, `src/lib/url-fetcher.ts`, `src/lib/robots-checker.ts`, `src/lib/rate-limiter.ts`
 - API: `src/app/api/extract/text/route.ts`, `src/app/api/extract/url/route.ts`
+- Billing: `src/components/billing/`, `src/app/api/billing/*`, `src/app/api/webhook/creem`, `src/lib/{creem,subscription,supabase-admin}.ts`, `supabase/*.sql`
 - i18n text: `messages/en.json`
 - Docs/plans: `PRD.md`, `DEVELOPMENT-TASKS.md`, `1-suzhen/`
 - Public: `public/pricing.md`, `public/llms.txt`
@@ -54,6 +56,8 @@ npm run test
 ## Environment
 
 - Clerk auth requires `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
+- Clerk local login requires matching publishable/secret keys; mismatches can cause session refresh redirect loops.
+- Billing env vars: `CREEM_API_KEY`, `CREEM_WEBHOOK_SECRET`, `CREEM_PRO_MONTHLY_PRODUCT_ID`, `CREEM_PRO_YEARLY_PRODUCT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`; document in `.env.example`, do not edit real `.env*`.
 - Production persistent rate limiting uses `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`; missing values fall back to memory.
 
 ## next-intl / Routing
@@ -71,14 +75,22 @@ npm run test
 - Home active 逻辑: `item.href === '/' ? pathname === '/' : pathname.endsWith(item.href)`；不要用 `CENTER_LINKS.some()` 方式
 - `seo-insight-block` 已全局废弃（CSS/组件/翻译全删），改用普通 `<p>` + Tailwind
 - 所有 `#fff` 必须用 `var(--primary-foreground)`；出现邮箱必须 `mailto:` 链接
-- Login/Signup 由 Clerk `useAuth().isLoaded`/`isSignedIn` 控制；Pricing v1 不显示登录状态差异
+- Login/Signup 由 Clerk `useAuth().isLoaded`/`isSignedIn` 控制；Pricing checkout signed-out opens Clerk auth, signed-in creates Creem checkout, active Pro returns `ALREADY_SUBSCRIBED`.
 - Visible breadcrumbs: use `src/components/layout/Breadcrumbs.tsx`; non-home pages show `Home / Current`, root `/` does not.
 - Breadcrumb UI must stay in sync with `createBreadcrumbList()` JSON-LD; keep one `application/ld+json` script per page.
+- Billing lives in Clerk `UserButton.UserProfilePage`; do not use `UserButton.Link` or recreate `/account` for billing UI.
+- `/account` should 404; Creem checkout success redirects to `/pricing?checkout=success`.
+- Creem webhook path is singular `/api/webhook/creem`; do not add `/api/webhooks/creem`.
+- `subscriptions` stores one current row per `clerk_user_id`; webhook history belongs in `payment_events`.
 
 ## 页面布局模式
 
 - Document 页 (Privacy/Terms): `.privacy-card` layout + 内联 `<style>` 块
 - Marketing 页 (About): homepage 风格，`seo-section` / `hero` 布局，无内联样式
+
+## 页面底部 CTA
+
+- 营销页底部 CTA 跟随首页 `bottom-cta` 模板: `<div className="bottom-cta"><Link href="...">text</Link><p className="text-muted-foreground mt-4 text-center text-xs">date</p></div>` — 只有链接+日期，不要另加 h2/button。
 
 ## HTML 设计稿
 
@@ -91,7 +103,10 @@ npm run test
 
 ## Design System
 
-- `.interface-design/system.md` 为唯一设计系统参考
+- `.interface-design/system.md` 为唯一设计系统参考。
+- Table: th/td 必须 `font-size: 13px` + `font-family: var(--font-mono)`; wrapper `border-radius: var(--radius)` (10px); corner radii 同步 wrapper.
+- h2 (seo): `text-[24px] font-bold tracking-[-0.03em]`，不要 28px.
+- Content widths: `max-w-[960px]` (tool/SEO), `max-w-[880px]` (doc pages), `max-w-[640px]` (insight block). 新增 container 优先用这些值.
 
 ## Theme / CSS
 
@@ -129,6 +144,10 @@ npm run test
 - 不要放 `#` 作为 SEO 内链占位；不存在的落地页不要链接。
 - Schema helpers live in `src/lib/schema.ts`; use `createJsonLdGraph()` / `createBreadcrumbList()` instead of hand-rolling page schema wrappers.
 
+## Meta Title Length
+
+- Root layout `title.template: '%s | ExtractKeywords'` adds 18 chars. Keep page meta title ≤ 41 chars so rendered ≤ 60 chars (Google display limit).
+
 ## URL Extraction
 
 - URL fetcher must keep SSRF protections: only http/https, reject localhost/private IPs.
@@ -142,12 +161,14 @@ npm run test
 - Use Vitest for unit/API tests.
 - For behavior changes, prefer TDD: write failing test, watch it fail, then implement.
 - Final checks for code changes: `npm run test`, `npm run lint`, `npm run build`.
+- Payment checks: `npm run test -- src/app/api/billing/checkout/route.test.ts src/app/api/webhook/creem/route.test.ts src/lib/subscription.test.ts src/lib/creem.test.ts`.
 - UI changes additionally require browser validation with desktop/mobile checks.
 
 ## Common Recovery
 
 - Turbopack/cache weirdness after layout/page moves: `rm -rf .next/cache`; severe cases `rm -rf .next`.
 - `agent-browser screenshot [path]`; valid flags include `--full` and `--annotate`, not `--full-page` or `--viewport`.
+- `npx playwright screenshot --viewport-size=390,844 URL file.png` works for viewport screenshots; `require('playwright')` may fail if not installed locally.
 - `agent-browser click` 不总是触发 React 合成事件。对 React `onClick` handler 改用 `agent-browser focus` + `agent-browser press Enter`。
 - If `agent-browser` is unavailable inside shell loops, set `AB=$(command -v agent-browser)` first and call `$AB ...`.
 
