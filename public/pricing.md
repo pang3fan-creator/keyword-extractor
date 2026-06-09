@@ -22,4 +22,4 @@
   - YouTube keyword extraction (planned)
   - 30-day extraction history (planned)
   - Priority support (planned)
-- Payment processor: Creem Inc. (to be integrated)
+- Payment integration: planned for a future release with Creem Inc.

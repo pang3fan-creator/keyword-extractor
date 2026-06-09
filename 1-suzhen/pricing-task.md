@@ -139,7 +139,7 @@
 | 设计风格 | Marketing 页风格（参照 About 页），非 Document 页 |
 | Metadata title | Pricing · ExtractKeywords — Simple, Transparent Pricing |
 | Metadata description | ExtractKeywords pricing: free and future Pro plans. Start with no signup required. (<=160 chars) |
-| Schema | Free: `InStock` 或不写 availability；**Pro: `https://schema.org/PreOrder`**，description 明确 "planned for future release" |
+| Schema | Free: 不写 availability；**Pro: 固定 `https://schema.org/PreOrder`**，description 明确 "planned for future release" |
 | Sitemap | 包含 `/pricing` |
 | llms.txt | **同时保留** `/pricing.md`（AI-readable 文档）和 `https://extractkeywords.com/pricing`（human-facing 页面） |
 
@@ -170,16 +170,16 @@ H1: Simple, Transparent Pricing
 - 标题：Free
 - 价格：$0 / forever
 - 特点：3-4 项核心权益
-- CTA：**Get Started** → 可点击，链接到首页 `#toolArea`
+- CTA：**Get Started** → 可点击，链接到首页 `/#toolArea`
 - 无高亮标签
 
 **Pro 卡片：**
 - 标题：Pro
 - 标签：**Planned**（非 Popular）
-- 价格：$9.99/mo（planned）/ $99/yr（planned），年付显示 "Save $20"
+- 价格：直接展示月付 / 年付两个价格，无需交互切换
+  - $9.99/mo (planned) / $99/yr (planned, save $20)
 - 特点：7 项权益列表，全部标注 planned / coming soon
 - CTA：**Coming Soon** → **disabled 按钮**，无点击事件，带 `aria-disabled` 属性
-- 不高亮为"Popular"，改标"Planned"
 
 #### 区块 3：功能对比表
 
@@ -213,7 +213,7 @@ H1: Simple, Transparent Pricing
 
 - 标题：Not sure yet?
 - 文案：Start with the free plan — no signup, no credit card. Pro is planned for when you need more.
-- 按钮：Try It Free → 可点击，链接到首页
+- 按钮：Try It Free → 可点击，链接到首页 `/#toolArea`
 
 ### 7.4 翻译结构（messages/en.json）
 
@@ -224,11 +224,23 @@ H1: Simple, Transparent Pricing
   "pricing": {
     "metadata": {
       "title": "Pricing · ExtractKeywords — Simple, Transparent Pricing",
-      "description": "ExtractKeywords pricing: free and future Pro plans. Start with no signup required."
+      "description": "ExtractKeywords pricing: free and future Pro plans. Start with no signup required.",
+      "openGraphTitle": "Pricing · ExtractKeywords",
+      "openGraphDescription": "Free keyword extraction and planned Pro plans. Start with no signup required.",
+      "twitterTitle": "Pricing · ExtractKeywords",
+      "twitterDescription": "Free keyword extraction and planned Pro plans. Start with no signup."
     },
     "hero": {
       "title": "Simple, Transparent Pricing",
       "subtitle": "Start free. Pro is planned for heavier workflows."
+    },
+    "aria": {
+      "pricingTable": "Pricing plans comparison",
+      "freeCard": "Free plan",
+      "proCard": "Pro plan",
+      "comparisonTable": "Feature comparison table",
+      "faqSection": "Frequently asked questions about pricing",
+      "proCta": "Coming Soon — Pro is planned for future release"
     },
     "cards": {
       "free": {
@@ -281,15 +293,15 @@ H1: Simple, Transparent Pricing
     "faq": [
       {
         "question": "Is there a Pro plan with more features?",
-        "answer": "Yes, a Pro plan is planned with unlimited character limits, AI-powered keyword extraction, PDF and YouTube extraction, 30-day history, and priority support. We'll announce pricing and availability when it's ready."
+        "answer": "Yes, a Pro plan is planned with unlimited character limits, AI-powered keyword extraction, PDF and YouTube extraction, 30-day history, and priority support. Final availability will be announced before launch."
       },
       {
         "question": "How much will Pro cost?",
-        "answer": "Pro is planned at $9.99 per month or $99 per year (save $20). Exact pricing may change before launch."
+        "answer": "Pro is planned at $9.99 per month or $99 per year (save $20). Exact pricing may change before launch. We'll announce final pricing closer to launch."
       },
       {
         "question": "What features will Pro include?",
-        "answer": "Pro is planned to include: unlimited character limit per submission, AI-powered semantic keyword extraction using advanced language models, PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support. We'll share the final feature set closer to launch."
+        "answer": "Pro is planned to include: unlimited character limit per submission, AI-powered semantic keyword extraction, PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support. The final feature set will be confirmed closer to launch."
       },
       {
         "question": "What is the free plan limit?",
@@ -304,6 +316,14 @@ H1: Simple, Transparent Pricing
       "title": "Not sure yet?",
       "subtitle": "Start with the free plan — no signup, no credit card. Pro is planned for when you need more.",
       "button": "Try It Free"
+    },
+    "schema": {
+      "productName": "ExtractKeywords Pro Plan",
+      "productDescription": "Pro plan for ExtractKeywords — planned for future release with unlimited extraction, AI-powered analysis, PDF and YouTube support.",
+      "freeOfferName": "Free Plan",
+      "freeOfferDescription": "Free keyword extraction with text and URL support, up to 10,000 characters.",
+      "proOfferName": "Pro Plan (Pre-Order)",
+      "proOfferDescription": "Pro plan for ExtractKeywords. Planned for future release with unlimited extraction, AI-powered semantic analysis, PDF and YouTube keyword extraction."
     }
   },
   "nav": {
@@ -330,9 +350,9 @@ H1: Simple, Transparent Pricing
 - [ ] Footer 中 Pricing 链接从 `href="#"` 改为真实路径 `/pricing`
 - [ ] Free / Pro 双卡片布局，响应式适配（桌面 + 移动端）
 - [ ] Pro 卡片标签为 "Planned"，非 "Popular"
-- [ ] 月付/年付切换正常，年付显示 "Save $20" 标签
+- [ ] Pro 卡片同时展示月付 $9.99/mo 和年付 $99/yr 两个价格，年付显示 "Save $20"，无需交互切换
 - [ ] Pro CTA（Coming Soon）为 **disabled 按钮**，无点击事件，带 `aria-disabled`
-- [ ] Free CTA（Get Started）可点击，链接到首页 `#toolArea`
+- [ ] Free CTA（Get Started）可点击，链接到首页 `/#toolArea`
 - [ ] 功能对比表表头为 `Pro (planned)`，字符限制行写 `Unlimited (planned)`
 - [ ] FAQ 可以展开/收起
 - [ ] 底部 CTA 按钮链接到首页
@@ -340,7 +360,10 @@ H1: Simple, Transparent Pricing
 ### SEO & Schema
 
 - [ ] Metadata 正确（title, description <= 160 chars, OG, Twitter）
-- [ ] Schema.org：Free Offer 用 `InStock` 或不写 availability；**Pro Offer 用 `https://schema.org/PreOrder`**，description 含 "planned for future release"
+- [ ] Schema.org：Free 不写 availability；**Pro 固定用 `https://schema.org/PreOrder`**，description 含 "planned for future release"
+- [ ] OG/Twitter metadata 有独立 title/description 文案（来自 messages.json）
+- [ ] aria labels 正确（pricing table、card labels、comparison table、faq section、Pro CTA）
+- [ ] Schema product/offer name/description 来自 messages.json，不硬编码
 - [ ] Sitemap 包含 `/pricing`
 - [ ] `public/llms.txt`：同时保留 `/pricing.md` 并新增 `/pricing`
 - [ ] `public/pricing.md`：Pro features 同步补全（与页面计划一致）
