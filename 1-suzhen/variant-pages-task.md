@@ -200,7 +200,7 @@ interface ToolSectionProps {
 - Website 变体页：`<ToolSection allowedTabs={['url']} />`
 - Text 变体页：`<ToolSection allowedTabs={['text']} />`
 
-#### SEO 区块组件 — namespace prop
+#### SEO 区块组件 — namespace prop + 数据结构统一
 
 以下组件统一加 `namespace` prop：
 
@@ -210,6 +210,22 @@ interface ToolSectionProps {
 | `HowToUseSection` | server component | `'home'` | 同上 |
 | `UseCasesSection` | server component | `'home'` | 同上 |
 | `FaqSection` | client component | `'home'` | 同上 |
+
+**数据结构约定**：
+
+现有 SEO 组件使用 flat key 命名（`seoHowStatsTitle`、`seoHowStep1Title`、`seoHowUrlNote` 等），而计划翻译结构使用嵌套对象。实施时 **统一采用 flat key 风格**（保持与现有组件一致，最小化改动），不切换到嵌套对象读取。
+
+**`seoHowUrlNote` 的处理**：
+- 不直接删除该 key（组件必定读取，删 key 运行时报错）
+- 保留 key 但内容降级为通用提示，如 "Results include word frequency, keyword density, and multi-word phrases"
+- URL 模式的技术细节（robots.txt、fetch 超时等）只放在 Website 变体页的 FAQ 中
+
+**`FaqSection` 改造为动态 FAQ 数组**：
+- 当前 `FaqSection.tsx` 硬编码 `Array.from({ length: 6 })` 渲染 6 个 FAQ
+- JSON-LD 的 `FAQPage` 也硬编码 6 个问题
+- **改为从 `messages/en.json` 读取 `faq` 数组**（每个元素为 `{ question, answer }`），数量和内容由翻译文件决定
+- 首页 FAQ 改为 5 条后自动渲染 5 条，变体页也各自读自己的 FAQ 数组
+- JSON-LD 的 `mainEntity` 也从同一个 `faq` 数组生成
 
 ### 5. 翻译结构
 
@@ -274,10 +290,12 @@ interface ToolSectionProps {
 
 **变体页**使用独立 JSON-LD，所有文案来自 `messages/en.json` 的 `schema` 字段：
 - `WebApplication`（URL 指向变体页自身，offer 只写 Free）
-- `FAQPage`（用变体页 FAQ 内容）
+- `FAQPage`（从变体页的 `faq` 字符串生成 `mainEntity`）
 - **不**重复首页的 `Organization` / `WebSite`
 
-**首页** `FAQPage` schema **同步更新**为新的首页通用 FAQ 内容。
+**首页**所有 Schema 同步更新并从 `messages/en.json` 读取：
+- `FAQPage` `mainEntity` → 从新的 5 条首页 FAQ 数组生成
+- `WebApplication` offer name/description/browserRequirements → 迁移到 `messages/en.json` 的 `home.schema` 字段，改为父级表述（不再提 "Text or URL"）
 
 ### 7. CTA 链接
 
@@ -410,6 +428,7 @@ Description: Free text keyword extractor. Paste text and find keywords — best 
 - [ ] 首页 FAQPage schema 同步更新为新的通用 FAQ
 - [ ] sitemap 包含新页面，排除旧路径
 - [ ] `public/llms.txt` 已添加新页面
+- [ ] **`FaqSection` 改为动态 FAQ 数组**：首页 5 条、变体页各 5 条，从 messages.json 读取 `faq` 数组，JSON-LD `mainEntity` 同步生成
 - [ ] Lighthouse SEO score >= 90
 
 ### 首页降级
@@ -419,7 +438,7 @@ Description: Free text keyword extractor. Paste text and find keywords — best 
 - [ ] `seoHowTitle` 改为 "How the Keyword Extraction Tool Works"
 - [ ] `seoHowStep1Title` / `seoHowStep1Desc` 改为通用步骤，不提"Text tab/URL tab"
 - [ ] `seoHowToUseTitle` 改为父级表述，不提"Text or URL"
-- [ ] `seoHowUrlNote` / `seoHowTextNote` 删除或降级为通用提示
+- [ ] `seoHowUrlNote` 保留 key，内容降级为通用提示；`seoHowTextNote` 同样降级，技术细节只放在对应变体页 FAQ
 - [ ] 首页 WebApplication schema 去硬编码，offer name/description 迁至 messages.json，改为父级表述
 - [ ] Footer tagline 改为父级描述，不提"text or URL"
 - [ ] Hero 副标题去具体化
