@@ -116,19 +116,31 @@ AI 提取: SEO services (0.95, topic), keyword research (0.89, service),
 - `.category-pill` - 基础样式
 - `.category-pill.topic` / `.service` / `.industry` / `.entity`
 
-### 3.4 权限控制
+### 3.4 权限控制（Gated Tab 模式）
 
-**点击 AI Tab 时**：
+**AI Tab 改为"可点击 gated tab"，不做 disabled 灰色锁定**：
 
-| 用户状态 | 行为 |
-|----------|------|
-| 未登录 | 弹出 Clerk 登录框 |
-| 已登录但 Free | 提示 "Upgrade to Pro" + 跳转 `/pricing` |
-| Pro 用户 | 正常切换到 AI Tab |
+| 用户状态 | 点击 AI Tab 行为 |
+|----------|------------------|
+| 未登录 | 弹出 Clerk 登录弹层 |
+| 已登录 Free | 切换到 AI 面板，显示升级提示 + Pricing CTA |
+| 已登录 Pro | 显示 AI 输入框和提取按钮，正常使用 |
 
-**AI Tab 按钮状态**：
-- Free/未登录：🔒 灰色 disabled + Pro badge
-- Pro 用户：可点击，正常 Tab 样式
+**设计理由**：
+- 比 disabled 更自然，不打断用户探索流程
+- 更能转化 Pro（用户看到 AI 面板内容后再决定是否升级）
+
+**AI 面板升级提示（Free 用户）**：
+```
+┌─────────────────────────────────────────┐
+│  🔒 AI Semantic Extraction              │
+│                                         │
+│  Unlock AI-powered keyword extraction   │
+│  with semantic understanding.           │
+│                                         │
+│  [Upgrade to Pro →]                     │
+└─────────────────────────────────────────┘
+```
 
 ### 3.5 加载状态
 
@@ -143,25 +155,43 @@ Pro 用户有月配额（2000 次），结果区底部显示：
 ✨ {count} AI extractions remaining this month
 ```
 
-### 3.7 错误降级
+### 3.7 错误处理（不自动降级）
+
+**AI 失败时明确提示，让用户自己选择**：
 
 | 情况 | 处理 |
 |------|------|
-| AI 超时 | 提示 "AI extraction taking longer. Please try again." |
-| AI 错误 | 降级到普通提取 + 提示 "AI unavailable, showing basic results" |
-| 配额用尽 | 提示 "AI limit reached this month" |
+| AI 超时 | 提示 "AI extraction timed out. Please try again." + "Use basic extraction" 按钮 |
+| AI 错误 | 提示 "AI extraction failed." + "Use basic extraction" 按钮 |
+| 配额用尽 | 提示 "AI limit reached this month." |
+
+**不静默降级**：AI 结果和普通词频结果本质不同，不能自动替换。提供 "Use basic extraction" 按钮让用户主动选择。
 
 ---
 
-## 四、后端规划
+## 四、字符限制
 
-### 4.1 AI 模型选择
+| 功能 | Free | Pro |
+|------|------|-----|
+| Text/URL 提取 | 10,000 字符 | 50,000 字符 |
+| AI 提取 | - | 20,000 字符（单独限制） |
+
+**说明**：
+- 50,000 字符 ≈ 7,500-10,000 words，覆盖长博客、落地页、报告章节
+- AI 输入单独设 20,000，因 AI 成本和上下文更敏感
+- AI 仅 Pro 可用
+
+---
+
+## 五、后端规划
+
+### 5.1 AI 模型选择
 
 来自 `MVP-SPEC.md`：
 - **首选**：DeepSeek
 - **备选**：阿里云通义千问
 
-### 4.2 Prompt 设计
+### 5.2 Prompt 设计
 
 ```
 You are a keyword extraction expert. Extract the most important 
@@ -186,7 +216,7 @@ Output format:
 }
 ```
 
-### 4.3 API 设计
+### 5.3 API 设计
 
 **端点**：`POST /api/extract/ai`
 
@@ -214,17 +244,55 @@ Output format:
 5. 更新配额
 6. 返回结果
 
-### 4.4 性能指标
+### 5.4 性能指标
 
 | 指标 | 目标 |
 |------|------|
 | 响应时间 | 3-5 秒 |
 | 超时设置 | 15 秒 |
-| 月配额 | 2000 次（内部限制） |
+| 月配额 | 2,000 次（内部限制） |
+
+### 5.5 AI 配额数据库
+
+**新建 `ai_usage` 表**：
+
+```sql
+create table public.ai_usage (
+  id uuid primary key default gen_random_uuid(),
+  clerk_user_id text not null,
+  month text not null,  -- 格式: '2026-06'
+  count integer not null default 0,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  unique (clerk_user_id, month)
+);
+
+-- 索引
+create index idx_ai_usage_user_month on public.ai_usage (clerk_user_id, month);
+```
+
+**配额扣减逻辑**：
+- AI 调用成功后才扣次数
+- AI 调用失败（超时、错误）不扣次数
+- 每月 1 号重置（新建当月记录）
+
+**可选审计表（MVP 可不做）**：
+
+```sql
+create table public.ai_usage_events (
+  id uuid primary key default gen_random_uuid(),
+  clerk_user_id text not null,
+  created_at timestamptz not null default now(),
+  status text not null,  -- 'success' | 'failed' | 'timeout'
+  input_chars integer,
+  keywords_count integer,
+  error_message text
+);
+```
 
 ---
 
-## 五、新增翻译 Key
+## 六、新增翻译 Key
 
 文件：`messages/en.json`
 
@@ -240,13 +308,18 @@ Output format:
   "aiAnalyzing": "AI is analyzing",
   "aiUnavailable": "AI unavailable, showing basic results",
   "aiLimitReached": "AI limit reached this month",
-  "aiTimeout": "AI extraction taking longer. Please try again."
+  "aiTimeout": "AI extraction timed out. Please try again.",
+  "aiFailed": "AI extraction failed.",
+  "aiUseBasicExtraction": "Use basic extraction",
+  "aiUnlockTitle": "AI Semantic Extraction",
+  "aiUnlockDesc": "Unlock AI-powered keyword extraction with semantic understanding.",
+  "aiUpgradeToPro": "Upgrade to Pro →"
 }
 ```
 
 ---
 
-## 六、代码改动清单
+## 七、代码改动清单
 
 | 文件 | 改动类型 | 说明 |
 |------|----------|------|
@@ -255,10 +328,11 @@ Output format:
 | `messages/en.json` | 新增 | AI 相关翻译 |
 | `src/app/api/extract/ai/route.ts` | 新建 | AI 提取 API 端点 |
 | `src/lib/ai-extractor.ts` | 新建 | AI 调用逻辑（DeepSeek/通义千问） |
+| `supabase/ai-usage.sql` | 新建 | AI 配额数据库表 |
 
 ---
 
-## 七、参考资料
+## 八、参考资料
 
 - `1-suzhen/MVP-SPEC.md` 第 285-367 行：AI 功能规划
 - `1-suzhen/COMPETITOR-ANALYSIS.md`：QuestionDB AI Keyword Extractor 分析
@@ -266,8 +340,9 @@ Output format:
 
 ---
 
-## 八、更新日志
+## 九、更新日志
 
 | 日期 | 说明 |
 |------|------|
 | 2026-06-09 | 初版，整理前端设计、后端规划、实现要点 |
+| 2026-06-09 | 根据审核意见修订：字符限制、Gated Tab 模式、不自动降级、AI 配额数据库 |
