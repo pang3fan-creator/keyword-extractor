@@ -22,34 +22,36 @@
 
 ### 首页定位 → 父级页 "Keyword Extraction Tool"
 
-首页从"功能入口"变为"总览页"，系统性地降低精确长尾词密度：
+首页从"功能入口"变为"总览页"，系统性地降低精确长尾词密度。
 
-**需要修改的首页内容**（在 `messages/en.json` 的 `home` namespace 中）：
+**首页 H1 修改**（关键）：实际 H1 当前为 "Extract keywords from **text or URL**"，直接覆盖了变体页的长尾意图。改为 "Extract Keywords" 或 "Keyword Extraction Tool" 等更父级的表述。
+
+**首页其他需要修改的文案**（在 `messages/en.json` 的 `home` namespace 中）：
 
 | 位置 | 当前文案问题 | 改为 |
 |------|------------|------|
-| Hero title | "Keyword Extractor" | 保持，没问题（宽泛词） |
-| Hero subtitle | "Extract keywords from any **text or URL**" | 调弱，去具体化 |
+| Hero title | "Keyword Extractor" | 保持（宽泛词，没问题） |
+| H1 | "Extract keywords from **text or URL**" | 更父级表述，去掉 "text or URL" 直接暗示 |
 | Use Case 卡片 | "any webpage"、"URL extractor"、"**website keyword extractor**" | 改为通用表述，让出长尾关键词空间 |
 
 **首页 FAQ 改为通用问题**（与变体页 FAQ 完全无话题重叠）：
 
-| # | 新首页 FAQ（通用） | 对应的变体页 FAQ 话题 |
-|---|-------------------|---------------------|
+| # | 新首页 FAQ（通用） | 确保不重叠 |
+|---|-------------------|-----------|
 | 1 | Is this tool free? No signup required? | — |
 | 2 | Can I download or export the results? | — |
 | 3 | Is there an AI-powered version planned? | — |
 | 4 | What do the columns in the results table mean? | — |
-| 5 | How is my data handled? Privacy overview | 隐私话题留给变体页讲细节 |
+| 5 | Where can I find your privacy policy? | 只提隐私政策入口，具体"文本是否存储"留给 Text 页 FAQ |
 
 ### 变体页 FAQ → 专项技术细节
 
 Website 页 FAQ 只讲 URL 模式专项：
 1. What happens if the website blocks crawlers (robots.txt)?
 2. How long does it take to fetch and analyze a page?
-3. What is the maximum URL length supported?
-4. Can I extract keywords from PDF or image URLs?
-5. What content does the extractor actually analyze from the page?
+3. Can I extract keywords from PDF or image URLs?
+4. What content does the extractor actually analyze from the page?
+5. What types of webpages work best for keyword extraction?
 
 Text 页 FAQ 只讲 Text 模式专项：
 1. What is the maximum text length the tool can process?
@@ -75,9 +77,13 @@ Text 页 FAQ 只讲 Text 模式专项：
 
 每个变体页加一块首页没有的独特内容：
 
-**Website 页：** "What Gets Analyzed" 区块 — 说明提取范围（title、meta description、headings、body text、alt text），解释不分析的内容（images、PDFs、scripts、JS-rendered），以及什么 URL 适合/不适合提取。
+**Website 页 — "What Gets Analyzed" 区块**
+说明实际分析范围：页面主体可读文本（通常来自 `<main>`、`<article>`、`<body>` 区域，包含正文里的 headings、list items、段落文本）。解释不分析的内容：meta description、image alt text、PDF、图片、脚本或纯 JS 渲染内容。以及什么 URL 适合/不适合提取。
 
-**Text 页：** "How Keywords Are Ranked" 区块 — 用简单例子展示 word frequency、stop-word filtering、bigram/trigram detection 如何工作，给出一个 50 词的示例文本和它的输出结果。
+> 注意：不能写会分析 title/meta/alt，实际代码只把 `<title>` 作为 pageTitle 返回（不送进提取），实际分析的是 `main/article/body` 的可读文本内容。
+
+**Text 页 — "How Keywords Are Ranked" 区块**
+用简单例子展示 word frequency、stop-word filtering、bigram/trigram detection 如何工作。给出一个 50 词的示例文本和它的输出结果。
 
 ### 内链漏斗
 
@@ -115,7 +121,18 @@ export const dynamicParams = false;
 - 所有 URL 拼写必须使用 `buildUrl(locale, "/tools/...")`，禁止手写 `/${locale}/tools/...`
 - 未知 slug 直接 404（`dynamicParams = false`）
 
-### 2. Canonical / Hreflang / OG
+### 2. 旧路径废弃与重定向
+
+旧路径 `/extract-keywords-from-url` 和 `/extract-keywords-from-text` **废弃**，实施 **301 永久重定向**到对应新路径：
+
+| 旧路径 | 新路径 |
+|--------|-------|
+| `/extract-keywords-from-url` | `/tools/website-keyword-extractor` |
+| `/extract-keywords-from-text` | `/tools/text-keyword-extractor` |
+
+在 `proxy.ts` 中实现重定向逻辑，或通过 Vercel 的 `next.config.ts` 配置 redirects。
+
+### 3. Canonical / Hreflang / OG
 
 **关键**：`[locale]/layout.tsx` 的 canonical 固定到首页，变体页必须在 `generateMetadata` 中覆盖：
 
@@ -126,7 +143,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 ```
 
-### 3. 组件复用策略
+### 4. 组件复用策略
 
 #### ToolSection — `allowedTabs` prop
 
@@ -136,6 +153,8 @@ interface ToolSectionProps {
   allowedTabs?: TabMode[];  // 默认 ['text', 'url', 'ai']
 }
 ```
+
+**重要**：`activeTab` 初始值必须取 `allowedTabs[0]`（而非硬编码 `'text'`），且 tab 切换只能在 allowed tabs 范围内发生。
 
 - Website 变体页：`<ToolSection allowedTabs={['url']} />`
 - Text 变体页：`<ToolSection allowedTabs={['text']} />`
@@ -151,7 +170,7 @@ interface ToolSectionProps {
 | `UseCasesSection` | server component | `'home'` | 同上 |
 | `FaqSection` | client component | `'home'` | 同上 |
 
-### 4. 翻译结构
+### 5. 翻译结构
 
 ```json
 {
@@ -179,7 +198,7 @@ interface ToolSectionProps {
 }
 ```
 
-### 5. Schema 结构化数据
+### 6. Schema 结构化数据
 
 **变体页**使用独立 JSON-LD：
 - `WebApplication`（URL 指向变体页自身，offer 只写 Free）
@@ -188,24 +207,24 @@ interface ToolSectionProps {
 
 **首页** `FAQPage` schema **同步更新**为新的首页通用 FAQ 内容。
 
-### 6. CTA 链接
+### 7. CTA 链接
 
 - 变体页回首页：链接到 `/`（用 `buildUrl`），不是 `#toolArea`
 - 首页 CTA 保持 `#toolArea`（同页滚动）
 
-### 7. AI Tab 处理
+### 8. AI Tab 处理
 
 变体页彻底不渲染 AI Tab，避免混淆。
 
-### 8. Sitemap
+### 9. Sitemap
 
-更新 `src/app/sitemap.ts`，自动包含 `/tools/*` 路径。
+更新 `src/app/sitemap.ts`，自动包含 `/tools/*` 路径。旧路径不再出现在 sitemap 中。
 
-### 9. llms.txt
+### 10. llms.txt
 
 更新 `public/llms.txt`，添加新页面路径。
 
-### 10. AGENTS.md
+### 11. AGENTS.md
 
 实现后更新 Key Paths，添加：
 ```
@@ -220,8 +239,9 @@ interface ToolSectionProps {
 
 ```
 Title: Website Keyword Extractor - Extract Keywords from Public Webpages Free
-Description: Free website keyword extractor tool. Paste a public webpage URL and extract keywords instantly. Analyzes HTML content including titles, headings, and body text. No signup required.
+Description: Free website keyword extractor. Paste a public webpage URL and get keywords instantly. Analyzes page body text. No signup required.
 ```
+> Description 控制在 160 字符以内。
 
 ### 页面结构
 
@@ -230,7 +250,7 @@ Description: Free website keyword extractor tool. Paste a public webpage URL and
 | Hero | H1: Website Keyword Extractor<br>副标题: Extract keywords from any public webpage URL |
 | 工具区 | 只显示 URL Tab（不渲染 Text/AI） |
 | How it works | 1. Paste a public webpage URL → 2. We fetch & analyze the HTML → 3. Get keywords |
-| What Gets Analyzed | 说明提取范围 + 不支持的内容类型（独特内容区块） |
+| What Gets Analyzed | 说明实际分析范围 + 不支持的内容类型（独特内容区块） |
 | Use cases | Competitor analysis, Content research, SEO audit, Backlink research |
 | FAQ | 5 个问题（URL 模式专项技术细节） |
 | CTA | Link back to homepage |
@@ -255,8 +275,9 @@ Description: Free website keyword extractor tool. Paste a public webpage URL and
 
 ```
 Title: Text Keyword Extractor - Find Keywords in Any Text Free
-Description: Free text keyword extractor tool. Paste any text and find keywords — best suited for English. Supports up to 10,000 characters with word frequency and phrase detection. No signup required.
+Description: Free text keyword extractor. Paste text and find keywords — best suited for English text. Up to 10K chars with phrase detection. No signup.
 ```
+> Description 控制在 160 字符以内。
 
 ### 页面结构
 
@@ -295,27 +316,32 @@ Description: Free text keyword extractor tool. Paste any text and find keywords 
 ## 验收标准
 
 - [ ] 两个页面可正常访问（`/tools/website-keyword-extractor`、`/tools/text-keyword-extractor`）
+- [ ] 旧路径 `/extract-keywords-from-url` 和 `/extract-keywords-from-text` 301 重定向到新路径
 - [ ] 每个页面只显示对应的 Tab（URL 页面只显示 URL Tab，Text 页面只显示 Text Tab）
-- [ ] Metadata 正确（title, description, OG，<= 160 chars）
+- [ ] `allowedTabs` 实现：`activeTab` 初始值取 `allowedTabs[0]`
+- [ ] Metadata 正确（title, description <= 160 chars, OG）
 - [ ] 变体页 `generateMetadata` 正确覆盖 canonical / hreflang / OG / Twitter
 - [ ] Schema.org 结构化数据（WebApplication + FAQPage，不重复 Organization/WebSite）
 - [ ] 首页 FAQPage schema 同步更新为新的通用 FAQ
 - [ ] Footer 新增 "More Tools" 区块，内链正确
-- [ ] Sitemap 包含新页面
+- [ ] Sitemap 包含新页面，排除旧路径
 - [ ] Lighthouse SEO score >= 90
 - [ ] 移动端适配正常
 - [ ] **首页内容已降级为父级总览页**：
+  - [ ] H1 从 "Extract keywords from text or URL" 改为更父级表述
   - [ ] `seoHowTitle` 改为 "How the Keyword Extraction Tool Works"
   - [ ] Hero 副标题去具体化
   - [ ] Use Cases 去掉精确长尾词（"website keyword extractor"、"URL extractor" 等）
-  - [ ] 首页 FAQ 改为 5 个通用问题（free/export/AI planned/privacy/columns），与变体页无话题重叠
+  - [ ] 首页 FAQ 改为 5 个通用问题（free/export/AI planned/columns/privacy policy），与变体页无话题重叠
 - [ ] **变体页内容真实**：
   - [ ] Website 页写 "public webpage URL" 而非 "any URL"
+  - [ ] Website "What Gets Analyzed" 如实写（分析 `main/article/body` 可读文本，不写 meta/alt）
   - [ ] Text 页写 "best suited for English" 而非多语言支持
 - [ ] **变体页有独特内容区块**（What Gets Analyzed / How Keywords Are Ranked）
 - [ ] **未知 slug 返回 404**（访问 `/tools/whatever` → 404）
 - [ ] **`public/llms.txt` 已添加新页面**
 - [ ] **`AGENTS.md` Key Paths 已更新**
+- [ ] **`1-suzhen/SITE-STRUCTURE.md` 已更新为 /tools/* 路径**
 - [ ] **`npm run build` 通过**
 
 ---
@@ -329,4 +355,5 @@ Description: Free text keyword extractor tool. Paste any text and find keywords 
 - 所有 URL 使用 `buildUrl()`，禁止手写 `/${locale}/...`
 - AI Tab 在变体页不渲染
 - CTA 链接回首页用 `/`，不是 `#toolArea`
+- 旧路径 `/extract-keywords-from-*` 必须 301 重定向，不能遗留 dead links
 - 测试：`npm run build` 成功

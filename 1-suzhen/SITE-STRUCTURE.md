@@ -7,8 +7,8 @@
 | 页面 | URL | 目标关键词 | 说明 |
 |-----|-----|-----------|------|
 | 首页 | `/` | extract keywords | 工具 + SEO 内容 |
-| 文本提取 | `/extract-keywords-from-text` | extract keywords from text | 功能落地页 |
-| URL 提取 | `/extract-keywords-from-url` | extract keywords from url | 功能落地页 |
+| Website Keyword Extractor | `/tools/website-keyword-extractor` | website keyword extractor, extract keywords from web page | 变体页 - 取代旧 `/extract-keywords-from-url` |
+| Text Keyword Extractor | `/tools/text-keyword-extractor` | extract keywords from text, find keywords in text | 变体页 - 取代旧 `/extract-keywords-from-text` |
 | PDF 提取 | `/extract-keywords-from-pdf` | extract keywords from pdf | 差异化功能 |
 | YouTube | `/youtube-keyword-extractor` | youtube keyword extractor | 差异化功能 |
 | 定价 | `/pricing` | - | 付费方案 |
