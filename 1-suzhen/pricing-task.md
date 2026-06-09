@@ -12,8 +12,8 @@
 | 套餐 | 价格 | 结算周期 |
 |-----|------|---------|
 | Free | $0 | 永久免费 |
-| Pro | $9.99/月 | 按月订阅（planned） |
-| Pro | $99/年 | 年付（planned，省 $20，≈$8.25/月） |
+| Pro (planned) | $9.99/月 | 按月订阅 |
+| Pro (planned) | $99/年 | 年付（省 $20，≈$8.25/月） |
 
 ### 1.2 定价决策记录
 
@@ -30,13 +30,13 @@
 
 ## 二、功能矩阵
 
-| 功能 | Free | Pro（planned） |
+| 功能 | Free | Pro (planned) |
 |------|------|---------------|
 | Text 关键词提取 | ✅ | ✅ |
 | URL 关键词提取 | ✅ | ✅ |
 | 2词/3词短语 | ✅ | ✅ |
 | CSV 导出 / 复制 | ✅ | ✅ |
-| 单次输入上限 | 10,000 字符 | Unlimited |
+| 单次输入上限 | 10,000 字符 | Unlimited (planned) |
 | AI 语义提取 | — | ✨ coming soon |
 | PDF 提取 | — | planned |
 | YouTube 提取 | — | planned |
@@ -76,7 +76,7 @@
 
 | 权益 | 说明 |
 |-----|------|
-| 无限字数 | 无单次输入限制 |
+| 无限字数 | 无单次输入限制（planned） |
 | AI 语义提取 | DeepSeek 驱动（planned） |
 | PDF 提取 | 上传 PDF 提取关键词（planned） |
 | YouTube 提取 | 从视频描述和字幕提取关键词（planned） |
@@ -96,7 +96,7 @@
 
 ## 五、支付集成（后续阶段）
 
-**当前阶段（v1）：** 不接支付。Pro CTA 为低承诺动作（Coming Soon / Get Notified）。
+**当前阶段（v1）：** 不接支付。Pro CTA 为 disabled 按钮，不触发任何流程。
 
 **后续阶段（v2+）：** 待 Creem 就绪后再集成。
 
@@ -139,20 +139,20 @@
 | 设计风格 | Marketing 页风格（参照 About 页），非 Document 页 |
 | Metadata title | Pricing · ExtractKeywords — Simple, Transparent Pricing |
 | Metadata description | ExtractKeywords pricing: free and future Pro plans. Start with no signup required. (<=160 chars) |
-| Schema | `Product` + `Offer`（Pro 标注 `availability: PreOrder` 或 `limited availability`） |
+| Schema | Free: `InStock` 或不写 availability；**Pro: `https://schema.org/PreOrder`**，description 明确 "planned for future release" |
 | Sitemap | 包含 `/pricing` |
-| llms.txt | 更新为指向 `/pricing`（或保留 `/pricing.md` 视策略而定） |
+| llms.txt | **同时保留** `/pricing.md`（AI-readable 文档）和 `https://extractkeywords.com/pricing`（human-facing 页面） |
 
 ### 7.2 当前代码状态与改动清单
 
 | 项目 | 当前状态 | 需要改动 |
 |------|---------|---------|
-| Header 导航 `/pricing` | 已有链接，`isEnabled` 为 false | 在 `CENTER_LINKS` 中 `/pricing` 添加 `enabled: true`，blog 保持禁用 |
+| Header 导航 `/pricing` | 已有链接，`isEnabled` 为 false | `CENTER_LINKS` 中 `/pricing` 加 `enabled: true`，blog 保持禁用 |
 | Footer 导航 `Pricing` | `href="#"` 阻止跳转 | 改为真实链接 `/pricing` |
 | `/pricing` 页面 | **不存在** | 新建 `src/app/[locale]/pricing/page.tsx` |
-| `public/pricing.md` | 写 Pro (Planned) | 保持一致即可，无需改 |
+| `public/pricing.md` | Pro features 只列了 AI / 更高限制 / 优先 / 无限流 | 同步补全 planned features（PDF、YouTube、30天历史），或页面收窄到与它一致 — **以页面计划为准，同步更新 public/pricing.md** |
 | Creem 支付 | 未接入 | **本次不做** |
-| Clerk 用户系统 | 已接入 | 本次只用于已登录用户的识别显示 |
+| Clerk 用户系统 | 已接入 | Pricing v1 页面不显示登录状态差异，不嵌入 user button |
 
 ### 7.3 页面区块
 
@@ -160,8 +160,9 @@
 
 ```
 H1: Simple, Transparent Pricing
-副标题: Start free. Upgrade when you need it.
+副标题: Start free. Pro is planned for heavier workflows.
 ```
+> 副标题不要写 "Upgrade when you need it"（暗示可立即升级）。
 
 #### 区块 2：定价卡片
 
@@ -169,31 +170,34 @@ H1: Simple, Transparent Pricing
 - 标题：Free
 - 价格：$0 / forever
 - 特点：3-4 项核心权益
-- CTA：Get Started → 链接到首页 `#toolArea`
-- 无高亮
+- CTA：**Get Started** → 可点击，链接到首页 `#toolArea`
+- 无高亮标签
 
 **Pro 卡片：**
 - 标题：Pro
-- 价格：$9.99/mo（planned）/ $99/yr（planned）
+- 标签：**Planned**（非 Popular）
+- 价格：$9.99/mo（planned）/ $99/yr（planned），年付显示 "Save $20"
 - 特点：7 项权益列表，全部标注 planned / coming soon
-- CTA：Coming Soon（低承诺，不触发支付，不收集邮箱）
-- 高亮标签：Popular
+- CTA：**Coming Soon** → **disabled 按钮**，无点击事件，带 `aria-disabled` 属性
+- 不高亮为"Popular"，改标"Planned"
 
 #### 区块 3：功能对比表
 
-| 功能 | Free | Pro |
-|------|------|-----|
+| 功能 | Free | Pro (planned) |
+|------|------|---------------|
 | Text keyword extraction | ✅ | ✅ |
 | URL keyword extraction | ✅ | ✅ |
 | Word frequency & density | ✅ | ✅ |
 | Bigram & trigram detection | ✅ | ✅ |
 | CSV download & clipboard copy | ✅ | ✅ |
-| Character limit per submission | 10,000 characters | Unlimited |
+| Character limit per submission | 10,000 characters | Unlimited (planned) |
 | AI-powered semantic extraction | — | ✨ coming soon |
 | PDF keyword extraction | — | planned |
 | YouTube keyword extraction | — | planned |
 | 30-day extraction history | — | planned |
 | Priority support | — | planned |
+
+> 表头为 `Pro (planned)`，非裸写 `Pro`。字符限制写 `Unlimited (planned)`。
 
 #### 区块 4：FAQ
 
@@ -208,10 +212,12 @@ H1: Simple, Transparent Pricing
 #### 区块 5：底部 CTA
 
 - 标题：Not sure yet?
-- 文案：Start with the free plan — no signup, no credit card. Upgrade to Pro when it's ready.
-- 按钮：Try It Free → 链接到首页
+- 文案：Start with the free plan — no signup, no credit card. Pro is planned for when you need more.
+- 按钮：Try It Free → 可点击，链接到首页
 
 ### 7.4 翻译结构（messages/en.json）
+
+> **注意**：Pro 状态（planned/coming soon）由代码常量控制，翻译文件只放显示文本，不放 `"planned": true` 这类逻辑标记。
 
 ```json
 {
@@ -222,7 +228,7 @@ H1: Simple, Transparent Pricing
     },
     "hero": {
       "title": "Simple, Transparent Pricing",
-      "subtitle": "Start free. Upgrade when you need it."
+      "subtitle": "Start free. Pro is planned for heavier workflows."
     },
     "cards": {
       "free": {
@@ -238,17 +244,16 @@ H1: Simple, Transparent Pricing
       },
       "pro": {
         "title": "Pro",
+        "badge": "Planned",
         "priceMonthly": "$9.99",
         "priceYearly": "$99",
         "periodMonthly": "/month",
         "periodYearly": "/year",
         "saveLabel": "Save $20",
-        "badge": "Popular",
         "cta": "Coming Soon",
-        "planned": true,
         "features": [
           "Everything in Free",
-          "Unlimited character limit",
+          "Unlimited character limit (planned)",
           "AI-powered semantic extraction (coming soon)",
           "PDF keyword extraction (planned)",
           "YouTube keyword extraction (planned)",
@@ -265,12 +270,12 @@ H1: Simple, Transparent Pricing
         { "feature": "Word frequency & density", "free": true, "pro": true },
         { "feature": "Bigram & trigram detection", "free": true, "pro": true },
         { "feature": "CSV download & clipboard copy", "free": true, "pro": true },
-        { "feature": "Character limit per submission", "free": "10,000 characters", "pro": "Unlimited" },
-        { "feature": "AI-powered semantic extraction", "free": false, "pro": "coming soon" },
-        { "feature": "PDF keyword extraction", "free": false, "pro": "planned" },
-        { "feature": "YouTube keyword extraction", "free": false, "pro": "planned" },
-        { "feature": "30-day extraction history", "free": false, "pro": "planned" },
-        { "feature": "Priority support", "free": false, "pro": "planned" }
+        { "feature": "Character limit per submission", "free": "10,000 characters", "pro": "Unlimited (planned)" },
+        { "feature": "AI-powered semantic extraction", "free": false, "pro": "Coming soon" },
+        { "feature": "PDF keyword extraction", "free": false, "pro": "Planned" },
+        { "feature": "YouTube keyword extraction", "free": false, "pro": "Planned" },
+        { "feature": "30-day extraction history", "free": false, "pro": "Planned" },
+        { "feature": "Priority support", "free": false, "pro": "Planned" }
       ]
     },
     "faq": [
@@ -297,7 +302,7 @@ H1: Simple, Transparent Pricing
     ],
     "cta": {
       "title": "Not sure yet?",
-      "subtitle": "Start with the free plan — no signup, no credit card. Upgrade to Pro when it's ready.",
+      "subtitle": "Start with the free plan — no signup, no credit card. Pro is planned for when you need more.",
       "button": "Try It Free"
     }
   },
@@ -306,8 +311,6 @@ H1: Simple, Transparent Pricing
   }
 }
 ```
-
-> `nav.pricing` 已在 `messages/en.json` 中。`Header.tsx` 中 `/pricing` 添加 `enabled: true`，blog 保持 `enabled` 为 undefined（即 false）。
 
 ---
 
@@ -326,32 +329,40 @@ H1: Simple, Transparent Pricing
 - [ ] Header 中 Pricing 导航可用（`CENTER_LINKS` 中 `/pricing` 加 `enabled: true`）
 - [ ] Footer 中 Pricing 链接从 `href="#"` 改为真实路径 `/pricing`
 - [ ] Free / Pro 双卡片布局，响应式适配（桌面 + 移动端）
+- [ ] Pro 卡片标签为 "Planned"，非 "Popular"
 - [ ] 月付/年付切换正常，年付显示 "Save $20" 标签
-- [ ] Pro CTA 为低承诺 "Coming Soon"，不触发支付，不收集邮箱
-- [ ] 功能对比表渲染正确，所有行数据来自 `messages/en.json`
+- [ ] Pro CTA（Coming Soon）为 **disabled 按钮**，无点击事件，带 `aria-disabled`
+- [ ] Free CTA（Get Started）可点击，链接到首页 `#toolArea`
+- [ ] 功能对比表表头为 `Pro (planned)`，字符限制行写 `Unlimited (planned)`
 - [ ] FAQ 可以展开/收起
+- [ ] 底部 CTA 按钮链接到首页
 
 ### SEO & Schema
 
 - [ ] Metadata 正确（title, description <= 160 chars, OG, Twitter）
-- [ ] Schema.org 结构化数据（Product + Offer，Pro 标注 `availability: PreOrder` 或 equivalent）
+- [ ] Schema.org：Free Offer 用 `InStock` 或不写 availability；**Pro Offer 用 `https://schema.org/PreOrder`**，description 含 "planned for future release"
 - [ ] Sitemap 包含 `/pricing`
-- [ ] `public/llms.txt` 已添加 `/pricing`（或确认与 `/pricing.md` 的链接策略一致）
+- [ ] `public/llms.txt`：同时保留 `/pricing.md` 并新增 `/pricing`
+- [ ] `public/pricing.md`：Pro features 同步补全（与页面计划一致）
 - [ ] 浏览器验证桌面端 + 移动端截图
 
 ### 文案规范
 
 - [ ] Pro 所有未上线功能标注 planned / coming soon，不写成已可用
+- [ ] Hero 副标题不写 "Upgrade" 暗示
 - [ ] 遵循 AGENTS.md SEO 规则（AI 表述规范等）
 - [ ] 所有 UI/SEO/aria/metadata/Schema 文案来自 `messages/en.json`
+- [ ] Pro 状态（planned/coming soon）由代码常量控制，翻译文件不包含逻辑标记
 
 ---
 
 ## 九、注意事项
 
-- **Pricing v1 不接支付**，Pro CTA 为低承诺动作，不触发 Creem 或任何支付流程
+- **Pricing v1 不接支付**：Pro CTA 是 disabled 按钮，不触发任何流程
 - 设计风格参照 About 页（Marketing 风格），非 Document 页
 - `Header.tsx`：只在 `/pricing` 加 `enabled: true`，blog 保持禁用
 - `Footer.tsx` 中 Pricing 链接改为 `href="/pricing"`
+- Pricing v1 页面不显示登录状态差异，不嵌入 user button
+- `public/pricing.md` 与页面计划的 Pro features 保持一致
 - 遵循 AGENTS.md 规范
 - 最终检查：JSON 校验 → test → lint → build → 浏览器验证（桌面+移动端）

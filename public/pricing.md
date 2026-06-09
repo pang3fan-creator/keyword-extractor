@@ -14,10 +14,12 @@
 
 ## Pro (Planned)
 
-- Price: $9.99/month (billed monthly) | $99/year (billed annually)
+- Price: $9.99/month (billed monthly) | $99/year (billed annually) — planned
 - Features (planned):
-  - AI-powered semantic extraction
-  - Higher character limits
-  - Priority access
-  - No rate limiting
-- Payment processor: Creem Inc.
+  - AI-powered semantic extraction (coming soon)
+  - Higher character limits (planned)
+  - PDF keyword extraction (planned)
+  - YouTube keyword extraction (planned)
+  - 30-day extraction history (planned)
+  - Priority support (planned)
+- Payment processor: Creem Inc. (to be integrated)
