@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ClerkProvider } from '@clerk/nextjs';
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
 import messages from '../../messages/en.json';
@@ -62,7 +63,9 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <body className="bg-background text-foreground min-h-screen antialiased">{children}</body>
+      <body className="bg-background text-foreground min-h-screen antialiased">
+        <ClerkProvider>{children}</ClerkProvider>
+      </body>
     </html>
   );
 }

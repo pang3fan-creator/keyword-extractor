@@ -204,6 +204,9 @@ header .inner {
   transition: 0.15s;
   color: var(--primary);
   border: 1px solid var(--primary);
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
 }
 .nav-right .btn-login:hover {
   background: var(--accent);
@@ -217,6 +220,9 @@ header .inner {
   transition: 0.15s;
   background: var(--primary);
   color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  cursor: pointer;
+  font-family: inherit;
 }
 .nav-right .btn-signup:hover {
   opacity: 0.9;
@@ -327,6 +333,44 @@ header .inner {
   width: 16px;
   height: 16px;
   flex-shrink: 0;
+}
+.mobile-auth-actions,
+.mobile-auth-row {
+  padding: 14px 0 0;
+}
+.mobile-auth-link,
+.mobile-auth-cta {
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+}
+.mobile-overlay .mobile-auth-link {
+  display: block;
+  padding: 14px 0;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: start;
+}
+.mobile-overlay .mobile-auth-link:hover {
+  color: var(--primary);
+}
+.mobile-overlay .mobile-auth-cta {
+  display: block;
+  margin-top: 8px;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+.mobile-overlay .mobile-auth-cta:hover {
+  opacity: 0.9;
 }
 
 /* ── Container ── */

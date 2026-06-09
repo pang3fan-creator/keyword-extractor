@@ -470,6 +470,8 @@
     "centerNavigation": "Center navigation",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
+    "accountMenu": "Account menu",
+    "authActions": "Account actions",
     "login": "Login",
     "logIn": "Log in",
     "signUp": "Sign Up"

@@ -1,8 +1,24 @@
+import { clerkMiddleware } from '@clerk/nextjs/server';
 import createMiddleware from 'next-intl/middleware';
+import { NextResponse } from 'next/server';
 import { routing } from './i18n/routing';
 
-export default createMiddleware(routing);
+const handleI18nRouting = createMiddleware(routing);
+
+export default clerkMiddleware((_auth, request) => {
+  const { pathname } = request.nextUrl;
+
+  if (pathname.startsWith('/api/') || pathname.startsWith('/trpc/') || pathname.startsWith('/__clerk/')) {
+    return NextResponse.next();
+  }
+
+  return handleI18nRouting(request);
+});
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  matcher: [
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
+    '/__clerk/(.*)',
+  ],
 };

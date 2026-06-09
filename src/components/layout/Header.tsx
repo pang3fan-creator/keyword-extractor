@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -16,11 +17,11 @@ const CENTER_LINKS = [
 ] as const;
 
 export function Header() {
-  const SHOW_AUTH = false;
   const t = useTranslations('nav');
   const themeT = useTranslations('theme');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { isLoaded, isSignedIn } = useAuth();
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -64,15 +65,23 @@ export function Header() {
           <nav className="nav-right" aria-label={t('mainNavigation')}>
             <LocaleSwitcher />
             <ThemeToggle />
-            {SHOW_AUTH && (
-              <>
-                <Link href="#" className="btn-login" onClick={(e) => e.preventDefault()}>
-                  {t('logIn')}
-                </Link>
-                <Link href="#" className="btn-signup" onClick={(e) => e.preventDefault()}>
-                  {t('signUp')}
-                </Link>
-              </>
+            {isLoaded && (
+              isSignedIn ? (
+                <UserButton />
+              ) : (
+                <>
+                  <SignInButton mode="modal">
+                    <button type="button" className="btn-login">
+                      {t('logIn')}
+                    </button>
+                  </SignInButton>
+                  <SignUpButton mode="modal">
+                    <button type="button" className="btn-signup">
+                      {t('signUp')}
+                    </button>
+                  </SignUpButton>
+                </>
+              )
             )}
           </nav>
 
@@ -134,39 +143,25 @@ export function Header() {
         <div className="mobile-locale-row">
           <LocaleSwitcher variant="list" />
         </div>
-        {SHOW_AUTH && (
-          <>
-            <Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setMenuOpen(false);
-              }}
-              style={{ border: 'none', fontWeight: 600 }}
-            >
-              {t('logIn')}
-            </Link>
-            <Link
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setMenuOpen(false);
-              }}
-              style={{
-                display: 'block',
-                textAlign: 'center',
-                marginTop: 8,
-                padding: 14,
-                borderRadius: 10,
-                background: 'var(--primary)',
-                color: 'var(--primary-foreground)',
-                fontWeight: 600,
-                border: 'none',
-              }}
-            >
-              {t('signUp')}
-            </Link>
-          </>
+        {isLoaded && (
+          isSignedIn ? (
+            <div className="mobile-auth-row" aria-label={t('accountMenu')}>
+              <UserButton />
+            </div>
+          ) : (
+            <div className="mobile-auth-actions" aria-label={t('authActions')}>
+              <SignInButton mode="modal">
+                <button type="button" className="mobile-auth-link" onClick={() => setMenuOpen(false)}>
+                  {t('logIn')}
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button type="button" className="mobile-auth-cta" onClick={() => setMenuOpen(false)}>
+                  {t('signUp')}
+                </button>
+              </SignUpButton>
+            </div>
+          )
         )}
       </div>
     </>
