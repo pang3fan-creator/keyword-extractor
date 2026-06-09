@@ -1,6 +1,19 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getAuth } from '@clerk/nextjs/server';
 import { POST } from './route';
 import { resetRateLimitStore } from '@/lib/rate-limiter';
+import { hasActiveProSubscription } from '@/lib/subscription';
+
+vi.mock('@clerk/nextjs/server', () => ({
+  getAuth: vi.fn(),
+}));
+
+vi.mock('@/lib/subscription', () => ({
+  hasActiveProSubscription: vi.fn(),
+}));
+
+const mockedGetAuth = vi.mocked(getAuth);
+const mockedHasActiveProSubscription = vi.mocked(hasActiveProSubscription);
 
 function jsonRequest(body: unknown, headers?: HeadersInit) {
   return new Request('http://localhost/api/extract/text', {
@@ -12,6 +25,9 @@ function jsonRequest(body: unknown, headers?: HeadersInit) {
 
 describe('POST /api/extract/text', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
+    mockedGetAuth.mockReturnValue({ userId: null } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(false);
     resetRateLimitStore();
   });
 
@@ -45,8 +61,18 @@ describe('POST /api/extract/text', () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toEqual({
       errorCode: 'TEXT_TOO_LONG',
-      error: 'Text must be 10,000 characters or fewer.',
+      error: 'Text exceeds the allowed character limit.',
     });
+  });
+
+  it('allows Pro users to submit text above the free limit', async () => {
+    mockedGetAuth.mockReturnValue({ userId: 'user_123' } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(true);
+
+    const response = await POST(jsonRequest({ text: `keyword ${'a'.repeat(10000)}` }));
+
+    expect(response.status).toBe(200);
+    expect(mockedHasActiveProSubscription).toHaveBeenCalledWith('user_123');
   });
 
   it('rejects invalid JSON with a stable error code', async () => {

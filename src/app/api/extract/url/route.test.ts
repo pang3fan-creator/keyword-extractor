@@ -1,6 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { getAuth } from '@clerk/nextjs/server';
 import { POST } from './route';
 import { resetRateLimitStore } from '@/lib/rate-limiter';
+import { hasActiveProSubscription } from '@/lib/subscription';
+
+vi.mock('@clerk/nextjs/server', () => ({
+  getAuth: vi.fn(),
+}));
+
+vi.mock('@/lib/subscription', () => ({
+  hasActiveProSubscription: vi.fn(),
+}));
 
 vi.mock('@/lib/robots-checker', () => ({
   checkRobotsTxt: vi.fn(),
@@ -23,6 +33,8 @@ import { fetchURLContent } from '@/lib/url-fetcher';
 
 const mockedCheckRobotsTxt = vi.mocked(checkRobotsTxt);
 const mockedFetchURLContent = vi.mocked(fetchURLContent);
+const mockedGetAuth = vi.mocked(getAuth);
+const mockedHasActiveProSubscription = vi.mocked(hasActiveProSubscription);
 
 function jsonRequest(body: unknown, headers?: HeadersInit) {
   return new Request('http://localhost/api/extract/url', {
@@ -35,6 +47,8 @@ function jsonRequest(body: unknown, headers?: HeadersInit) {
 describe('POST /api/extract/url', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockedGetAuth.mockReturnValue({ userId: null } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(false);
     resetRateLimitStore();
   });
 
@@ -133,6 +147,39 @@ describe('POST /api/extract/url', () => {
       errorCode: 'EMPTY_CONTENT',
       error: 'No readable page content found.',
     });
+  });
+
+  it('rejects fetched content above the free character limit', async () => {
+    mockedCheckRobotsTxt.mockResolvedValue(true);
+    mockedFetchURLContent.mockResolvedValue({
+      success: true,
+      title: 'Long article',
+      content: 'keyword '.repeat(1500),
+    });
+
+    const response = await POST(jsonRequest({ url: 'https://example.com/long' }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      errorCode: 'TEXT_TOO_LONG',
+      error: 'Text exceeds the allowed character limit.',
+    });
+  });
+
+  it('allows Pro users to extract fetched content above the free limit', async () => {
+    mockedGetAuth.mockReturnValue({ userId: 'user_123' } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(true);
+    mockedCheckRobotsTxt.mockResolvedValue(true);
+    mockedFetchURLContent.mockResolvedValue({
+      success: true,
+      title: 'Long article',
+      content: 'keyword '.repeat(1500),
+    });
+
+    const response = await POST(jsonRequest({ url: 'https://example.com/long' }));
+
+    expect(response.status).toBe(200);
+    expect(mockedHasActiveProSubscription).toHaveBeenCalledWith('user_123');
   });
 
   it('rate limits repeated URL extraction requests from the same IP', async () => {

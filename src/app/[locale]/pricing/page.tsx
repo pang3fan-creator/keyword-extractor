@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { PricingCheckoutActions } from '@/components/billing/PricingCheckoutActions';
 import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -8,9 +9,11 @@ import { PricingFaqSection } from '@/components/seo/PricingFaqSection';
 import { createBreadcrumbList, createJsonLdGraph } from '@/lib/schema';
 import { buildUrl } from '@/lib/url';
 import { routing } from '@/i18n/routing';
+import { cn } from '@/lib/utils';
 
 type Props = {
   params: Promise<{ locale: string }>;
+  searchParams?: Promise<{ checkout?: string }>;
 };
 
 function makeAlternates(path: string) {
@@ -54,19 +57,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 type RowStyle = 'unlimited' | 'comingSoon' | 'planned';
 
-const ROW_STYLE_LOOKUP: Record<string, RowStyle> = {
-  'Character limit per submission': 'unlimited',
-  'AI-powered semantic extraction': 'comingSoon',
-  'PDF keyword extraction': 'planned',
-  'YouTube keyword extraction': 'planned',
-  '30-day extraction history': 'planned',
-  'Priority support': 'planned',
-};
-
 type ComparisonRow = {
+  key: string;
   feature: string;
   free: boolean | string;
   pro: boolean | string;
+  proStyle?: RowStyle;
+};
+
+type ProFeature = {
+  text: string;
+  status?: 'comingSoon' | 'planned';
 };
 
 type CellLabels = {
@@ -74,7 +75,6 @@ type CellLabels = {
   notAvailable: string;
   free: string;
   pro: string;
-  unlimited: string;
   planned: string;
 };
 
@@ -103,12 +103,7 @@ function renderComparisonValue(
       return <span className="pro-label">{value as string}</span>;
     }
     if (rowStyle === 'unlimited') {
-      return (
-        <>
-          <span className="pro-label">{labels.unlimited}</span>{' '}
-          <span className="pricing-label-muted">{labels.planned}</span>
-        </>
-      );
+      return <span className="pro-label">{value as string}</span>;
     }
     return <span className="cell-label">{value as string}</span>;
   }
@@ -147,10 +142,11 @@ function renderComparisonCell(
   return <td data-label={dataLabel}>{value as string}</td>;
 }
 
-export default async function PricingPage({ params }: Props) {
+export default async function PricingPage({ params, searchParams }: Props) {
   const t = await getTranslations('pricing');
   const navT = await getTranslations('nav');
   const { locale } = await params;
+  const query = await searchParams;
   const canonical = buildUrl(locale, '/pricing');
 
   const jsonLd = createJsonLdGraph([
@@ -173,7 +169,7 @@ export default async function PricingPage({ params }: Props) {
           price: '9.99',
           priceCurrency: 'USD',
           description: t('schema.proOfferDescription'),
-          availability: 'https://schema.org/PreOrder',
+          availability: 'https://schema.org/InStock',
         },
       ],
     },
@@ -185,23 +181,17 @@ export default async function PricingPage({ params }: Props) {
 
   const comparisonRows = t.raw('comparison.rows') as ComparisonRow[];
   const freeFeatures = t.raw('cards.free.features') as string[];
-  const proFeatures = t.raw('cards.pro.features') as string[];
+  const proFeatures = t.raw('cards.pro.features') as ProFeature[];
 
   const cellLabels: CellLabels = {
     included: t('comparison.included'),
     notAvailable: t('comparison.notAvailable'),
     free: t('comparison.colFree'),
     pro: t('comparison.colPro'),
-    unlimited: t('comparison.unlimitedCell'),
     planned: t('comparison.labelPlanned'),
   };
 
   const comingSoonLabel = t('comparison.labelComingSoon');
-
-  function proFeatureStatus(feature: string): RowStyle | null {
-    const clean = feature.replace(/\s*\((planned|coming soon)\)/, '').trim();
-    return ROW_STYLE_LOOKUP[clean] ?? null;
-  }
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -212,6 +202,12 @@ export default async function PricingPage({ params }: Props) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <Breadcrumbs items={[{ label: navT('home'), href: '/' }, { label: navT('pricing') }]} />
+
+        {query?.checkout === 'success' && (
+          <div className="pricing-status-message" role="status">
+            {t('checkout.success')}
+          </div>
+        )}
 
         <section className="hero">
           <h1>{t('hero.title')}</h1>
@@ -236,7 +232,7 @@ export default async function PricingPage({ params }: Props) {
               <p className="plan-desc">{t('cards.free.desc')}</p>
               <div className="price-row price-free">
                 <span className="amount">{t('cards.free.price')}</span>
-                <span className="period">/ {t('cards.free.period')}</span>
+                <span className="period">{t('cards.free.period')}</span>
               </div>
               <ul className="feature-list" aria-label={t('aria.freeFeatures')}>
                 {freeFeatures.map((feature) => (
@@ -281,21 +277,21 @@ export default async function PricingPage({ params }: Props) {
               </div>
               <ul className="feature-list" aria-label={t('aria.proFeatures')}>
                 {proFeatures.map((feature) => {
-                  const status = proFeatureStatus(feature);
+                  const status = feature.status ?? null;
                   const label =
                     status === 'comingSoon'
                       ? comingSoonLabel
                       : status === 'planned'
                         ? cellLabels.planned
                         : null;
-                  const display = label
-                    ? feature.replace(/\s*\((planned|coming soon)\)/, '')
-                    : feature;
 
                   return (
-                    <li key={feature}>
+                    <li key={feature.text}>
                       <span
-                        className={`icon ${status === 'comingSoon' ? 'pricing-icon-pro' : 'pricing-icon-check'}`}
+                        className={cn(
+                          'icon',
+                          status === 'comingSoon' ? 'pricing-icon-pro' : 'pricing-icon-check',
+                        )}
                         aria-hidden="true"
                       >
                         <svg
@@ -311,21 +307,13 @@ export default async function PricingPage({ params }: Props) {
                           <path d="M4 9l3 3 7-7" />
                         </svg>
                       </span>
-                      {display}
+                      {feature.text}
                       {label && <span className="pricing-label-muted">{label}</span>}
                     </li>
                   );
                 })}
               </ul>
-              <button
-                className="cta cta-disabled"
-                aria-label={t('aria.proCta')}
-                aria-disabled="true"
-                disabled
-                type="button"
-              >
-                {t('cards.pro.cta')}
-              </button>
+              <PricingCheckoutActions />
             </article>
           </div>
         </section>
@@ -358,10 +346,10 @@ export default async function PricingPage({ params }: Props) {
               </thead>
               <tbody>
                 {comparisonRows.map((row) => (
-                  <tr key={row.feature}>
+                  <tr key={row.key}>
                     <td>{row.feature}</td>
                     {renderComparisonCell(row.free, false, undefined, cellLabels)}
-                    {renderComparisonCell(row.pro, true, ROW_STYLE_LOOKUP[row.feature], cellLabels)}
+                    {renderComparisonCell(row.pro, true, row.proStyle, cellLabels)}
                   </tr>
                 ))}
               </tbody>
@@ -369,10 +357,8 @@ export default async function PricingPage({ params }: Props) {
           </div>
           <div className="comparison-mobile-list" aria-label={t('comparison.caption')}>
             {comparisonRows.map((row) => {
-              const rowStyle = ROW_STYLE_LOOKUP[row.feature];
-
               return (
-                <article className="comparison-mobile-row" key={row.feature}>
+                <article className="comparison-mobile-row" key={row.key}>
                   <h3>{row.feature}</h3>
                   <div className="comparison-mobile-values">
                     <div>
@@ -384,7 +370,7 @@ export default async function PricingPage({ params }: Props) {
                     <div className="comparison-mobile-pro">
                       <span className="comparison-mobile-label">{cellLabels.pro}</span>
                       <span className="comparison-mobile-value">
-                        {renderComparisonValue(row.pro, true, rowStyle, cellLabels)}
+                        {renderComparisonValue(row.pro, true, row.proStyle, cellLabels)}
                       </span>
                     </div>
                   </div>

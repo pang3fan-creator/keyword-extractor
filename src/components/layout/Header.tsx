@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { SignInButton, SignUpButton, UserButton, useAuth } from '@clerk/nextjs';
+import { CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { BillingProfilePanel } from '@/components/billing/BillingProfilePanel';
 import { cn } from '@/lib/utils';
 import { Logo } from './Logo';
 import { LocaleSwitcher } from './LocaleSwitcher';
@@ -16,9 +18,24 @@ const CENTER_LINKS = [
   { href: '/blog', key: 'blog' },
 ] as const;
 
+function BillingUserButton({ label }: { label: string }) {
+  return (
+    <UserButton>
+      <UserButton.UserProfilePage
+        label={label}
+        labelIcon={<CreditCard aria-hidden="true" size={16} />}
+        url="billing"
+      >
+        <BillingProfilePanel />
+      </UserButton.UserProfilePage>
+    </UserButton>
+  );
+}
+
 export function Header() {
   const t = useTranslations('nav');
   const themeT = useTranslations('theme');
+  const billingT = useTranslations('billing.profile');
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const { isLoaded, isSignedIn } = useAuth();
@@ -67,7 +84,7 @@ export function Header() {
             <ThemeToggle />
             {isLoaded &&
               (isSignedIn ? (
-                <UserButton />
+                <BillingUserButton label={billingT('menuLabel')} />
               ) : (
                 <>
                   <SignInButton mode="modal">
@@ -145,7 +162,7 @@ export function Header() {
         {isLoaded &&
           (isSignedIn ? (
             <div className="mobile-auth-row" aria-label={t('accountMenu')}>
-              <UserButton />
+              <BillingUserButton label={billingT('menuLabel')} />
             </div>
           ) : (
             <div className="mobile-auth-actions" aria-label={t('authActions')}>

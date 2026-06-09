@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { ExtractionResult, Phrase } from '@/types';
@@ -431,9 +432,9 @@ export function ToolSection() {
           <div className="ai-lock">
             <div className="lock-icon-big">&#x1F512;</div>
             <p>{t('aiLockedDesc')}</p>
-            <button className="btn-upgrade" type="button">
+            <Link href="/pricing" className="btn-upgrade">
               {t('upgradeToPro')}
-            </button>
+            </Link>
           </div>
         </div>
       </div>

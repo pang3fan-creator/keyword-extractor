@@ -1158,10 +1158,38 @@ tr:hover td {
   opacity: 0.85;
   text-decoration: none;
 }
+.pricing-card .cta-secondary {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--border);
+}
+.pricing-card .cta-secondary:hover {
+  border-color: oklch(from var(--primary) l c h / 0.45);
+  color: var(--primary);
+  text-decoration: none;
+}
 .pricing-card .cta-disabled {
   background: var(--border);
   color: var(--muted-foreground);
   cursor: not-allowed;
+}
+.pricing-checkout-actions,
+.billing-action-stack {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+.billing-message,
+.billing-error {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.billing-message {
+  color: var(--muted-foreground);
+}
+.billing-error {
+  color: var(--destructive);
 }
 .pricing-card .feature-list {
   list-style: none;
@@ -1374,6 +1402,124 @@ tr:hover td {
   }
 }
 
+.pricing-status-message {
+  max-width: 880px;
+  margin: 24px auto 0;
+  border: 1px solid oklch(from var(--success) l c h / 0.25);
+  border-radius: 8px;
+  background: oklch(from var(--success) l c h / 0.08);
+  color: var(--success);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ── Billing profile ── */
+.billing-profile-panel {
+  width: min(100%, 640px);
+  padding: 4px 0 24px;
+}
+.billing-profile-kicker {
+  margin: 0 0 8px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.billing-profile-panel h1 {
+  margin: 0 0 8px;
+  color: var(--foreground);
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.12;
+}
+.billing-profile-panel p {
+  max-width: 620px;
+  color: var(--muted-foreground);
+  line-height: 1.65;
+}
+.billing-profile-state {
+  margin-top: 24px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--muted-foreground);
+  padding: 12px 14px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.billing-profile-state-error {
+  border-color: oklch(from var(--destructive) l c h / 0.25);
+  background: oklch(from var(--destructive) l c h / 0.08);
+  color: var(--destructive);
+}
+.subscription-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 28px 0;
+}
+.subscription-summary > div {
+  min-height: 94px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 12px;
+}
+.subscription-label {
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.subscription-summary strong {
+  color: var(--foreground);
+  font-size: 16px;
+  line-height: 1.3;
+}
+.billing-primary-button {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 12px 18px;
+  text-decoration: none;
+}
+.billing-primary-button:hover {
+  opacity: 0.88;
+  text-decoration: none;
+}
+.billing-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+@media (max-width: 768px) {
+  .pricing-status-message {
+    margin: 20px 20px 0;
+  }
+  .billing-profile-panel h1 {
+    font-size: 24px;
+  }
+  .subscription-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Footer ── */
 footer {
   border-top: 1px solid var(--border);
@@ -1425,6 +1571,8 @@ footer ul li a:hover {
 }
 .footer-badge-rail {
   margin-top: 16px;
+  max-width: var(--max-tool);
+  margin-inline: auto;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;

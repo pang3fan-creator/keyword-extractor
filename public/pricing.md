@@ -12,14 +12,14 @@
   - No account or signup required
   - Rate-limited for fair use
 
-## Pro (Planned)
+## Pro
 
-- Price: $9.99/month (billed monthly) | $99/year (billed annually) — planned
-- Features (planned):
+- Price: $9.99/month (billed monthly) | $99/year (billed annually)
+- Features:
+  - 100,000 character limit for Text and URL keyword extraction
   - AI-powered semantic extraction (coming soon)
-  - Unlimited character limit (planned)
   - PDF keyword extraction (planned)
   - YouTube keyword extraction (planned)
   - 30-day extraction history (planned)
   - Priority support (planned)
-- Payment integration: planned for a future release with Creem Inc.
+- Payments and billing management are processed by Creem Inc.
