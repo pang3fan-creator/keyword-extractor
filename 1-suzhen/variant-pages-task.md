@@ -26,6 +26,15 @@
 
 **首页 H1 修改**（关键）：实际 H1 当前为 "Extract keywords from **text or URL**"，直接覆盖了变体页的长尾意图。改为 "Extract Keywords" 或 "Keyword Extraction Tool" 等更父级的表述。
 
+**首页 metadata 同步降级**：当前 `<title>`、description、OG/Twitter 来自 `messages/en.json` 的 `metadata` namespace，仍是 "Extract Keywords from Text & URL"。同步修改：
+
+| 字段 | 当前（需改） | 改为 |
+|------|------------|------|
+| `metadata.titleDefault` | Extract Keywords from Text & URL | Keyword Extraction Tool — Extract Keywords Online Free |
+| `metadata.description` | (当前含 text or URL 暗示) | Free keyword extraction tool. Extract keywords from any text. No signup needed. |
+| `metadata.openGraphTitle` | 同上 | Keyword Extraction Tool — Extract Keywords Free |
+| `metadata.openGraphDescription` | 同上 | Free online keyword extraction tool. Get instant keyword analysis. No signup required. |
+
 **首页其他需要修改的文案**（在 `messages/en.json` 的 `home` namespace 中）：
 
 | 位置 | 当前文案问题 | 改为 |
@@ -130,7 +139,25 @@ export const dynamicParams = false;
 | `/extract-keywords-from-url` | `/tools/website-keyword-extractor` |
 | `/extract-keywords-from-text` | `/tools/text-keyword-extractor` |
 
-在 `proxy.ts` 中实现重定向逻辑，或通过 Vercel 的 `next.config.ts` 配置 redirects。
+**实现方案**：使用 `next.config.ts` 的 `redirects()` 方法实现，不要动 `proxy.ts`（现有 Clerk + next-intl 组合逻辑不应受干扰）。
+
+```typescript
+// next.config.ts
+async redirects() {
+  return [
+    {
+      source: '/extract-keywords-from-url',
+      destination: '/tools/website-keyword-extractor',
+      permanent: true,
+    },
+    {
+      source: '/extract-keywords-from-text',
+      destination: '/tools/text-keyword-extractor',
+      permanent: true,
+    },
+  ];
+}
+```
 
 ### 3. Canonical / Hreflang / OG
 
@@ -142,6 +169,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   // 不能继承 layout.tsx 的 fallback canonical
 }
 ```
+
+**链接模式区分**：
+- **schema/canonical/sitemap**：使用 `buildUrl(locale, '/tools/...')` 生成绝对 URL
+- **UI 内链**（`<Link>`、`href`）：使用项目现有的本地化链接模式，不要全部写成绝对外链
 
 ### 4. 组件复用策略
 
@@ -172,23 +203,54 @@ interface ToolSectionProps {
 
 ### 5. 翻译结构
 
+每个变体 namespace 需要覆盖以下字段（包含 metadata/schema/cta，所有 UI 文案必须来自 `messages/en.json`）：
+
 ```json
 {
   "website-extractor": {
-    "hero": { ... },
+    "metadata": {
+      "title": "Website Keyword Extractor - Extract Keywords from Public Webpages Free",
+      "description": "Free website keyword extractor. Paste a public webpage URL and get keywords instantly. Analyzes page body text. No signup required.",
+      "openGraphTitle": "...",
+      "openGraphDescription": "..."
+    },
+    "hero": {
+      "title": "Website Keyword Extractor",
+      "subtitle": "Extract keywords from any public webpage URL"
+    },
     "howItWorks": { ... },
     "howToUse": { ... },
     "useCases": { ... },
     "whatGetsAnalyzed": { ... },
-    "faq": [ ... ]
+    "faq": [
+      { "question": "...", "answer": "..." },
+      ...
+    ],
+    "schema": {
+      "applicationName": "Website Keyword Extractor",
+      "description": "...",
+      "offerDescription": "Free online tool"
+    },
+    "cta": {
+      "backToHome": "...",
+      "tryOtherModes": "..."
+    }
   },
   "text-extractor": {
+    "metadata": {
+      "title": "Text Keyword Extractor - Find Keywords in Any Text Free",
+      "description": "Free text keyword extractor. Paste text and find keywords — best suited for English text. Up to 10K chars with phrase detection. No signup.",
+      "openGraphTitle": "...",
+      "openGraphDescription": "..."
+    },
     "hero": { ... },
     "howItWorks": { ... },
     "howToUse": { ... },
     "useCases": { ... },
     "howKeywordsRanked": { ... },
-    "faq": [ ... ]
+    "faq": [ ... ],
+    "schema": { ... },
+    "cta": { ... }
   },
   "footer": {
     "moreTools": "More Tools",
@@ -200,7 +262,7 @@ interface ToolSectionProps {
 
 ### 6. Schema 结构化数据
 
-**变体页**使用独立 JSON-LD：
+**变体页**使用独立 JSON-LD，所有文案来自 `messages/en.json` 的 `schema` 字段：
 - `WebApplication`（URL 指向变体页自身，offer 只写 Free）
 - `FAQPage`（用变体页 FAQ 内容）
 - **不**重复首页的 `Organization` / `WebSite`
@@ -209,7 +271,7 @@ interface ToolSectionProps {
 
 ### 7. CTA 链接
 
-- 变体页回首页：链接到 `/`（用 `buildUrl`），不是 `#toolArea`
+- 变体页回首页：链接到 `/`（UI 内链用项目现有本地化模式，schema/canonical 用 `buildUrl`）
 - 首页 CTA 保持 `#toolArea`（同页滚动）
 
 ### 8. AI Tab 处理
@@ -315,34 +377,58 @@ Description: Free text keyword extractor. Paste text and find keywords — best 
 
 ## 验收标准
 
+### 构建与代码检查
+
+- [ ] `python3 -m json.tool messages/en.json` — JSON 格式校验通过
+- [ ] `npm run test` — 通过
+- [ ] `npm run lint` — 通过
+- [ ] `npm run build` — 通过
+
+### 页面功能
+
 - [ ] 两个页面可正常访问（`/tools/website-keyword-extractor`、`/tools/text-keyword-extractor`）
 - [ ] 旧路径 `/extract-keywords-from-url` 和 `/extract-keywords-from-text` 301 重定向到新路径
+- [ ] 未知 slug（如 `/tools/whatever`）返回 404
 - [ ] 每个页面只显示对应的 Tab（URL 页面只显示 URL Tab，Text 页面只显示 Text Tab）
 - [ ] `allowedTabs` 实现：`activeTab` 初始值取 `allowedTabs[0]`
-- [ ] Metadata 正确（title, description <= 160 chars, OG）
+
+### SEO & Schema
+
+- [ ] Metadata 正确（title, description <= 160 chars, OG, Twitter）
 - [ ] 变体页 `generateMetadata` 正确覆盖 canonical / hreflang / OG / Twitter
-- [ ] Schema.org 结构化数据（WebApplication + FAQPage，不重复 Organization/WebSite）
+- [ ] Schema.org 渲染正确（WebApplication + FAQPage，不重复 Organization/WebSite）
 - [ ] 首页 FAQPage schema 同步更新为新的通用 FAQ
-- [ ] Footer 新增 "More Tools" 区块，内链正确
-- [ ] Sitemap 包含新页面，排除旧路径
+- [ ] sitemap 包含新页面，排除旧路径
+- [ ] `public/llms.txt` 已添加新页面
 - [ ] Lighthouse SEO score >= 90
+
+### 首页降级
+
+- [ ] H1 从 "Extract keywords from text or URL" 改为更父级表述
+- [ ] `metadata.titleDefault` / `metadata.description` / OG 同步改为父级意图
+- [ ] `seoHowTitle` 改为 "How the Keyword Extraction Tool Works"
+- [ ] Hero 副标题去具体化
+- [ ] Use Cases 去掉精确长尾词（"website keyword extractor"、"URL extractor" 等）
+- [ ] 首页 FAQ 改为 5 个通用问题（free/export/AI planned/columns/privacy policy），与变体页无话题重叠
+
+### 变体页内容真实性
+
+- [ ] Website 页写 "public webpage URL" 而非 "any URL"
+- [ ] Website "What Gets Analyzed" 如实写（分析 `main/article/body` 可读文本，不写 meta/alt）
+- [ ] Text 页写 "best suited for English" 而非多语言支持
+- [ ] 变体页有独特内容区块（What Gets Analyzed / How Keywords Are Ranked）
+
+### UI & 内链
+
+- [ ] Footer 新增 "More Tools" 区块，内链正确
+- [ ] 变体页 CTA 链接回首页，模式正确（UI 内链用本地化模式，非绝对 URL）
 - [ ] 移动端适配正常
-- [ ] **首页内容已降级为父级总览页**：
-  - [ ] H1 从 "Extract keywords from text or URL" 改为更父级表述
-  - [ ] `seoHowTitle` 改为 "How the Keyword Extraction Tool Works"
-  - [ ] Hero 副标题去具体化
-  - [ ] Use Cases 去掉精确长尾词（"website keyword extractor"、"URL extractor" 等）
-  - [ ] 首页 FAQ 改为 5 个通用问题（free/export/AI planned/columns/privacy policy），与变体页无话题重叠
-- [ ] **变体页内容真实**：
-  - [ ] Website 页写 "public webpage URL" 而非 "any URL"
-  - [ ] Website "What Gets Analyzed" 如实写（分析 `main/article/body` 可读文本，不写 meta/alt）
-  - [ ] Text 页写 "best suited for English" 而非多语言支持
-- [ ] **变体页有独特内容区块**（What Gets Analyzed / How Keywords Are Ranked）
-- [ ] **未知 slug 返回 404**（访问 `/tools/whatever` → 404）
-- [ ] **`public/llms.txt` 已添加新页面**
-- [ ] **`AGENTS.md` Key Paths 已更新**
-- [ ] **`1-suzhen/SITE-STRUCTURE.md` 已更新为 /tools/* 路径**
-- [ ] **`npm run build` 通过**
+- [ ] 浏览器验证桌面端 + 移动端截图检查
+
+### 文档更新
+
+- [ ] `AGENTS.md` Key Paths 已更新
+- [ ] `1-suzhen/SITE-STRUCTURE.md` 已更新为 `/tools/*` 路径
 
 ---
 
@@ -350,10 +436,9 @@ Description: Free text keyword extractor. Paste text and find keywords — best 
 
 - 不要复制首页内容，保证每个页面有独特价值
 - 遵循项目 AGENTS.md 规范
-- UI 文案必须来自 `messages/en.json`，不要硬编码
+- UI/SEO/metadata/Schema 文案必须来自 `messages/en.json`，不要硬编码
 - 使用 `cn()` 合并 className
-- 所有 URL 使用 `buildUrl()`，禁止手写 `/${locale}/...`
 - AI Tab 在变体页不渲染
-- CTA 链接回首页用 `/`，不是 `#toolArea`
-- 旧路径 `/extract-keywords-from-*` 必须 301 重定向，不能遗留 dead links
-- 测试：`npm run build` 成功
+- 旧路径 `/extract-keywords-from-*` 用 `next.config.ts redirects()` 301 重定向，不动 `proxy.ts`
+- schema/canonical/sitemap 用 `buildUrl()` 生成绝对 URL；UI 内链用项目现有本地化模式
+- 最终检查：JSON 校验 → test → lint → build → 浏览器验证（桌面+移动端）
