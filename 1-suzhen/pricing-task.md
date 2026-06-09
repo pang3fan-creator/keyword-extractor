@@ -1,7 +1,7 @@
 # Pricing 定价页面
 
-> 合并自 `PRICING.md`（定价方案） + `pricing-task.md`（定价页开发任务）
-> 创建日期：2026-06-09
+> **Pricing v1 定位：** 透明的定价与未来 Pro 说明页。
+> **不接支付，不超卖。** Pro 功能全部标注 planned/coming soon，等 Creem 真正就绪后再开购买入口。
 
 ---
 
@@ -9,13 +9,11 @@
 
 ### 1.1 定价层级
 
-**单层定价（MVP 阶段）：** 先上线单一 Pro 套餐，简化决策流程。后续根据数据再考虑是否增加层级。
-
 | 套餐 | 价格 | 结算周期 |
 |-----|------|---------|
 | Free | $0 | 永久免费 |
-| Pro | $9.99/月 | 按月订阅 |
-| Pro | $99/年 | 年付（省 $20，≈$8.25/月） |
+| Pro | $9.99/月 | 按月订阅（planned） |
+| Pro | $99/年 | 年付（planned，省 $20，≈$8.25/月） |
 
 ### 1.2 定价决策记录
 
@@ -32,18 +30,18 @@
 
 ## 二、功能矩阵
 
-| 功能 | Free | Pro |
-|------|------|-----|
+| 功能 | Free | Pro（planned） |
+|------|------|---------------|
 | Text 关键词提取 | ✅ | ✅ |
 | URL 关键词提取 | ✅ | ✅ |
 | 2词/3词短语 | ✅ | ✅ |
 | CSV 导出 / 复制 | ✅ | ✅ |
-| 单次输入上限 | ⚠️ 10,000 字符 | 🔓 无限 |
-| AI 语义提取 | ❌ | ✨ DeepSeek |
-| PDF 提取 | ❌ | 📄 |
-| YouTube 提取 | ❌ | 🎬 |
-| 30天提取历史 | ❌ | 📜 |
-| 优先支持 | ❌ | ⚡ |
+| 单次输入上限 | 10,000 字符 | Unlimited |
+| AI 语义提取 | — | ✨ coming soon |
+| PDF 提取 | — | planned |
+| YouTube 提取 | — | planned |
+| 30天提取历史 | — | planned |
+| 优先支持 | — | planned |
 
 ---
 
@@ -54,7 +52,7 @@
 | 项目 | 限制 |
 |-----|------|
 | 单次输入上限 | 10,000 字符 |
-| 超限提示 | "Your text exceeds 10,000 characters. Upgrade to Pro for unlimited extraction." |
+| 超限提示 | "Your text exceeds 10,000 characters." |
 
 ### 3.2 注册要求
 
@@ -66,7 +64,7 @@
 
 | 项目 | 限制 |
 |-----|------|
-| 每日请求次数 | 每 IP 每日 50 次（MVP 内存限流） |
+| 每日请求次数 | 每 IP 每日 50 次（内存限流） |
 | URL 抓取范围 | 仅支持公开可访问的 HTML 页面 |
 | URL 抓取限制 | 遵守 robots.txt，拒绝 localhost / 私网地址 |
 
@@ -74,23 +72,18 @@
 
 ## 四、Pro 版规则
 
-### 4.1 Pro 权益
+### 4.1 Pro 权益（planned，未上线）
 
 | 权益 | 说明 |
 |-----|------|
 | 无限字数 | 无单次输入限制 |
-| AI 语义提取 | DeepSeek 驱动，月上限 2000 次（内部限制） |
-| PDF 提取 | 上传 PDF 提取关键词 |
-| YouTube 提取 | 从视频描述和字幕提取关键词 |
-| 提取历史 | 30 天历史记录 |
-| 优先支持 | 优先响应客服请求 |
+| AI 语义提取 | DeepSeek 驱动（planned） |
+| PDF 提取 | 上传 PDF 提取关键词（planned） |
+| YouTube 提取 | 从视频描述和字幕提取关键词（planned） |
+| 提取历史 | 30 天历史记录（planned） |
+| 优先支持 | 优先响应客服请求（planned） |
 
-### 4.2 AI 提取限制（内部，不告知用户）
-
-- 月上限：2000 次（足够覆盖 99% 用户）
-- 超限后：降级到普通提取 + 提示 "AI limit reached this month"
-
-### 4.3 成本测算
+### 4.2 AI 成本测算（内部参考，不对外公开）
 
 | 项目 | 值 |
 |-----|------|
@@ -99,53 +92,28 @@
 | 售价 | $9.99 |
 | 利润率 | > 90% |
 
-### 4.4 订阅管理
-
-- 月付：随时取消，下月不再续费
-- 年付：随时取消，剩余时间可用至年末
-- 退款政策：7 天无理由退款
-
 ---
 
-## 五、支付集成
+## 五、支付集成（后续阶段）
+
+**当前阶段（v1）：** 不接支付。Pro CTA 为低承诺动作（Coming Soon / Get Notified）。
+
+**后续阶段（v2+）：** 待 Creem 就绪后再集成。
 
 | 项目 | 详情 |
 |-----|------|
-| 支付网关 | **Creem**（已选定） |
+| 支付网关 | Creem（已选定，未接入） |
 | 支持卡种 | Visa, MasterCard, Amex |
 | 可选方式 | PayPal |
-| 货币 | USD（后续可考虑 EUR, GBP） |
+| 货币 | USD |
 | 认证 | Clerk（已接入） |
-| 数据库 | Supabase（`subscriptions` 表已设计） |
-
-### 5.1 数据库表
-
-```sql
-CREATE TABLE subscriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
-  plan TEXT CHECK (plan IN ('free', 'pro')),
-  status TEXT CHECK (status IN ('active', 'canceled', 'expired')),
-  current_period_end TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW()
-);
-
-CREATE TABLE ai_usage (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
-  month TEXT NOT NULL,
-  count INTEGER DEFAULT 0,
-  UNIQUE(user_id, month)
-);
-```
+| 数据库 | Supabase（`subscriptions` 表已设计，未接入） |
 
 ---
 
 ## 六、未来考虑（暂不实现）
 
 ### 6.1 双层定价
-
-如果数据显示需要：
 
 | 套餐 | 价格 | 差异 |
 |-----|------|------|
@@ -170,19 +138,21 @@ CREATE TABLE ai_usage (
 | 路由 | `src/app/[locale]/pricing/page.tsx` |
 | 设计风格 | Marketing 页风格（参照 About 页），非 Document 页 |
 | Metadata title | Pricing · ExtractKeywords — Simple, Transparent Pricing |
-| Metadata description | ExtractKeywords pricing: free and Pro plans. Start with no signup required. Upgrade when you need unlimited extraction and AI. (<=160 chars) |
-| Schema | `Product` + `Offer` + `PriceSpecification` |
+| Metadata description | ExtractKeywords pricing: free and future Pro plans. Start with no signup required. (<=160 chars) |
+| Schema | `Product` + `Offer`（Pro 标注 `availability: PreOrder` 或 `limited availability`） |
+| Sitemap | 包含 `/pricing` |
+| llms.txt | 更新为指向 `/pricing`（或保留 `/pricing.md` 视策略而定） |
 
-### 7.2 当前代码状态
+### 7.2 当前代码状态与改动清单
 
-| 项目 | 状态 |
-|------|------|
-| Header 导航 `/pricing` | 已有链接占位，但 `isEnabled` 为 false（禁用状态）→ 需改为启用 |
-| Pricing 页面 | **不存在**，需新建 |
-| Creem 支付集成 | **未开始** |
-| Clerk 用户系统 | 已接入，`isSignedIn` 可用，但无登录墙 |
-| Supabase 数据库 | 已配置但未接入 |
-| `public/pricing.md` | 已有基础定价说明（用于 llms.txt） |
+| 项目 | 当前状态 | 需要改动 |
+|------|---------|---------|
+| Header 导航 `/pricing` | 已有链接，`isEnabled` 为 false | 在 `CENTER_LINKS` 中 `/pricing` 添加 `enabled: true`，blog 保持禁用 |
+| Footer 导航 `Pricing` | `href="#"` 阻止跳转 | 改为真实链接 `/pricing` |
+| `/pricing` 页面 | **不存在** | 新建 `src/app/[locale]/pricing/page.tsx` |
+| `public/pricing.md` | 写 Pro (Planned) | 保持一致即可，无需改 |
+| Creem 支付 | 未接入 | **本次不做** |
+| Clerk 用户系统 | 已接入 | 本次只用于已登录用户的识别显示 |
 
 ### 7.3 页面区块
 
@@ -193,27 +163,23 @@ H1: Simple, Transparent Pricing
 副标题: Start free. Upgrade when you need it.
 ```
 
-#### 区块 2：定价卡片（核心）
-
-**布局：** Free / Pro 并排双卡片。月付/年付切换标签。
+#### 区块 2：定价卡片
 
 **Free 卡片：**
 - 标题：Free
 - 价格：$0 / forever
-- 特点：3-4 项核心权益（Text & URL extraction, bigram/trigram, CSV download）
+- 特点：3-4 项核心权益
 - CTA：Get Started → 链接到首页 `#toolArea`
 - 无高亮
 
 **Pro 卡片：**
 - 标题：Pro
-- 价格：$9.99/mo / $99/yr（年付显示 "Save $20" 折扣标签）
-- 特点：7 项权益列表
-- CTA：Upgrade to Pro → 触发 Creem 支付流程
+- 价格：$9.99/mo（planned）/ $99/yr（planned）
+- 特点：7 项权益列表，全部标注 planned / coming soon
+- CTA：Coming Soon（低承诺，不触发支付，不收集邮箱）
 - 高亮标签：Popular
 
 #### 区块 3：功能对比表
-
-全功能行对比，行名 + Free/Pro 两列。
 
 | 功能 | Free | Pro |
 |------|------|-----|
@@ -223,26 +189,26 @@ H1: Simple, Transparent Pricing
 | Bigram & trigram detection | ✅ | ✅ |
 | CSV download & clipboard copy | ✅ | ✅ |
 | Character limit per submission | 10,000 characters | Unlimited |
-| AI-powered semantic extraction | — | ✅ |
-| PDF keyword extraction | — | ✅ |
-| YouTube keyword extraction | — | ✅ |
-| 30-day extraction history | — | ✅ |
-| Priority support | — | ✅ |
+| AI-powered semantic extraction | — | ✨ coming soon |
+| PDF keyword extraction | — | planned |
+| YouTube keyword extraction | — | planned |
+| 30-day extraction history | — | planned |
+| Priority support | — | planned |
 
 #### 区块 4：FAQ
 
-5 个问题，围绕付费订阅的常见疑虑：
+5 个问题，围绕定价与 Pro 的未来规划：
 
-1. Can I cancel my subscription anytime?
-2. What payment methods do you accept?
-3. What is your refund policy?
-4. Is my data safe with Pro?
-5. What happens when I upgrade or downgrade?
+1. Is there a Pro plan with more features?
+2. How much will Pro cost?
+3. What features will Pro include?
+4. What is the free plan limit?
+5. Do I need an account to use the tool?
 
 #### 区块 5：底部 CTA
 
 - 标题：Not sure yet?
-- 文案：Start with the free plan — no signup, no credit card. Upgrade anytime.
+- 文案：Start with the free plan — no signup, no credit card. Upgrade to Pro when it's ready.
 - 按钮：Try It Free → 链接到首页
 
 ### 7.4 翻译结构（messages/en.json）
@@ -252,7 +218,7 @@ H1: Simple, Transparent Pricing
   "pricing": {
     "metadata": {
       "title": "Pricing · ExtractKeywords — Simple, Transparent Pricing",
-      "description": "ExtractKeywords pricing: free and Pro plans. Start with no signup required. Upgrade when you need unlimited extraction and AI."
+      "description": "ExtractKeywords pricing: free and future Pro plans. Start with no signup required."
     },
     "hero": {
       "title": "Simple, Transparent Pricing",
@@ -278,15 +244,16 @@ H1: Simple, Transparent Pricing
         "periodYearly": "/year",
         "saveLabel": "Save $20",
         "badge": "Popular",
-        "cta": "Upgrade to Pro",
+        "cta": "Coming Soon",
+        "planned": true,
         "features": [
           "Everything in Free",
           "Unlimited character limit",
-          "AI-powered semantic extraction",
-          "PDF keyword extraction",
-          "YouTube keyword extraction",
-          "30-day extraction history",
-          "Priority support"
+          "AI-powered semantic extraction (coming soon)",
+          "PDF keyword extraction (planned)",
+          "YouTube keyword extraction (planned)",
+          "30-day extraction history (planned)",
+          "Priority support (planned)"
         ]
       }
     },
@@ -299,53 +266,48 @@ H1: Simple, Transparent Pricing
         { "feature": "Bigram & trigram detection", "free": true, "pro": true },
         { "feature": "CSV download & clipboard copy", "free": true, "pro": true },
         { "feature": "Character limit per submission", "free": "10,000 characters", "pro": "Unlimited" },
-        { "feature": "AI-powered semantic extraction", "free": false, "pro": true },
-        { "feature": "PDF keyword extraction", "free": false, "pro": true },
-        { "feature": "YouTube keyword extraction", "free": false, "pro": true },
-        { "feature": "30-day extraction history", "free": false, "pro": true },
-        { "feature": "Priority support", "free": false, "pro": true }
+        { "feature": "AI-powered semantic extraction", "free": false, "pro": "coming soon" },
+        { "feature": "PDF keyword extraction", "free": false, "pro": "planned" },
+        { "feature": "YouTube keyword extraction", "free": false, "pro": "planned" },
+        { "feature": "30-day extraction history", "free": false, "pro": "planned" },
+        { "feature": "Priority support", "free": false, "pro": "planned" }
       ]
     },
     "faq": [
       {
-        "question": "Can I cancel my subscription anytime?",
-        "answer": "Yes. You can cancel your Pro subscription at any time. Monthly plans stop at the end of the current billing period. Annual plans continue until the end of the paid year — no prorated refunds for partial years."
+        "question": "Is there a Pro plan with more features?",
+        "answer": "Yes, a Pro plan is planned with unlimited character limits, AI-powered keyword extraction, PDF and YouTube extraction, 30-day history, and priority support. We'll announce pricing and availability when it's ready."
       },
       {
-        "question": "What payment methods do you accept?",
-        "answer": "We accept major credit cards including Visa, MasterCard, and American Express. Payments are processed securely by Creem Inc."
+        "question": "How much will Pro cost?",
+        "answer": "Pro is planned at $9.99 per month or $99 per year (save $20). Exact pricing may change before launch."
       },
       {
-        "question": "What is your refund policy?",
-        "answer": "We offer a 7-day money-back guarantee. If you are not satisfied with Pro within 7 days of purchase, contact support for a full refund."
+        "question": "What features will Pro include?",
+        "answer": "Pro is planned to include: unlimited character limit per submission, AI-powered semantic keyword extraction using advanced language models, PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support. We'll share the final feature set closer to launch."
       },
       {
-        "question": "Is my data safe with Pro?",
-        "answer": "Yes. We process extraction requests in real time and do not store pasted text, fetched page content, submitted URLs, or extraction results. Pro users' data is handled exactly like free users' data — no logging, no storage, no third-party sharing."
+        "question": "What is the free plan limit?",
+        "answer": "The free plan supports up to 10,000 characters per submission with text and URL keyword extraction, bigram and trigram analysis, CSV download, and clipboard copy. No account or signup required."
       },
       {
-        "question": "What happens when I upgrade or downgrade?",
-        "answer": "When upgrading, Pro features are available immediately. When downgrading back to Free at the end of your billing period, your character limit reverts to 10,000 characters and Pro-only features (AI, PDF, YouTube extraction) are no longer available. Your extraction history is not retained."
+        "question": "Do I need an account to use the tool?",
+        "answer": "No. The free Text and URL extraction modes work without any account or signup. An account may be needed for future Pro features."
       }
     ],
     "cta": {
       "title": "Not sure yet?",
-      "subtitle": "Start with the free plan — no signup, no credit card. Upgrade anytime.",
+      "subtitle": "Start with the free plan — no signup, no credit card. Upgrade to Pro when it's ready.",
       "button": "Try It Free"
     }
+  },
+  "nav": {
+    "pricing": "Pricing"
   }
 }
 ```
 
-### 7.5 注意：nav.pricing 翻译键
-
-```json
-// 已在 messages/en.json 中，Header 已有 `/pricing` 链接占位
-// 实施时将 Header.tsx 中 isEnabled 改为 true 即可启用
-"nav": {
-  "pricing": "Pricing"
-}
-```
+> `nav.pricing` 已在 `messages/en.json` 中。`Header.tsx` 中 `/pricing` 添加 `enabled: true`，blog 保持 `enabled` 为 undefined（即 false）。
 
 ---
 
@@ -361,39 +323,35 @@ H1: Simple, Transparent Pricing
 ### 页面功能
 
 - [ ] `/pricing` 页面正常访问
-- [ ] Header 中 Pricing 导航链接可用（`isEnabled = true`）
+- [ ] Header 中 Pricing 导航可用（`CENTER_LINKS` 中 `/pricing` 加 `enabled: true`）
+- [ ] Footer 中 Pricing 链接从 `href="#"` 改为真实路径 `/pricing`
 - [ ] Free / Pro 双卡片布局，响应式适配（桌面 + 移动端）
 - [ ] 月付/年付切换正常，年付显示 "Save $20" 标签
+- [ ] Pro CTA 为低承诺 "Coming Soon"，不触发支付，不收集邮箱
 - [ ] 功能对比表渲染正确，所有行数据来自 `messages/en.json`
 - [ ] FAQ 可以展开/收起
-
-### 支付与用户
-
-- [ ] Free CTA（Get Started）链接到首页 `#toolArea`
-- [ ] Pro CTA（Upgrade to Pro）触发 Creem 支付流程
-- [ ] Creem 支付成功后重定向回站内
-- [ ] Creem 支付失败/取消有合理提示
-- [ ] Clerk 登录用户在 Pricing 页正确显示登录状态
 
 ### SEO & Schema
 
 - [ ] Metadata 正确（title, description <= 160 chars, OG, Twitter）
-- [ ] Schema.org 结构化数据（Product + Offer + PriceSpecification）
+- [ ] Schema.org 结构化数据（Product + Offer，Pro 标注 `availability: PreOrder` 或 equivalent）
 - [ ] Sitemap 包含 `/pricing`
-- [ ] `public/llms.txt` 已添加 `/pricing`
+- [ ] `public/llms.txt` 已添加 `/pricing`（或确认与 `/pricing.md` 的链接策略一致）
+- [ ] 浏览器验证桌面端 + 移动端截图
 
 ### 文案规范
 
-- [ ] AI 功能文案遵循 AGENTS.md 规则（planned / coming soon 等表述）
-- [ ] "free" / "pro" 大小写由翻译文件控制，非硬编码
-- [ ] 所有 UI 文案来自 `messages/en.json`
+- [ ] Pro 所有未上线功能标注 planned / coming soon，不写成已可用
+- [ ] 遵循 AGENTS.md SEO 规则（AI 表述规范等）
+- [ ] 所有 UI/SEO/aria/metadata/Schema 文案来自 `messages/en.json`
 
 ---
 
 ## 九、注意事项
 
-- 遵循项目 AGENTS.md 规范
+- **Pricing v1 不接支付**，Pro CTA 为低承诺动作，不触发 Creem 或任何支付流程
 - 设计风格参照 About 页（Marketing 风格），非 Document 页
-- 实施时需准备 Creem API key 和 webhook endpoint
-- AI 未上线时文案写 "planned" / "coming soon"，遵循 AGENTS.md SEO 规则
+- `Header.tsx`：只在 `/pricing` 加 `enabled: true`，blog 保持禁用
+- `Footer.tsx` 中 Pricing 链接改为 `href="/pricing"`
+- 遵循 AGENTS.md 规范
 - 最终检查：JSON 校验 → test → lint → build → 浏览器验证（桌面+移动端）
