@@ -118,6 +118,13 @@
     "pageNext": "Next page",
     "pageFirst": "First page",
     "pageLast": "Last page",
+    "schema": {
+      "contactType": "customer support",
+      "freeOfferName": "Free",
+      "freeOfferDescription": "Text and URL keyword extraction up to 10,000 characters per submission.",
+      "proOfferName": "Pro",
+      "proOfferDescription": "AI-powered semantic extraction, higher limits, and priority access. Planned for future release."
+    },
     "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team"
   },
   "privacy": {
@@ -501,7 +508,7 @@
         "desc": "For AI analysis and heavy workflows",
         "badge": "Planned",
         "priceMonthly": "$9.99",
-        "priceYearly": "$99.9",
+        "priceYearly": "$99",
         "periodMonthly": "/month",
         "periodYearly": "/year",
         "saveLabel": "Save $20",
@@ -554,7 +561,7 @@
       },
       {
         "question": "How much will Pro cost?",
-        "answer": "Pro is planned at $9.99 per month or $99.9 per year (save $20). Exact pricing may change before launch. We'll announce final pricing closer to launch."
+        "answer": "Pro is planned at $9.99 per month or $99 per year (save $20). Exact pricing may change before launch. We'll announce final pricing closer to launch."
       },
       {
         "question": "What features will Pro include?",
@@ -569,10 +576,11 @@
         "answer": "No. The free Text and URL extraction modes work without any account or signup. An account may be needed for future Pro features."
       }
     ],
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
     "cta": {
       "title": "Not sure yet?",
-      "subtitle": "Start with the free plan — no signup, no credit card. Pro is planned for when you need more.",
-      "button": "Try It Free"
+      "subtitleLink": "Start with the free plan",
+      "subtitleRest": " — no signup, no credit card. Pro is planned for when you need more."
     },
     "schema": {
       "productName": "ExtractKeywords Keyword Extractor",
@@ -592,6 +600,7 @@
     "about": "About",
     "mainNavigation": "Main navigation",
     "centerNavigation": "Center navigation",
+    "breadcrumbNavigation": "Breadcrumb",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
     "accountMenu": "Account menu",

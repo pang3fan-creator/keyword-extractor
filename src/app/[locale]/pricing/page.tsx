@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getTranslations } from 'next-intl/server';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { PricingFaqSection } from '@/components/seo/PricingFaqSection';
+import { createBreadcrumbList, createJsonLdGraph } from '@/lib/schema';
 import { buildUrl } from '@/lib/url';
 import { routing } from '@/i18n/routing';
 
@@ -76,6 +78,43 @@ type CellLabels = {
   planned: string;
 };
 
+function renderComparisonValue(
+  value: boolean | string,
+  isPro: boolean,
+  rowStyle: RowStyle | undefined,
+  labels: CellLabels,
+) {
+  if (value === true) {
+    return (
+      <span className="check" aria-label={labels.included}>
+        ✓
+      </span>
+    );
+  }
+  if (value === false) {
+    return (
+      <span className="dash" aria-label={labels.notAvailable}>
+        —
+      </span>
+    );
+  }
+  if (isPro && rowStyle) {
+    if (rowStyle === 'comingSoon') {
+      return <span className="pro-label">{value as string}</span>;
+    }
+    if (rowStyle === 'unlimited') {
+      return (
+        <>
+          <span className="pro-label">{labels.unlimited}</span>{' '}
+          <span className="pricing-label-muted">{labels.planned}</span>
+        </>
+      );
+    }
+    return <span className="cell-label">{value as string}</span>;
+  }
+  return value as string;
+}
+
 function renderComparisonCell(
   value: boolean | string,
   isPro: boolean,
@@ -87,40 +126,21 @@ function renderComparisonCell(
   if (value === true) {
     return (
       <td className={isPro ? 'pro-cell' : ''} data-label={dataLabel}>
-        <span className="check" aria-label={labels.included}>
-          ✓
-        </span>
+        {renderComparisonValue(value, isPro, rowStyle, labels)}
       </td>
     );
   }
   if (value === false) {
     return (
       <td className={isPro ? 'pro-cell' : ''} data-label={dataLabel}>
-        <span className="dash" aria-label={labels.notAvailable}>
-          —
-        </span>
+        {renderComparisonValue(value, isPro, rowStyle, labels)}
       </td>
     );
   }
   if (isPro && rowStyle) {
-    if (rowStyle === 'comingSoon') {
-      return (
-        <td className="pro-cell" data-label={labels.pro}>
-          <span className="pro-label">{value as string}</span>
-        </td>
-      );
-    }
-    if (rowStyle === 'unlimited') {
-      return (
-        <td className="pro-cell" data-label={labels.pro}>
-          <span className="pro-label">{labels.unlimited}</span>{' '}
-          <span className="pricing-label-muted">{labels.planned}</span>
-        </td>
-      );
-    }
     return (
       <td className="pro-cell" data-label={labels.pro}>
-        <span className="cell-label">{value as string}</span>
+        {renderComparisonValue(value, isPro, rowStyle, labels)}
       </td>
     );
   }
@@ -129,37 +149,39 @@ function renderComparisonCell(
 
 export default async function PricingPage({ params }: Props) {
   const t = await getTranslations('pricing');
+  const navT = await getTranslations('nav');
   const { locale } = await params;
   const canonical = buildUrl(locale, '/pricing');
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Product',
-        name: t('schema.productName'),
-        description: t('schema.productDescription'),
-        url: canonical,
-        offers: [
-          {
-            '@type': 'Offer',
-            name: t('schema.freeOfferName'),
-            price: '0',
-            priceCurrency: 'USD',
-            description: t('schema.freeOfferDescription'),
-          },
-          {
-            '@type': 'Offer',
-            name: t('schema.proOfferName'),
-            price: '9.99',
-            priceCurrency: 'USD',
-            description: t('schema.proOfferDescription'),
-            availability: 'https://schema.org/PreOrder',
-          },
-        ],
-      },
-    ],
-  };
+  const jsonLd = createJsonLdGraph([
+    {
+      '@type': 'Product',
+      name: t('schema.productName'),
+      description: t('schema.productDescription'),
+      url: canonical,
+      offers: [
+        {
+          '@type': 'Offer',
+          name: t('schema.freeOfferName'),
+          price: '0',
+          priceCurrency: 'USD',
+          description: t('schema.freeOfferDescription'),
+        },
+        {
+          '@type': 'Offer',
+          name: t('schema.proOfferName'),
+          price: '9.99',
+          priceCurrency: 'USD',
+          description: t('schema.proOfferDescription'),
+          availability: 'https://schema.org/PreOrder',
+        },
+      ],
+    },
+    createBreadcrumbList([
+      { name: navT('home'), url: buildUrl(locale, '/') },
+      { name: navT('pricing'), url: canonical },
+    ]),
+  ]);
 
   const comparisonRows = t.raw('comparison.rows') as ComparisonRow[];
   const freeFeatures = t.raw('cards.free.features') as string[];
@@ -189,6 +211,7 @@ export default async function PricingPage({ params }: Props) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <Breadcrumbs items={[{ label: navT('home'), href: '/' }, { label: navT('pricing') }]} />
 
         <section className="hero">
           <h1>{t('hero.title')}</h1>
@@ -308,10 +331,10 @@ export default async function PricingPage({ params }: Props) {
         </section>
 
         <section className="px-6 pb-16" aria-label={t('aria.comparisonTable')}>
-          <h2 className="mb-8 text-center text-[28px] font-bold tracking-tight">
+          <h2 className="mb-8 text-center text-[24px] font-bold tracking-[-0.03em]">
             {t('comparison.title')}
           </h2>
-          <div className="comparison-table-wrap" style={{ maxWidth: 820, margin: '0 auto' }}>
+          <div className="comparison-table-wrap" style={{ maxWidth: 880, margin: '0 auto' }}>
             <table className="comparison-table">
               <caption
                 style={{
@@ -344,27 +367,49 @@ export default async function PricingPage({ params }: Props) {
               </tbody>
             </table>
           </div>
+          <div className="comparison-mobile-list" aria-label={t('comparison.caption')}>
+            {comparisonRows.map((row) => {
+              const rowStyle = ROW_STYLE_LOOKUP[row.feature];
+
+              return (
+                <article className="comparison-mobile-row" key={row.feature}>
+                  <h3>{row.feature}</h3>
+                  <div className="comparison-mobile-values">
+                    <div>
+                      <span className="comparison-mobile-label">{cellLabels.free}</span>
+                      <span className="comparison-mobile-value">
+                        {renderComparisonValue(row.free, false, undefined, cellLabels)}
+                      </span>
+                    </div>
+                    <div className="comparison-mobile-pro">
+                      <span className="comparison-mobile-label">{cellLabels.pro}</span>
+                      <span className="comparison-mobile-value">
+                        {renderComparisonValue(row.pro, true, rowStyle, cellLabels)}
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
         </section>
 
         <section className="px-6 pb-16" aria-label={t('aria.faqSection')}>
-          <h2 className="mb-8 text-center text-[28px] font-bold tracking-tight">
+          <h2 className="mb-8 text-center text-[24px] font-bold tracking-[-0.03em]">
             {t('faqHeading')}
           </h2>
-          <div className="mx-auto max-w-[700px]">
+          <div className="mx-auto max-w-[880px]">
             <PricingFaqSection />
           </div>
         </section>
 
         <section className="bottom-cta">
-          <h2 className="mb-2.5 text-[28px] font-bold tracking-tight">{t('cta.title')}</h2>
-          <p className="mb-5">{t('cta.subtitle')}</p>
-          <Link
-            href="/#toolArea"
-            className="bg-primary text-primary-foreground inline-block rounded-[var(--radius)] px-9 py-3.5 text-base font-semibold transition hover:opacity-85"
-            style={{ color: 'var(--primary-foreground)', textDecoration: 'none' }}
-          >
-            {t('cta.button')}
-          </Link>
+          <h2 className="mb-2.5 text-[24px] font-bold tracking-[-0.03em]">{t('cta.title')}</h2>
+          <p className="mb-5">
+            <Link href="/">{t('cta.subtitleLink')}</Link>
+            {t('cta.subtitleRest')}
+          </p>
+          <p className="text-muted-foreground mt-4 text-center text-xs">{t('lastUpdated')}</p>
         </section>
       </main>
       <Footer />

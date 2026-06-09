@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json(apiError('TEXT_TOO_LONG'), { status: 400 });
   }
 
-  const rateLimit = checkRateLimit(getRateLimitKey(request));
+  const rateLimit = await checkRateLimit(getRateLimitKey(request));
   if (!rateLimit.allowed) {
     return NextResponse.json(apiError('RATE_LIMIT_EXCEEDED'), { status: 429 });
   }

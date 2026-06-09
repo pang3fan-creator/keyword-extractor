@@ -12,8 +12,10 @@ import {
   Mail,
 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { createBreadcrumbList, createJsonLdGraph } from '@/lib/schema';
 import { buildUrl } from '@/lib/url';
 import { cn } from '@/lib/utils';
 import { routing } from '@/i18n/routing';
@@ -87,21 +89,29 @@ export async function generateMetadata({
 export default async function TermsPage() {
   const t = await getTranslations('terms');
   const metadataT = await getTranslations('metadata');
+  const navT = await getTranslations('nav');
+  const canonical = buildUrl(routing.defaultLocale, '/terms');
+  const homeUrl = buildUrl(routing.defaultLocale, '/');
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebPage',
-    name: t('metadata.schemaName'),
-    description: t('metadata.schemaDescription'),
-    url: buildUrl(routing.defaultLocale, '/terms'),
-    inLanguage: 'en',
-    dateModified: new Date().toISOString().split('T')[0],
-    isPartOf: {
-      '@type': 'WebApplication',
-      name: metadataT('siteName'),
-      url: buildUrl(routing.defaultLocale, '/'),
+  const jsonLd = createJsonLdGraph([
+    {
+      '@type': 'WebPage',
+      name: t('metadata.schemaName'),
+      description: t('metadata.schemaDescription'),
+      url: canonical,
+      inLanguage: routing.defaultLocale,
+      dateModified: new Date().toISOString().split('T')[0],
+      isPartOf: {
+        '@type': 'WebApplication',
+        name: metadataT('siteName'),
+        url: homeUrl,
+      },
     },
-  };
+    createBreadcrumbList([
+      { name: navT('home'), url: homeUrl },
+      { name: navT('terms'), url: canonical },
+    ]),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -260,6 +270,13 @@ export default async function TermsPage() {
               }
             `,
           }}
+        />
+
+        <Breadcrumbs
+          items={[
+            { label: navT('home'), href: '/' },
+            { label: navT('terms') },
+          ]}
         />
 
         <section className="privacy-page-header" aria-labelledby="terms-title">

@@ -6,77 +6,79 @@ import { FaqSection } from '@/components/seo/FaqSection';
 import HowToUseSection from '@/components/seo/HowToUseSection';
 import UseCasesSection from '@/components/seo/UseCasesSection';
 import HowItWorksSection from '@/components/seo/HowItWorksSection';
+import { routing } from '@/i18n/routing';
+import { createBreadcrumbList, createJsonLdGraph } from '@/lib/schema';
+import { buildUrl } from '@/lib/url';
 
 export default async function HomePage() {
   const t = await getTranslations('home');
   const metadataT = await getTranslations('metadata');
+  const navT = await getTranslations('nav');
 
   const dateModified = new Date().toISOString().split('T')[0];
+  const homeUrl = buildUrl(routing.defaultLocale, '/');
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Organization',
-        name: metadataT('siteName'),
-        url: 'https://extractkeywords.com',
-        description: metadataT('description'),
-        logo: 'https://extractkeywords.com/og-image.png',
-        contactPoint: {
-          '@type': 'ContactPoint',
-          email: 'support@extractkeywords.com',
-          contactType: 'customer support',
+  const jsonLd = createJsonLdGraph([
+    {
+      '@type': 'Organization',
+      name: metadataT('siteName'),
+      url: homeUrl,
+      description: metadataT('description'),
+      logo: 'https://extractkeywords.com/og-image.png',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        email: 'support@extractkeywords.com',
+        contactType: t('schema.contactType'),
+      },
+    },
+    {
+      '@type': 'WebSite',
+      name: metadataT('siteName'),
+      url: homeUrl,
+      description: metadataT('description'),
+      inLanguage: routing.defaultLocale,
+    },
+    {
+      '@type': 'WebApplication',
+      name: metadataT('siteName'),
+      url: homeUrl,
+      description: metadataT('openGraphDescription'),
+      applicationCategory: 'UtilityApplication',
+      operatingSystem: 'All',
+      browserRequirements: 'Requires JavaScript',
+      inLanguage: routing.defaultLocale,
+      dateModified,
+      offers: [
+        {
+          '@type': 'Offer',
+          name: t('schema.freeOfferName'),
+          price: '0',
+          priceCurrency: 'USD',
+          description: t('schema.freeOfferDescription'),
         },
-      },
-      {
-        '@type': 'WebSite',
-        name: metadataT('siteName'),
-        url: 'https://extractkeywords.com',
-        description: metadataT('description'),
-        inLanguage: 'en',
-      },
-      {
-        '@type': 'WebApplication',
-        name: metadataT('siteName'),
-        url: 'https://extractkeywords.com',
-        description: metadataT('openGraphDescription'),
-        applicationCategory: 'UtilityApplication',
-        operatingSystem: 'All',
-        browserRequirements: 'Requires JavaScript',
-        inLanguage: 'en',
-        dateModified,
-        offers: [
-          {
-            '@type': 'Offer',
-            name: 'Free',
-            price: '0',
-            priceCurrency: 'USD',
-            description: 'Text and URL keyword extraction up to 10,000 characters per submission.',
-          },
-          {
-            '@type': 'Offer',
-            name: 'Pro',
-            price: '9.99',
-            priceCurrency: 'USD',
-            description:
-              'AI-powered semantic extraction, higher limits, and priority access. Planned for future release.',
-            availability: 'https://schema.org/PreOrder',
-          },
-        ],
-      },
-      {
-        '@type': 'FAQPage',
-        mainEntity: Array.from({ length: 6 }, (_, i) => i + 1).map((index) => ({
-          '@type': 'Question',
-          name: t(`seoFaq${index}Q` as never),
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: t(`seoFaq${index}A` as never),
-          },
-        })),
-      },
-    ],
-  };
+        {
+          '@type': 'Offer',
+          name: t('schema.proOfferName'),
+          price: '9.99',
+          priceCurrency: 'USD',
+          description: t('schema.proOfferDescription'),
+          availability: 'https://schema.org/PreOrder',
+        },
+      ],
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: Array.from({ length: 6 }, (_, i) => i + 1).map((index) => ({
+        '@type': 'Question',
+        name: t(`seoFaq${index}Q` as never),
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: t(`seoFaq${index}A` as never),
+        },
+      })),
+    },
+    createBreadcrumbList([{ name: navT('home'), url: homeUrl }]),
+  ]);
 
   return (
     <div className="flex min-h-screen flex-col">

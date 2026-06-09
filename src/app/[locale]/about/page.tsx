@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import { Breadcrumbs } from '@/components/layout/Breadcrumbs';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { createBreadcrumbList, createJsonLdGraph } from '@/lib/schema';
 import { buildUrl } from '@/lib/url';
 import { cn } from '@/lib/utils';
 import { routing } from '@/i18n/routing';
@@ -54,23 +56,29 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function AboutPage({ params }: Props) {
   const t = await getTranslations('about');
   const metadataT = await getTranslations('metadata');
+  const navT = await getTranslations('nav');
   const { locale } = await params;
   const canonical = buildUrl(locale, '/about');
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'AboutPage',
-    name: t('metadata.schemaName'),
-    description: t('metadata.schemaDescription'),
-    url: canonical,
-    inLanguage: 'en',
-    dateModified: new Date().toISOString().split('T')[0],
-    isPartOf: {
-      '@type': 'WebApplication',
-      name: metadataT('siteName'),
-      url: buildUrl(locale, '/'),
+  const jsonLd = createJsonLdGraph([
+    {
+      '@type': 'AboutPage',
+      name: t('metadata.schemaName'),
+      description: t('metadata.schemaDescription'),
+      url: canonical,
+      inLanguage: locale,
+      dateModified: new Date().toISOString().split('T')[0],
+      isPartOf: {
+        '@type': 'WebApplication',
+        name: metadataT('siteName'),
+        url: buildUrl(locale, '/'),
+      },
     },
-  };
+    createBreadcrumbList([
+      { name: navT('home'), url: buildUrl(locale, '/') },
+      { name: navT('about'), url: canonical },
+    ]),
+  ]);
 
   const principles = [
     { icon: 'sparkles', key: 'free' },
@@ -85,6 +93,12 @@ export default async function AboutPage({ params }: Props) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <Breadcrumbs
+          items={[
+            { label: navT('home'), href: '/' },
+            { label: navT('about') },
+          ]}
         />
 
         <section className="hero">

@@ -33,6 +33,8 @@ npm run test
 - 404: `src/app/not-found.tsx`
 - Layout/i18n: `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`, `src/proxy.ts`
 - UI: `src/components/ui/`, `src/components/layout/`, `src/components/extractor/`, `src/components/seo/`, `src/components/theme/`
+- Breadcrumb UI: `src/components/layout/Breadcrumbs.tsx`
+- Schema helpers: `src/lib/schema.ts`
 - Extraction backend: `src/lib/keyword-extractor.ts`, `src/lib/url-fetcher.ts`, `src/lib/robots-checker.ts`, `src/lib/rate-limiter.ts`
 - API: `src/app/api/extract/text/route.ts`, `src/app/api/extract/url/route.ts`
 - i18n text: `messages/en.json`
@@ -45,8 +47,14 @@ npm run test
 - UI/SEO/aria/metadata/Schema 文案必须来自 `messages/en.json`，不要硬编码用户可见文本。
 - 涉及 UI/UX 改动必须用浏览器验证，优先 `agent-browser`。
 - 不要改 `.opencode/*`、全局配置或无关 dirty files，除非用户明确要求。
+- 不要改 `.ccb/*` 缓存/代理状态目录；其中的 AGENTS.md 不是本项目上下文。
 - 用 `cn()` 合并动态 className，不要用模板字符串拼接 class。
 - 组件用 logical spacing `ms-*` / `me-*`，预留 RTL。
+
+## Environment
+
+- Clerk auth requires `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY`.
+- Production persistent rate limiting uses `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`; missing values fall back to memory.
 
 ## next-intl / Routing
 
@@ -64,6 +72,8 @@ npm run test
 - `seo-insight-block` 已全局废弃（CSS/组件/翻译全删），改用普通 `<p>` + Tailwind
 - 所有 `#fff` 必须用 `var(--primary-foreground)`；出现邮箱必须 `mailto:` 链接
 - Login/Signup 由 Clerk `useAuth().isLoaded`/`isSignedIn` 控制；Pricing v1 不显示登录状态差异
+- Visible breadcrumbs: use `src/components/layout/Breadcrumbs.tsx`; non-home pages show `Home / Current`, root `/` does not.
+- Breadcrumb UI must stay in sync with `createBreadcrumbList()` JSON-LD; keep one `application/ld+json` script per page.
 
 ## 页面布局模式
 
@@ -110,13 +120,14 @@ npm run test
 
 ## SEO Rules
 
-- 新页面需覆盖 metadata/schema/sitemap/llms.txt；meta description <=160 chars。建议使用 `gen-seo-page` skill 生成 page skeleton。
+- 新页面需覆盖 metadata/schema/sitemap/llms.txt；meta description <=160 chars。
 - 首页 SEO 内容不要写：TF-IDF, inverse document frequency, natural language processing, contextual relevance, semantic analysis。
 - 正确免费算法描述：word frequency, stop-word filtering, keyword density, multi-word phrase detection (bigrams/trigrams)。
 - AI 未上线时不要写：is available, is a Pro feature, will be available, AI Pro mode uses。
 - 正确 AI 表述：planned as a Pro feature, for future release, planned for a future Pro plan which may require an account。
 - 不要加 `WebSite SearchAction`，除非站内搜索真实存在。
 - 不要放 `#` 作为 SEO 内链占位；不存在的落地页不要链接。
+- Schema helpers live in `src/lib/schema.ts`; use `createJsonLdGraph()` / `createBreadcrumbList()` instead of hand-rolling page schema wrappers.
 
 ## URL Extraction
 
@@ -124,6 +135,7 @@ npm run test
 - robots.txt missing/fetch failed defaults allow; explicit Disallow blocks extraction.
 - Fetch only HTML, cap response size, extract readable main/article/body text with Cheerio.
 - API errors use `{ errorCode, error }`; frontend maps `errorCode` to i18n text.
+- Rate limiting uses async `checkRateLimit()` with Upstash REST env fallback: `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`; missing or failing Redis falls back to memory.
 
 ## Testing
 
@@ -137,6 +149,7 @@ npm run test
 - Turbopack/cache weirdness after layout/page moves: `rm -rf .next/cache`; severe cases `rm -rf .next`.
 - `agent-browser screenshot [path]`; valid flags include `--full` and `--annotate`, not `--full-page` or `--viewport`.
 - `agent-browser click` 不总是触发 React 合成事件。对 React `onClick` handler 改用 `agent-browser focus` + `agent-browser press Enter`。
+- If `agent-browser` is unavailable inside shell loops, set `AB=$(command -v agent-browser)` first and call `$AB ...`.
 
 ## Git Safety
 

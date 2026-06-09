@@ -5,9 +5,9 @@
 | Phase | 内容 | 预计工时 | 优先级 | 状态 |
 |-------|------|---------|--------|------|
 | Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
-| Phase 1 | 核心功能 | 2 天 | P0 | 🔄 进行中（免费工具主链路已完成） |
-| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | ⏳ 未开始 |
-| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 进行中（页面主体已完成，内容仍在打磨） |
+| Phase 1 | 核心功能 | 2 天 | P0 | ✅ 完成（Text/URL 提取、短语分析、CSV/clipboard、API、限流已可用） |
+| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | 🔄 部分完成（Clerk 已接入；支付/订阅/AI 待开发） |
+| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 基础完成（About/Privacy/Terms/Pricing、robots、sitemap、llms 已落地，内容持续优化） |
 | Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
 
 **MVP 上线范围：Phase 0-3**
@@ -21,32 +21,32 @@
 ~~### Task 0.3: 配置环境变量~~ ✅（.env.local + .env.example）
 ~~### Task 0.4: 配置 Vercel 部署~~ ✅（extractkeywords.com 上线）
 
-### Task 0.5: 创建基础组件结构 ⚠️ 部分完成
+### Task 0.5: 创建基础组件结构 ✅ 已完成（AI 相关后续）
 
 **输入：** Task 0.4 完成
 
 **已完成：**
 - `src/app/layout.tsx`, `[locale]/layout.tsx`, `[locale]/page.tsx`, `globals.css`
 - `src/app/[locale]/about/page.tsx` ✓
+- `src/app/[locale]/pricing/page.tsx` ✓
 - `src/app/[locale]/privacy/page.tsx` ✓
 - `src/app/[locale]/terms/page.tsx` ✓
 - `src/components/ui/` — Button, Input, Tabs, Table ✓
 - `src/components/layout/` — Header, Footer, Logo ✓（额外）
+- `src/components/extractor/ToolSection.tsx` — 文本/URL 输入、结果展示、CSV/clipboard 内联实现 ✓
 - `src/components/theme/` — ThemeProvider, ThemeToggle（额外）
 - `src/types/index.ts` ✓
 - `src/lib/utils.ts` ✓（cn 函数）
 - `src/i18n/routing.ts`, `request.ts`, `proxy.ts`（额外）
-
-**未完成/缺失：**
-- `src/app/[locale]/pricing/page.tsx` ❌
-- `src/components/extractor/` — 逻辑全部内联在 `ToolSection.tsx` 中，无独立组件文件
 - `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `robots-checker.ts` ✅
 - `src/lib/rate-limiter.ts` ✅（额外）
+
+**后续功能缺失：**
 - `src/lib/ai-extractor.ts` ❌（AI 功能未开始）
 
 ---
 
-## Phase 1: 核心功能 🔄
+## Phase 1: 核心功能 ✅
 
 ### Task 1.1: 实现关键词提取算法 ✅ 已完成
 
@@ -175,7 +175,7 @@ async function checkRobotsTxt(url: string): Promise<boolean>;
 
 ---
 
-### Task 1.5: 创建文本输入组件 ❌ 未开始（内联在 ToolSection）
+### Task 1.5: 创建文本输入组件 ✅ 已完成（内联在 ToolSection）
 
 **输入：** 无
 
@@ -198,9 +198,11 @@ export function TextInput({ onSubmit, maxLength = 10000, isLoading }: TextInputP
 - 提交按钮
 - Loading 状态
 
+> ✅ 功能已在 `src/components/extractor/ToolSection.tsx` 内联实现。当前不拆独立 `text-input.tsx`，避免为单一工具流程增加不必要组件边界。
+
 ---
 
-### Task 1.6: 创建 URL 输入组件 ❌ 未开始（内联在 ToolSection）
+### Task 1.6: 创建 URL 输入组件 ✅ 已完成（内联在 ToolSection）
 
 **输入：** 无
 
@@ -222,9 +224,11 @@ export function URLInput({ onSubmit, isLoading }: URLInputProps);
 - 提交按钮
 - Loading 状态
 
+> ✅ 功能已在 `src/components/extractor/ToolSection.tsx` 内联实现，并接入 `/api/extract/url`。当前不拆独立 `url-input.tsx`。
+
 ---
 
-### Task 1.7: 创建结果展示组件 ❌ 未开始（内联在 ToolSection）
+### Task 1.7: 创建结果展示组件 ✅ 已完成（内联在 ToolSection）
 
 **输入：** 提取结果数据
 
@@ -246,9 +250,11 @@ export function ResultsTable({ result, onExport }: ResultsTableProps);
 - 排序功能
 - 导出按钮
 
+> ✅ 结果展示、短语 Tab、表格与操作按钮已在 `src/components/extractor/ToolSection.tsx` 内联实现。当前不拆独立 `results-table.tsx`。
+
 ---
 
-### Task 1.8: 创建导出功能 ❌ 未开始（内联在 ToolSection）
+### Task 1.8: 创建导出功能 ✅ 已完成（内联在 ToolSection）
 
 **输入：** 提取结果数据
 
@@ -264,6 +270,8 @@ function copyToClipboard(result: ExtractionResult): void;
 - CSV 格式生成
 - Blob 下载
 - 剪贴板 API
+
+> ✅ CSV 下载与 clipboard copy 已在 `src/components/extractor/ToolSection.tsx` 内联实现。当前不拆独立 `src/lib/export.ts`。
 
 ---
 
@@ -349,28 +357,31 @@ async function incrementRateLimit(
 
 ---
 
-## Phase 2: 用户系统 + 支付 ⏳
+## Phase 2: 用户系统 + 支付 🔄
 
-### Task 2.1: 集成 Clerk 认证 ❌ 未开始
+### Task 2.1: 集成 Clerk 认证 ✅ 已完成
 
 **输入：** Clerk 账号
 
-**文件：** `src/middleware.ts`, `src/app/layout.tsx`
+**文件：** `src/proxy.ts`, `src/app/layout.tsx`, `src/components/layout/Header.tsx`
 
 **功能：**
 - 配置 Clerk Provider
-- 配置中间件
-- 创建登录/注册页面
+- 配置 Clerk + next-intl proxy
+- Header 接入登录/注册按钮与用户菜单
+- 使用 Clerk prebuilt modal，不新增自定义登录/注册页面
 
 **验证：** 登录/注册流程正常
 
+> ✅ 已在根 `layout.tsx` 中配置 `ClerkProvider`，在 `src/proxy.ts` 中组合 Clerk 与 next-intl，并在 Header 中接入 `SignInButton`、`SignUpButton`、`UserButton`。免费提取功能仍保持匿名可用。
+
 ---
 
-### Task 2.2: 创建 Header 组件 ⚠️ 基本完成
+### Task 2.2: 创建 Header 组件 ✅ 已完成
 
 **输入：** 无
 
-**文件：** `src/components/layout/header.tsx`
+**文件：** `src/components/layout/Header.tsx`
 
 **功能：**
 ```tsx
@@ -386,7 +397,7 @@ export function Header() {
 - Pricing 链接
 - 登录按钮 / 用户头像下拉
 
-> ⚠️ 已实现基本布局（Logo + nav + ThemeToggle + 预留认证入口），但缺少 Clerk 认证集成（无用户头像下拉、无 Auth 绑定）。
+> ✅ 已实现 Logo、导航、ThemeToggle、LocaleSwitcher、桌面/移动端登录注册入口、登录后用户菜单。Pricing 导航已启用，Blog 保持禁用占位。
 
 ---
 
@@ -471,7 +482,7 @@ export async function POST(request: Request) {
 
 ---
 
-### Task 2.7: 创建 Pricing 页面 ❌ 未开始
+### Task 2.7: 创建 Pricing 页面 ✅ 已完成（v1 信息页）
 
 **输入：** 无
 
@@ -479,9 +490,11 @@ export async function POST(request: Request) {
 
 **功能：**
 - 价格对比表
-- 月付/年付切换
-- 升级按钮
+- Free / Pro planned 方案说明
+- Pro CTA disabled，不触发支付、登录、邮箱收集或跳转
 - FAQ 部分
+
+> ✅ 已创建 `/pricing` 页面。Pricing v1 仅用于透明展示免费方案与未来 Pro 计划，不接 Creem checkout、Webhook、Supabase subscription 或 paid access gates。
 
 ---
 
@@ -518,12 +531,11 @@ function usePermissions() {
     canUseAI: boolean;
     dailyLimit: number | null;
     dailyRemaining: number;
-};
-
-> ⚠️ 已在根 `layout.tsx` 中配置 title.template、description、OG、Twitter 元数据，但为硬编码文本，未使用 `getTranslations()` 动态获取翻译。各页面（pricing/privacy/terms）因页面不存在而无元数据。
-
+  };
 }
 ```
+
+> ❌ 未开始。当前 Clerk 只提供登录状态，尚未接 Supabase subscription、Pro entitlement 或 AI 权限控制。
 
 ---
 
@@ -634,13 +646,13 @@ Sitemap: https://extractkeywords.com/sitemap.xml
 
 **功能：**
 - 动态生成 sitemap
-- 包含所有静态页面
+- 包含所有已上线静态页面
 
-> ✅ 已实现，当前包含 `/`、`/privacy`、`/terms`、`/about`，并输出 locale alternates。
+> ✅ 已实现，当前包含 `/`、`/privacy`、`/terms`、`/about`、`/pricing`，并输出 locale alternates。
 
 ---
 
-### Task 3.8: 创建 SEO 元数据 ⚠️ 部分完成
+### Task 3.8: 创建 SEO 元数据 ✅ 基础完成
 
 **输入：** 无
 
@@ -667,7 +679,22 @@ export const metadata: Metadata = {
 };
 ```
 
-> ⚠️ 根 `layout.tsx`、首页、Privacy、Terms 均已配置 metadata；但根布局仍采用静态导入 `messages/en.json` 作为默认文案，尚未做完整 locale 动态化。
+> ✅ 根 `layout.tsx`、首页、About、Privacy、Terms、Pricing 均已配置 metadata、canonical/alternates 或页面级 SEO 信息。仍需注意：根布局目前采用静态导入 `messages/en.json` 作为默认英文文案，尚未做完整 locale 动态化。
+
+---
+
+### Task 3.9: 创建 llms.txt / AI-readable pricing 文档 ✅ 已完成
+
+**输入：** 无
+
+**文件：** `public/llms.txt`, `public/pricing.md`
+
+**功能：**
+- 为 AI crawler 提供站点摘要、关键页面与 sitemap 链接
+- 提供 human-facing `/pricing` 与 AI-readable `/pricing.md`
+- 保持 Pro planned 信息与 Pricing 页面一致
+
+> ✅ 已创建 `public/llms.txt` 与 `public/pricing.md`，当前包含 `/pricing`、`/pricing.md`、`/sitemap.xml` 等关键入口。
 
 ---
 
@@ -797,12 +824,13 @@ test: 添加单元测试
 - [x] 文本提取功能正常
 - [x] URL 提取功能正常
 - [x] 2词/3词短语分析正常
-- [ ] CSV 导出正常
+- [x] CSV 导出正常
+- [x] Clipboard copy 正常
 - [x] 使用次数限制生效
 
 ### Phase 2 验收
 
-- [ ] Clerk 登录/注册正常
+- [x] Clerk 登录/注册正常
 - [ ] AI 提取功能正常
 - [ ] Creem 支付流程正常
 - [ ] 权限控制正确
@@ -810,9 +838,11 @@ test: 添加单元测试
 ### Phase 3 验收
 
 - [x] 首页渲染正常
-- [ ] SEO 内容完整
-- [ ] Schema.org 正确
+- [x] SEO 基础内容完整（首页、About、Privacy、Terms、Pricing）
+- [x] Schema.org 基础可用
+- [ ] BreadcrumbList 与统一 schema 组件仍可补充
 - [x] robots.txt/sitemap.xml 可访问
+- [x] llms.txt 与 pricing.md 可访问
 
 ---
 
