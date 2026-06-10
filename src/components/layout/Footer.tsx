@@ -67,6 +67,15 @@ const FOOTER_BADGES = [
     imageClassName: 'footer-badge-image',
     rel: 'noopener noreferrer',
   },
+  {
+    href: 'https://aidirs.best/item/extract-keywords',
+    imageSrc: 'https://aidirs.best/light.svg',
+    width: 200,
+    height: 56,
+    altKey: 'badgeAlt.aidirs',
+    imageClassName: 'footer-badge-image',
+    rel: undefined,
+  },
 ] as const;
 
 export function Footer() {
