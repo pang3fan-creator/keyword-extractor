@@ -85,15 +85,6 @@ const FOOTER_BADGES = [
     imageClassName: 'footer-badge-image',
     rel: undefined,
   },
-  {
-    href: 'https://openhunts.com',
-    imageSrc: 'https://cdn.openhunts.com/badges/club.webp',
-    width: 195,
-    height: 105,
-    altKey: 'badgeAlt.openHunts',
-    imageClassName: 'footer-badge-image',
-    rel: undefined,
-  },
 ] as const;
 
 export function Footer() {
