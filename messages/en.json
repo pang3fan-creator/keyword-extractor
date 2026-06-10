@@ -97,7 +97,12 @@
       "fetchFailed": "Unable to fetch this page. Please check the URL or paste the text directly.",
       "nonHtmlContent": "Only HTML web pages can be extracted.",
       "emptyContent": "No readable page content was found. Try pasting the text directly.",
-      "rateLimitExceeded": "Daily free extraction limit reached. Please try again tomorrow."
+      "rateLimitExceeded": "Daily free extraction limit reached. Please try again tomorrow.",
+      "proRequired": "Pro is required to use AI extraction.",
+      "aiLimitReached": "AI limit reached this month.",
+      "aiTimeout": "AI extraction timed out. Please try again.",
+      "aiFailed": "AI extraction failed.",
+      "aiConfigMissing": "AI extraction is not available right now."
     },
     "filterOneWord": "1-word",
     "filterTwoWord": "2-word",
@@ -125,7 +130,25 @@
       "proOfferName": "Pro",
       "proOfferDescription": "Higher extraction limits for Pro users. AI-powered semantic extraction is planned for future release."
     },
-    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team"
+    "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
+    "ai": {
+      "inputLabel": "AI extraction input",
+      "extract": "Extract AI Keywords",
+      "relevance": "Relevance",
+      "category": "Category",
+      "quotaRemaining": "{count} AI extractions remaining this month",
+      "analyzing": "AI is analyzing",
+      "signInTitle": "AI Semantic Extraction",
+      "signInDesc": "Sign in to access AI-powered keyword extraction.",
+      "signInButton": "Sign In",
+      "upgradeTitle": "AI Semantic Extraction",
+      "upgradeDesc": "Unlock AI-powered keyword extraction with semantic understanding.",
+      "upgradeButton": "Upgrade to Pro",
+      "useBasicExtraction": "Use basic extraction",
+      "retry": "Retry",
+      "placeholder": "Enter or paste text for AI semantic analysis...",
+      "charLimit": "20,000 character limit for AI extraction"
+    }
   },
   "privacy": {
     "title": "Privacy Policy",

@@ -28,7 +28,7 @@ export interface URLExtractionResult extends ExtractionResult {
 export interface AIKeyword {
   keyword: string;
   relevance: number;
-  category: string;
+  category: 'topic' | 'service' | 'industry' | 'entity';
 }
 
 export interface AIExtractionResult {

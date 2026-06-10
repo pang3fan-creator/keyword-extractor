@@ -17,7 +17,12 @@ export type APIErrorCode =
   | 'SUBSCRIPTION_NOT_FOUND'
   | 'PORTAL_FAILED'
   | 'WEBHOOK_SIGNATURE_INVALID'
-  | 'WEBHOOK_PROCESSING_FAILED';
+  | 'WEBHOOK_PROCESSING_FAILED'
+  | 'PRO_REQUIRED'
+  | 'AI_LIMIT_REACHED'
+  | 'AI_TIMEOUT'
+  | 'AI_FAILED'
+  | 'AI_CONFIG_MISSING';
 
 export interface APIErrorBody {
   errorCode: APIErrorCode;
@@ -44,6 +49,11 @@ export const API_ERROR_MESSAGES: Record<APIErrorCode, string> = {
   PORTAL_FAILED: 'Unable to open billing management.',
   WEBHOOK_SIGNATURE_INVALID: 'Invalid webhook signature.',
   WEBHOOK_PROCESSING_FAILED: 'Unable to process webhook.',
+  PRO_REQUIRED: 'Pro subscription is required for AI extraction.',
+  AI_LIMIT_REACHED: 'AI extraction limit reached this month.',
+  AI_TIMEOUT: 'AI extraction timed out.',
+  AI_FAILED: 'AI extraction failed.',
+  AI_CONFIG_MISSING: 'AI extraction is not configured.',
 };
 
 export function apiError(errorCode: APIErrorCode, error = API_ERROR_MESSAGES[errorCode]) {
