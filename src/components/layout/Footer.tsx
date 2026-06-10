@@ -74,7 +74,7 @@ const FOOTER_BADGES = [
     height: 56,
     altKey: 'badgeAlt.aidirs',
     imageClassName: 'footer-badge-image',
-    rel: undefined,
+    rel: 'noopener noreferrer',
   },
 ] as const;
 
