@@ -56,9 +56,9 @@
 
     "seoFaqTitle": "Frequently Asked Questions",
     "seoFaq1Q": "Is this tool really free?",
-    "seoFaq1A": "Yes, the Text and URL extraction modes are completely free. No signup or account required. AI-powered semantic extraction is planned as a Pro feature for users who need deeper contextual analysis.",
+    "seoFaq1A": "Yes, the Text and URL extraction modes are completely free. No signup or account required. AI-powered semantic extraction is available for Pro users who need deeper contextual analysis.",
     "seoFaq2Q": "How accurate is the keyword extraction?",
-    "seoFaq2A": "The tool uses word frequency, stop-word filtering, keyword density, and multi-word phrase detection (bigrams and trigrams) to identify meaningful keywords. This approach works well for most English text where keyword frequency and phrase patterns are useful. AI-powered semantic extraction, which uses contextual understanding for more nuanced results, is planned as a future Pro feature.",
+    "seoFaq2A": "The free tool uses word frequency, stop-word filtering, keyword density, and multi-word phrase detection (bigrams and trigrams) to identify meaningful keywords. Pro users can also use AI-powered semantic extraction for more nuanced, context-aware results.",
     "seoFaq3Q": "Can I extract keywords from any website?",
     "seoFaq3A": "The URL mode can extract content from most publicly accessible web pages. Some sites with paywalls, login requirements, or anti-scraping measures may not be accessible. For best results, copy the text directly and use the Text tab.",
     "seoFaq4Q": "What formats can I download the results in?",
@@ -83,9 +83,9 @@
     "seoHowPhraseDesc": "Beyond single keywords, the tool detects and ranks two-word phrases (bigrams) and three-word phrases (trigrams) that appear together. These multi-word combinations often represent more specific and valuable search terms, capturing the full context of how words are used.",
     "seoHowUrlNote": "For URL extractions, our tool fetches the publicly accessible HTML of the webpage, respects robots.txt directives, and extracts the main text content before running the same keyword analysis used in Text mode. Just paste a URL and get results instantly \u2014 no signup needed.",
     "seoFaq5Q": "What\u2019s the difference between regular and AI keyword extraction?",
-    "seoFaq5A": "Regular keyword extraction, available now for free, uses word frequency analysis, keyword density, stop-word filtering, and phrase detection (bigrams and trigrams) to identify the most common terms in your text. AI semantic extraction is planned as a Pro feature for future release. Until then, the free Text and URL modes provide keyword extraction without signup.",
+    "seoFaq5A": "Regular keyword extraction, available for free, uses word frequency analysis, keyword density, stop-word filtering, and phrase detection (bigrams and trigrams) to identify the most common terms in your text. AI semantic extraction is available for Pro users and identifies topic-level keywords with contextual understanding.",
     "seoFaq6Q": "Do I need to sign up to use the keyword extractor?",
-    "seoFaq6A": "No signup is required for the free Text and URL extraction modes. You can paste text or enter any publicly accessible URL and get keyword results instantly. AI-powered semantic extraction is planned for a future Pro plan, which may require an account. All free features will remain available without registration.",
+    "seoFaq6A": "No signup is required for the free Text and URL extraction modes. You can paste text or enter any publicly accessible URL and get keyword results instantly. A signed-in Pro account is required for AI-powered semantic extraction. All free features remain available without registration.",
     "invalidUrl": "Please enter a valid URL",
     "errors": {
       "invalidJson": "The request could not be read. Please try again.",
@@ -111,7 +111,7 @@
     "extractFailed": "Extraction failed. Please try again.",
     "noKeywordsFound": "No keywords found. Try adding more content.",
     "aiLockedBanner": "AI-Powered Extraction",
-    "aiLockedDesc": "AI-powered semantic extraction is planned for Pro users in a future release.",
+    "aiLockedDesc": "AI-powered semantic extraction is available for Pro users.",
     "aiSampleText": "Artificial intelligence is transforming how businesses operate...",
     "upgradeToPro": "View Pro options",
     "tableKeyword": "Keyword",
@@ -128,7 +128,7 @@
       "freeOfferName": "Free",
       "freeOfferDescription": "Text and URL keyword extraction up to 10,000 characters per submission.",
       "proOfferName": "Pro",
-      "proOfferDescription": "Higher extraction limits for Pro users. AI-powered semantic extraction is planned for future release."
+      "proOfferDescription": "Higher extraction limits and AI-powered semantic extraction for Pro users."
     },
     "lastUpdated": "Last updated: June 2026 \u2014 ExtractKeywords Team",
     "ai": {
@@ -338,6 +338,13 @@
           },
           {
             "cells": [
+              "DeepSeek",
+              "AI semantic keyword extraction for Pro users.",
+              "When you use AI extraction, submitted text is sent to DeepSeek for processing. ExtractKeywords does not store AI input text or AI extraction results after processing. Basic Text and URL extraction do not send submitted text to a third-party AI provider."
+            ]
+          },
+          {
+            "cells": [
               "Font files (Inter, JetBrains Mono)",
               "Typeface rendering in the browser. Font files are self-hosted and served from the same domain as the application.",
               "No external requests are made at runtime. Font files were downloaded at build time and are served directly by Vercel."
@@ -379,7 +386,7 @@
         "title": "Service Description",
         "paragraphs": [
           "ExtractKeywords offers keyword extraction by analyzing text or URL content using word frequency analysis, stop-word filtering, and multi-word phrase detection. The free tier can be used without an account or payment.",
-          "The free tier is limited to 10,000 characters per submission. Pro subscriptions increase the Text and URL extraction limit to 100,000 characters per submission. URL extraction works only on publicly accessible web pages and respects robots.txt directives. Only http and https URLs are accepted.",
+          "The free tier is limited to 10,000 characters per submission. Pro subscriptions increase the Text and URL extraction limit to 50,000 characters per submission and include AI semantic extraction up to 20,000 characters per request. URL extraction works only on publicly accessible web pages and respects robots.txt directives. Only http and https URLs are accepted.",
           "Extraction results are generated in real time and are not stored on our servers. The Service is intended for lawful purposes only."
         ]
       },
@@ -437,7 +444,8 @@
       "proFeatures": {
         "title": "Pro Features",
         "paragraphs": [
-          "Pro is a paid subscription offered at $9.99 per month or $99 per year. Pro increases the character limit for Text and URL keyword extraction while future AI, PDF, YouTube, history, and priority support features remain planned for later release.",
+          "Pro is a paid subscription offered at $9.99 per month or $99 per year. Pro increases the character limit for Text and URL keyword extraction to 50,000 characters per submission and includes AI semantic extraction up to 20,000 characters per request. Future PDF, YouTube, history, and priority support features remain planned for later release.",
+          "AI semantic extraction sends submitted text to DeepSeek for processing. We do not store your AI input text or extraction results after processing. Basic Text and URL extraction do not send submitted text to a third-party AI provider.",
           "Payments and billing management are processed by Creem Inc. Subscription access is synchronized through our payment provider and may be updated if billing status changes."
         ]
       },
@@ -561,8 +569,8 @@
         "ctaYearly": "Subscribe yearly",
         "features": [
           { "text": "Everything in Free" },
-          { "text": "100,000 character limit" },
-          { "text": "AI-powered semantic extraction", "status": "comingSoon" },
+          { "text": "50,000 character limit for Text and URL" },
+          { "text": "AI-powered semantic extraction" },
           { "text": "PDF keyword extraction", "status": "planned" },
           { "text": "YouTube keyword extraction", "status": "planned" },
           { "text": "30-day extraction history", "status": "planned" },
@@ -591,15 +599,14 @@
           "key": "limit",
           "feature": "Character limit per submission",
           "free": "10,000 characters",
-          "pro": "100,000 characters",
+          "pro": "50,000 characters",
           "proStyle": "unlimited"
         },
         {
           "key": "ai",
           "feature": "AI-powered semantic extraction",
           "free": false,
-          "pro": "Coming soon",
-          "proStyle": "comingSoon"
+          "pro": true
         },
         {
           "key": "pdf",
@@ -635,7 +642,7 @@
     "faq": [
       {
         "question": "What does Pro include today?",
-        "answer": "Pro increases the Text and URL extraction limit to 100,000 characters per submission. AI-powered semantic extraction, PDF extraction, YouTube extraction, 30-day history, and priority support remain planned for future releases."
+        "answer": "Pro increases the Text and URL extraction limit to 50,000 characters per submission and includes AI-powered semantic extraction up to 20,000 characters per request. PDF extraction, YouTube extraction, 30-day history, and priority support remain planned for future releases."
       },
       {
         "question": "How much will Pro cost?",
@@ -643,7 +650,7 @@
       },
       {
         "question": "What features will Pro include?",
-        "answer": "Pro currently includes higher Text and URL extraction limits. AI-powered semantic keyword extraction, PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support are planned future additions."
+        "answer": "Pro currently includes higher Text and URL extraction limits and AI-powered semantic keyword extraction. PDF document keyword extraction, YouTube video keyword extraction, 30-day extraction history, and priority support are planned future additions."
       },
       {
         "question": "What is the free plan limit?",
@@ -666,7 +673,7 @@
       "freeOfferName": "Free Plan",
       "freeOfferDescription": "Free keyword extraction with text and URL support, up to 10,000 characters.",
       "proOfferName": "Pro Plan",
-      "proOfferDescription": "Pro plan for ExtractKeywords with a 100,000 character limit for Text and URL keyword extraction. AI, PDF, YouTube, history, and priority support features are planned for future release."
+      "proOfferDescription": "Pro plan for ExtractKeywords with a 50,000 character limit for Text and URL keyword extraction plus AI semantic extraction. PDF, YouTube, history, and priority support features are planned for future release."
     },
     "checkout": {
       "loading": "Loading checkout...",

@@ -16,10 +16,11 @@
 
 - Price: $9.99/month (billed monthly) | $99/year (billed annually)
 - Features:
-  - 100,000 character limit for Text and URL keyword extraction
-  - AI-powered semantic extraction (coming soon)
+  - 50,000 character limit for Text and URL keyword extraction
+  - AI-powered semantic extraction up to 20,000 characters per request
   - PDF keyword extraction (planned)
   - YouTube keyword extraction (planned)
   - 30-day extraction history (planned)
   - Priority support (planned)
 - Payments and billing management are processed by Creem Inc.
+- AI semantic extraction sends submitted text to DeepSeek for processing. ExtractKeywords does not store AI input text or AI extraction results after processing.

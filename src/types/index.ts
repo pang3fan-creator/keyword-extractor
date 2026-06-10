@@ -33,4 +33,9 @@ export interface AIKeyword {
 
 export interface AIExtractionResult {
   keywords: AIKeyword[];
+  usage: {
+    remaining: number;
+    limit: number;
+    resetAt: string;
+  };
 }

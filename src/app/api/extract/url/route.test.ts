@@ -182,6 +182,25 @@ describe('POST /api/extract/url', () => {
     expect(mockedHasActiveProSubscription).toHaveBeenCalledWith('user_123');
   });
 
+  it('rejects Pro URL content above the Pro character limit', async () => {
+    mockedGetAuth.mockReturnValue({ userId: 'user_123' } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(true);
+    mockedCheckRobotsTxt.mockResolvedValue(true);
+    mockedFetchURLContent.mockResolvedValue({
+      success: true,
+      title: 'Very long article',
+      content: 'a'.repeat(50_001),
+    });
+
+    const response = await POST(jsonRequest({ url: 'https://example.com/very-long' }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      errorCode: 'TEXT_TOO_LONG',
+      error: 'Text exceeds the allowed character limit.',
+    });
+  });
+
   it('rate limits repeated URL extraction requests from the same IP', async () => {
     mockedCheckRobotsTxt.mockResolvedValue(true);
     mockedFetchURLContent.mockResolvedValue({

@@ -7,11 +7,11 @@
 - Download results as CSV or copy to clipboard
 - All features above are free, no signup required
 - Pro subscriptions increase Text and URL extraction limits
-- AI-powered semantic extraction is planned for a future Pro release
+- AI-powered semantic extraction is available for Pro users
 
 ## Pricing
 - Free: $0/month — 10,000 characters per submission, text and URL extraction, CSV export
-- Pro: $9.99/month or $99/year — 100,000 characters per Text or URL extraction
+- Pro: $9.99/month or $99/year — 50,000 characters per Text or URL extraction, plus AI semantic extraction up to 20,000 characters per request
 - Full pricing details: https://extractkeywords.com/pricing.md
 
 ## Key Pages

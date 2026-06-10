@@ -62,7 +62,7 @@ export default async function HomePage() {
           price: '9.99',
           priceCurrency: 'USD',
           description: t('schema.proOfferDescription'),
-          availability: 'https://schema.org/PreOrder',
+          availability: 'https://schema.org/InStock',
         },
       ],
     },

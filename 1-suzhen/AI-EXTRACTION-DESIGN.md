@@ -222,11 +222,11 @@ Pro 用户有月配额（2000 次），结果区底部显示：
 - AI 输入单独设 20,000，因 AI 成本和上下文更敏感
 - AI 仅 Pro 可用
 
-**需同步修改的文件**（当前项目仍是 100,000 字符）：
+**需同步修改的文件**（实现时已同步为 50,000 字符）：
 
 | 文件 | 修改内容 |
 |------|----------|
-| `src/lib/entitlements.ts` | 将 Pro 字符限制从 100,000 改为 50,000 |
+| `src/lib/entitlements.ts` | 将 Pro 字符限制同步为 50,000 |
 | `messages/en.json` | 更新字符限制相关的提示文案 |
 | `DEVELOPMENT-TASKS.md` | 更新任务中的字符限制说明 |
 | `src/app/[locale]/terms/page.tsx` | 更新 Terms 中的字符限制说明 |
@@ -287,10 +287,11 @@ const AI_RESPONSE_SCHEMA = z.object({
 ```
 
 **校验规则**：
-- `keyword`：非空字符串，最大 100 字符
-- `relevance`：0-1 之间的数值，超出范围则 clamp
-- `category`：仅允许四个枚举值，其他值默认为 `topic`
-- `keywords` 数组：最多 20 个元素
+- 先 normalize 模型输出，再用 schema 校验，避免模型轻微格式偏差直接导致失败
+- `keyword`：trim 后非空，最大 100 字符
+- `relevance`：转换为数字后 clamp 到 0-1
+- `category`：仅允许四个枚举值；其他值归一为 `topic`
+- `keywords` 数组：去重后最多保留 20 个元素
 
 ### 5.3 API 设计
 
@@ -328,9 +329,9 @@ const AI_RESPONSE_SCHEMA = z.object({
 **处理流程**：
 1. 检查用户登录状态
 2. 检查用户订阅状态（Pro）
-3. 检查 AI 使用配额
+3. 原子 reserve AI 使用额度
 4. 执行 AI 提取
-5. 更新配额
+5. 成功则保留额度消耗；失败或超时则 refund
 6. 返回结果
 
 ### 5.4 性能指标
@@ -383,18 +384,20 @@ create table public.ai_usage (
 create index idx_ai_usage_user_month on public.ai_usage (clerk_user_id, month);
 ```
 
-**配额扣减逻辑**：
-- AI 调用成功后才扣次数
-- AI 调用失败（超时、错误）不扣次数
+**配额逻辑**：
+- AI 调用前先原子 reserve 1 次额度，避免并发请求同时通过检查后打爆模型成本
+- AI 调用成功后保留本次消耗
+- AI 调用失败（超时、模型错误、解析失败）后 refund 本次 reserve
 - 每月 1 号重置（新建当月记录）
 
 **并发安全**：
-- 使用 Supabase RPC 或 SQL transaction 做原子扣减
+- 使用 Supabase RPC 或 SQL transaction 做原子 reserve/refund
 - 避免"同时检查都有额度，最后超扣"的问题
+- 行不存在时先 `insert ... on conflict do nothing`，再 `select ... for update`，避免并发首个请求撞唯一约束
 
-**原子扣减示例（Supabase RPC）**：
+**原子 reserve 示例（Supabase RPC）**：
 ```sql
-create or replace function decrement_ai_quota(
+create or replace function reserve_ai_usage(
   p_user_id text,
   p_month text
 ) returns json as $$
@@ -402,25 +405,23 @@ declare
   v_current_count integer;
   v_limit integer := 2000;
 begin
+  -- 确保当月记录存在；并发时由 unique(clerk_user_id, month) 兜底
+  insert into ai_usage (clerk_user_id, month, count)
+  values (p_user_id, p_month, 0)
+  on conflict (clerk_user_id, month) do nothing;
+
   -- 获取当前计数（加锁）
   select count into v_current_count
   from ai_usage
   where clerk_user_id = p_user_id and month = p_month
   for update;
 
-  -- 不存在则创建
-  if v_current_count is null then
-    insert into ai_usage (clerk_user_id, month, count)
-    values (p_user_id, p_month, 0);
-    v_current_count := 0;
-  end if;
-
   -- 检查配额
   if v_current_count >= v_limit then
     return json_build_object('success', false, 'reason', 'limit_reached');
   end if;
 
-  -- 原子扣减
+  -- 原子 reserve
   update ai_usage
   set count = count + 1, updated_at = now()
   where clerk_user_id = p_user_id and month = p_month;
@@ -429,6 +430,20 @@ begin
     'success', true,
     'remaining', v_limit - v_current_count - 1
   );
+end;
+$$ language plpgsql;
+```
+
+**失败 refund 示例（Supabase RPC）**：
+```sql
+create or replace function refund_ai_usage(
+  p_user_id text,
+  p_month text
+) returns void as $$
+begin
+  update ai_usage
+  set count = greatest(count - 1, 0), updated_at = now()
+  where clerk_user_id = p_user_id and month = p_month;
 end;
 $$ language plpgsql;
 ```
@@ -453,26 +468,7 @@ create table public.ai_usage_events (
 
 文件：`messages/en.json`
 
-```json
-{
-  "aiRelevance": "Relevance",
-  "aiCategory": "Category",
-  "aiCategoryTopic": "Topic",
-  "aiCategoryService": "Service",
-  "aiCategoryIndustry": "Industry",
-  "aiCategoryEntity": "Entity",
-  "aiQuotaRemaining": "{count} AI extractions remaining this month",
-  "aiAnalyzing": "AI is analyzing",
-  "aiUnavailable": "AI unavailable, showing basic results",
-  "aiLimitReached": "AI limit reached this month",
-  "aiTimeout": "AI extraction timed out. Please try again.",
-  "aiFailed": "AI extraction failed.",
-  "aiUseBasicExtraction": "Use basic extraction",
-  "aiUnlockTitle": "AI Semantic Extraction",
-  "aiUnlockDesc": "Unlock AI-powered keyword extraction with semantic understanding.",
-  "aiUpgradeToPro": "Upgrade to Pro →"
-}
-```
+翻译 key 不使用平铺结构，按现有 `useTranslations('home')` 习惯放入 `home.ai.*` 与 `home.errors.*`。具体结构见第七节“翻译结构建议”。
 
 ---
 
@@ -490,16 +486,16 @@ create table public.ai_usage_events (
 - 明确告知用户：AI 提取功能会将提交的文本发送给第三方 AI 服务提供商
 - 数据存储策略：输入文本和提取结果是否存储、存储时长
 - 第三方处理：列出 AI provider（DeepSeek/通义千问）及其隐私政策链接
-- 用户控制：用户可选择使用普通提取（本地处理）而非 AI 提取
+- 用户控制：用户可选择使用普通提取（不发送给第三方 AI provider）而非 AI 提取
 
 **建议文案**（Privacy 页面新增段落）：
 ```
 AI Semantic Extraction: When you use our AI-powered keyword extraction 
 feature, your submitted text is sent to our AI service provider 
 (DeepSeek or Alibaba Tongyi Qianwen) for processing. We do not store 
-your input text or extraction results after processing. You may choose 
-to use our basic extraction feature, which processes your text locally 
-without third-party involvement.
+your input text or extraction results after processing. You may choose
+to use our basic extraction feature, which processes your text without
+sending it to a third-party AI provider.
 ```
 
 ---
@@ -510,10 +506,45 @@ without third-party involvement.
 |------|----------|------|
 | `src/components/extractor/ToolSection.tsx` | 修改 | AI Tab 激活逻辑、新结果表格、权限判断 |
 | `src/app/globals.css` | 新增 | Relevance 进度条、Category pill、加载动画样式 |
-| `messages/en.json` | 新增 | AI 相关翻译 |
+| `messages/en.json` | 修改 | AI 相关翻译，建议放在 `home.ai.*` 与 `home.errors.*` |
+| `.env.example` | 修改 | 新增 AI provider 配置示例 |
 | `src/app/api/extract/ai/route.ts` | 新建 | AI 提取 API 端点 |
 | `src/lib/ai-extractor.ts` | 新建 | AI 调用逻辑（DeepSeek/通义千问） |
 | `supabase/ai-usage.sql` | 新建 | AI 配额数据库表 |
+
+**环境变量**：
+```bash
+DEEPSEEK_API_KEY=
+TONGYI_API_KEY=
+AI_PROVIDER=deepseek
+AI_REQUEST_TIMEOUT_MS=15000
+AI_MONTHLY_LIMIT=2000
+```
+
+**翻译结构建议**：
+```json
+{
+  "home": {
+    "ai": {
+      "relevance": "Relevance",
+      "category": "Category",
+      "quotaRemaining": "{count} AI extractions remaining this month",
+      "analyzing": "AI is analyzing",
+      "useBasicExtraction": "Use basic extraction",
+      "unlockTitle": "AI Semantic Extraction",
+      "unlockDesc": "Unlock AI-powered keyword extraction with semantic understanding.",
+      "upgradeToPro": "Upgrade to Pro"
+    },
+    "errors": {
+      "proRequired": "Pro is required to use AI extraction.",
+      "aiLimitReached": "AI limit reached this month.",
+      "aiTimeout": "AI extraction timed out. Please try again.",
+      "aiFailed": "AI extraction failed.",
+      "aiConfigMissing": "AI extraction is not configured yet."
+    }
+  }
+}
+```
 
 ---
 
@@ -532,3 +563,4 @@ without third-party involvement.
 | 2026-06-09 | 初版，整理前端设计、后端规划、实现要点 |
 | 2026-06-09 | 根据审核意见修订：字符限制、Gated Tab 模式、不自动降级、AI 配额数据库 |
 | 2026-06-09 | 第二轮修订：修复"任意长度"矛盾、补充字符限制同步清单、隐私条款更新、并发安全原子扣减、API 配额返回、错误码定义、Prompt schema 校验、移动端表格设计 |
+| 2026-06-09 | 第三轮修订：配额改为 reserve/refund，修复 RPC 并发空行问题，补充环境变量、翻译结构与隐私文案 |

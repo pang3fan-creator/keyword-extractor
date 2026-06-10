@@ -75,6 +75,19 @@ describe('POST /api/extract/text', () => {
     expect(mockedHasActiveProSubscription).toHaveBeenCalledWith('user_123');
   });
 
+  it('rejects Pro text above the Pro character limit', async () => {
+    mockedGetAuth.mockReturnValue({ userId: 'user_123' } as ReturnType<typeof getAuth>);
+    mockedHasActiveProSubscription.mockResolvedValue(true);
+
+    const response = await POST(jsonRequest({ text: 'a'.repeat(50_001) }));
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({
+      errorCode: 'TEXT_TOO_LONG',
+      error: 'Text exceeds the allowed character limit.',
+    });
+  });
+
   it('rejects invalid JSON with a stable error code', async () => {
     const response = await POST(
       new Request('http://localhost/api/extract/text', {

@@ -6,7 +6,7 @@
 |-------|------|---------|--------|------|
 | Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
 | Phase 1 | 核心功能 | 2 天 | P0 | ✅ 完成（Text/URL 提取、短语分析、CSV/clipboard、API、限流已可用） |
-| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | 🔄 部分完成（Clerk 已接入；支付/订阅/AI 待开发） |
+| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | ✅ 基础完成（Clerk、Creem、Supabase 订阅同步、Billing 菜单、AI Pro 提取已接入） |
 | Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 基础完成（About/Privacy/Terms/Pricing、robots、sitemap、llms 已落地，内容持续优化） |
 | Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
 
@@ -416,7 +416,7 @@ export function Header() {
 
 ---
 
-### Task 2.4: 实现 AI 提取功能 ❌ 未开始
+### Task 2.4: 实现 AI 提取功能 ✅ 已完成（Pro）
 
 **输入：** 用户文本
 
@@ -438,14 +438,16 @@ async function extractWithAI(text: string): Promise<AIExtractionResult>;
 ```
 
 **实现要点：**
-- 调用 DeepSeek API
+- 调用 DeepSeek API（OpenAI-compatible Chat Completions）
 - Prompt 设计
-- 错误处理
-- 超时设置
+- JSON 输出归一化：relevance clamp、category fallback、去重、最多 20 个
+- 错误处理与 15 秒超时设置
+
+> ✅ 已实现 `src/lib/ai-extractor.ts`，默认使用 `deepseek-v4-flash`，服务端 fetch 直连，不新增 OpenAI SDK。
 
 ---
 
-### Task 2.5: 创建 API 路由 - AI 提取 ❌ 未开始
+### Task 2.5: 创建 API 路由 - AI 提取 ✅ 已完成
 
 **输入：** POST 请求
 
@@ -456,33 +458,46 @@ async function extractWithAI(text: string): Promise<AIExtractionResult>;
 export async function POST(request: Request) {
   // 1. 检查用户登录状态
   // 2. 检查用户订阅状态
-  // 3. 检查 AI 使用配额
+  // 3. 原子 reserve AI 使用配额
   // 4. 执行 AI 提取
-  // 5. 更新配额
+  // 5. 成功保留消耗；失败或超时 refund
   // 6. 返回结果
 }
 ```
 
 **权限：** 仅 Pro 用户可访问
 
+> ✅ 已实现 `POST /api/extract/ai`，接收 `{ text }`，返回 `{ keywords, usage }`。AI 单次输入限制 20,000 字符，月配额通过 Supabase `ai_usage` RPC reserve/refund 管理。
+
 ---
 
-### Task 2.6: 集成 Creem 支付 ❌ 未开始
+### Task 2.6: 集成 Creem 支付 ✅ 已完成（Pro v1）
 
 **输入：** Creem 账号
 
-**文件：** `src/app/api/webhooks/creem/route.ts`
+**文件：**
+- `src/app/api/billing/checkout/route.ts`
+- `src/app/api/billing/subscription/route.ts`
+- `src/app/api/billing/portal/route.ts`
+- `src/app/api/webhook/creem/route.ts`
+- `src/lib/creem.ts`
+- `src/lib/supabase-admin.ts`
+- `src/lib/subscription.ts`
 
 **功能：**
-- 创建 Checkout Session
-- 处理 Webhook
-- 更新用户订阅状态
+- 创建 Creem Checkout（monthly/yearly）
+- 处理单数路径 Webhook：`/api/webhook/creem`
+- 验证 Creem webhook 签名，按 `payment_events.event_id` 幂等处理
+- 同步当前用户订阅状态到 Supabase
+- 创建 Creem Customer Portal 链接
+- 已订阅 active/trialing Pro 时阻止重复 checkout，返回 `ALREADY_SUBSCRIBED`
+- Checkout 成功回跳 `/pricing?checkout=success`
 
-**验证：** 支付流程完整
+**验证：** API/订阅/Webhook 单测通过；本地真实 Creem 流程已完成到 Supabase active 订阅写入。Creem 后台如已产生重复 active subscription，仍需在 Creem dashboard 手动取消不保留的订阅。
 
 ---
 
-### Task 2.7: 创建 Pricing 页面 ✅ 已完成（v1 信息页）
+### Task 2.7: 创建 Pricing 页面 ✅ 已完成（支付版）
 
 **输入：** 无
 
@@ -490,32 +505,41 @@ export async function POST(request: Request) {
 
 **功能：**
 - 价格对比表
-- Free / Pro planned 方案说明
-- Pro CTA disabled，不触发支付、登录、邮箱收集或跳转
+- Free / Pro 方案说明
+- 登录用户可直接发起 monthly/yearly checkout
+- 未登录用户点击 Pro CTA 打开 Clerk 登录
+- `checkout=success` 成功提示
 - FAQ 部分
 
-> ✅ 已创建 `/pricing` 页面。Pricing v1 仅用于透明展示免费方案与未来 Pro 计划，不接 Creem checkout、Webhook、Supabase subscription 或 paid access gates。
+> ✅ 已创建 `/pricing` 页面并接入 `PricingCheckoutActions`。Pro v1 已上线付费订阅，解锁 Text/URL 50,000 字符限制和 AI semantic extraction；PDF、YouTube、历史记录、优先支持仍明确标记为未来计划。
 
 ---
 
-### Task 2.8: 创建用户订阅管理 ❌ 未开始
+### Task 2.8: 创建用户订阅管理 ✅ 已完成（当前权益状态）
 
 **输入：** 用户 ID
 
-**文件：** `src/lib/subscription.ts`
+**文件：**
+- `src/lib/subscription.ts`
+- `src/components/billing/BillingProfilePanel.tsx`
+- `src/components/billing/BillingPortalButton.tsx`
+- `src/components/layout/Header.tsx`
 
 **功能：**
 ```typescript
-async function getUserSubscription(userId: string): Promise<Subscription>;
-async function createSubscription(userId: string, plan: string): Promise<void>;
-async function cancelSubscription(userId: string): Promise<void>;
+async function getUserSubscription(clerkUserId: string): Promise<Subscription | null>;
+async function hasActiveProSubscription(clerkUserId: string | null): Promise<boolean>;
+function isActiveProSubscription(subscription: Subscription | null): boolean;
+async function processCreemSubscriptionEvent(event: NormalizedCreemSubscription): Promise<{ processed: boolean }>;
 ```
 
-**数据库：** Supabase subscriptions 表
+**数据库：** Supabase `subscriptions` + `payment_events`
+
+> ✅ 已实现。`subscriptions` 只保存每个 `clerk_user_id` 的当前订阅/权益状态，`payment_events` 保存 webhook 历史。Billing 不再使用 `/account` 页面，而是嵌入 Clerk `UserButton.UserProfilePage`；旧 `/account` 页面已移除，访问应返回 404。
 
 ---
 
-### Task 2.9: 创建权限控制 Hook ❌ 未开始
+### Task 2.9: 创建权限/权益控制 🔄 部分完成（服务端权益已接入）
 
 **输入：** 无
 
@@ -535,7 +559,7 @@ function usePermissions() {
 }
 ```
 
-> ❌ 未开始。当前 Clerk 只提供登录状态，尚未接 Supabase subscription、Pro entitlement 或 AI 权限控制。
+> 🔄 服务端权益已接入：`src/lib/entitlements.ts` 定义 Free 10,000 / Pro 50,000 / AI 20,000 字符限制，Text、URL、AI API 通过 Clerk userId + Supabase subscription 判断 Pro 权益。尚未创建客户端 `usePermissions()` Hook。
 
 ---
 
@@ -692,9 +716,9 @@ export const metadata: Metadata = {
 **功能：**
 - 为 AI crawler 提供站点摘要、关键页面与 sitemap 链接
 - 提供 human-facing `/pricing` 与 AI-readable `/pricing.md`
-- 保持 Pro planned 信息与 Pricing 页面一致
+- 保持 Pro 当前权益与未来计划说明同 Pricing 页面一致
 
-> ✅ 已创建 `public/llms.txt` 与 `public/pricing.md`，当前包含 `/pricing`、`/pricing.md`、`/sitemap.xml` 等关键入口。
+> ✅ 已创建 `public/llms.txt` 与 `public/pricing.md`，当前包含 `/pricing`、`/pricing.md`、`/sitemap.xml` 等关键入口，并已同步 Pro 付费订阅、50,000 字符限制、AI semantic extraction、Creem billing 与未来 PDF/YouTube 计划边界。
 
 ---
 
@@ -743,14 +767,48 @@ export const metadata: Metadata = {
 **subscriptions 表：**
 ```sql
 CREATE TABLE subscriptions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
-  plan TEXT CHECK (plan IN ('free', 'pro')),
-  status TEXT CHECK (status IN ('active', 'canceled', 'expired')),
-  stripe_subscription_id TEXT,
-  current_period_end TIMESTAMP,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NOW()
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clerk_user_id TEXT NOT NULL UNIQUE,
+  plan TEXT NOT NULL CHECK (plan IN ('pro')),
+  interval TEXT CHECK (interval IN ('monthly', 'yearly')),
+  status TEXT NOT NULL CHECK (
+    status IN (
+      'active',
+      'trialing',
+      'past_due',
+      'canceled',
+      'unpaid',
+      'incomplete',
+      'incomplete_expired',
+      'paused',
+      'expired'
+    )
+  ),
+  provider TEXT NOT NULL DEFAULT 'creem' CHECK (provider IN ('creem')),
+  provider_customer_id TEXT,
+  provider_subscription_id TEXT,
+  provider_checkout_id TEXT,
+  product_id TEXT,
+  current_period_start TIMESTAMPTZ,
+  current_period_end TIMESTAMPTZ,
+  canceled_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (provider, provider_subscription_id)
+);
+```
+
+> ✅ SQL 已提交在 `supabase/payment-system.sql`。若已有重复订阅行，先执行 `supabase/fix-subscription-uniqueness.sql`：按 `clerk_user_id` 保留最新当前行，删除旧重复行，再创建唯一索引。
+
+**payment_events 表：**
+```sql
+CREATE TABLE payment_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  event_id TEXT NOT NULL UNIQUE,
+  provider TEXT NOT NULL DEFAULT 'creem' CHECK (provider IN ('creem')),
+  event_type TEXT NOT NULL,
+  payload JSONB NOT NULL,
+  processed_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 ```
 
@@ -764,6 +822,8 @@ CREATE TABLE ip_usage (
   UNIQUE(ip_address, date)
 );
 ```
+
+> ⏳ `ip_usage` / `ai_usage` 仍是后续持久化配额设计；当前线上限流使用 `src/lib/rate-limiter.ts`，可通过 Upstash Redis 环境变量启用生产持久限流，缺失时回退内存。
 
 **ai_usage 表：**
 ```sql
@@ -831,9 +891,14 @@ test: 添加单元测试
 ### Phase 2 验收
 
 - [x] Clerk 登录/注册正常
-- [ ] AI 提取功能正常
-- [ ] Creem 支付流程正常
-- [ ] 权限控制正确
+- [x] Creem checkout API 可创建 monthly/yearly checkout
+- [x] Creem webhook 使用 `/api/webhook/creem` 单数路径
+- [x] Supabase subscription 当前状态同步可用
+- [x] Pro Text/URL 50,000 字符限制生效，Free 仍为 10,000
+- [x] Billing 嵌入 Clerk 用户菜单
+- [x] `/account` 页面已移除，应返回 404
+- [x] AI 提取 API、Pro 权益、20,000 字符限制、月配额 reserve/refund 已接入
+- [ ] 客户端 `usePermissions()` Hook（等待 AI/历史等客户端权益场景）
 
 ### Phase 3 验收
 
@@ -855,13 +920,16 @@ test: 添加单元测试
 | DeepSeek API 不稳定 | 添加重试机制 + 降级方案 |
 | URL 抓取失败率高 | 添加错误提示 + 用户友好信息 |
 | Vercel 函数超时 | 优化算法，减少处理时间 |
+| Creem 后台重复订阅 | 应用侧阻止 active Pro 重复 checkout；历史重复 active subscription 需在 Creem dashboard 手动取消 |
+| Clerk 本地 key/session 不匹配 | 确认 `.env.local` 中 publishable/secret key 属于同一 Clerk app，必要时清理浏览器会话 |
 
 ### 注意事项
 
 1. **环境变量安全：** 不要提交 `.env.local`
-2. **API 密钥保护：** 使用 Server Actions，不暴露客户端
+2. **API 密钥保护：** Creem、Supabase service role、Clerk secret 仅服务端使用，不暴露客户端
 3. **错误日志：** 使用 Vercel Analytics 监控错误
 4. **性能监控：** 使用 Web Vitals 追踪性能
+5. **支付 Webhook：** Creem 后台统一配置 `/api/webhook/creem`，不要再使用复数 `/api/webhooks/creem`
 
 ---
 

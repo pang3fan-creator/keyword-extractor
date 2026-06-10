@@ -1,10 +1,18 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 import type { ExtractionResult, Phrase } from '@/types';
+import { AIInput } from './AIInput';
+import { AIGatedPanel } from './AIGatedPanel';
+import { AIResultTable } from './AIResultTable';
+import { AIResultCard } from './AIResultCard';
+import { AIQuotaDisplay } from './AIQuotaDisplay';
+import { AILoadingState } from './AILoadingState';
+import { AIErrorDisplay } from './AIErrorDisplay';
+import { usePro } from '@/hooks/usePro';
+import type { AIKeyword } from '@/types';
 
 interface KeywordItem {
   word: string;
@@ -14,6 +22,7 @@ interface KeywordItem {
 
 const PAGE_SIZE = 20;
 type ResultFilter = 'all' | '1word' | '2word' | '3word';
+type TabId = 'text' | 'url' | 'ai';
 type APIErrorCode =
   | 'INVALID_JSON'
   | 'TEXT_REQUIRED'
@@ -24,7 +33,12 @@ type APIErrorCode =
   | 'FETCH_FAILED'
   | 'NON_HTML_CONTENT'
   | 'EMPTY_CONTENT'
-  | 'RATE_LIMIT_EXCEEDED';
+  | 'RATE_LIMIT_EXCEEDED'
+  | 'PRO_REQUIRED'
+  | 'AI_LIMIT_REACHED'
+  | 'AI_TIMEOUT'
+  | 'AI_FAILED'
+  | 'AI_CONFIG_MISSING';
 
 const ERROR_TRANSLATION_KEYS: Record<APIErrorCode, string> = {
   INVALID_JSON: 'errors.invalidJson',
@@ -37,6 +51,11 @@ const ERROR_TRANSLATION_KEYS: Record<APIErrorCode, string> = {
   NON_HTML_CONTENT: 'errors.nonHtmlContent',
   EMPTY_CONTENT: 'errors.emptyContent',
   RATE_LIMIT_EXCEEDED: 'errors.rateLimitExceeded',
+  PRO_REQUIRED: 'errors.proRequired',
+  AI_LIMIT_REACHED: 'errors.aiLimitReached',
+  AI_TIMEOUT: 'errors.aiTimeout',
+  AI_FAILED: 'errors.aiFailed',
+  AI_CONFIG_MISSING: 'errors.aiConfigMissing',
 };
 
 function TextIcon() {
@@ -167,6 +186,16 @@ export function ToolSection() {
   const [sortDir, setSortDir] = useState('desc');
   const [currentPage, setCurrentPage] = useState(1);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const [resultSource, setResultSource] = useState<TabId | null>(null);
+
+  // AI extraction state
+  const [aiResults, setAiResults] = useState<AIKeyword[] | null>(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiUsage, setAiUsage] = useState<{ remaining: number; limit: number } | null>(null);
+
+  const { isPro, isSignedIn, isLoading: proLoading } = usePro();
+  const AI_MAX_LENGTH = 20000;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -209,6 +238,7 @@ export function ToolSection() {
     setTrigrams((result.trigrams ?? []).map(phraseToItem));
     setResultFilter('all');
     setUrlError('');
+    setResultSource(activeTab as TabId);
   };
 
   const getTranslatedError = (payload: unknown) => {
@@ -267,6 +297,69 @@ export function ToolSection() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAIExtract = async (text: string) => {
+    if (aiLoading) return;
+    setAiLoading(true);
+    setAiError(null);
+    setAiResults(null);
+    setAiUsage(null);
+
+    try {
+      const res = await fetch('/api/extract/ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setAiError(data.errorCode ?? 'AI_FAILED');
+        return;
+      }
+
+      setAiResults(data.keywords ?? []);
+      setAiUsage(data.usage ?? null);
+    } catch {
+      setAiError('AI_FAILED');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAIErrorRetry = () => {
+    setAiError(null);
+  };
+
+  const handleSwitchToBasic = () => {
+    setActiveTab('text');
+    setAiError(null);
+  };
+
+  const handleAICopy = async () => {
+    if (!aiResults) return;
+    const rows = [`${t('tableKeyword')}\t${t('ai.relevance')}\t${t('ai.category')}`];
+    aiResults.forEach((k) => rows.push(`${k.keyword}\t${k.relevance.toFixed(2)}\t${k.category}`));
+    await navigator.clipboard.writeText(rows.join('\n'));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleAIDownloadCsv = () => {
+    if (!aiResults) return;
+    const rows = [[t('tableKeyword'), t('ai.relevance'), t('ai.category')]];
+    aiResults.forEach((k) => rows.push([k.keyword, String(k.relevance), k.category]));
+    const csv = rows
+      .map((row) => row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ai-keywords.csv';
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
 
   const allResults = [...(results ?? []), ...bigrams, ...trigrams];
@@ -338,6 +431,10 @@ export function ToolSection() {
     }
   };
 
+  const handleTabSwitch = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   return (
     <div ref={resultsRef}>
       {/* Tabs */}
@@ -346,7 +443,7 @@ export function ToolSection() {
           className={cn('tab-btn', activeTab === 'text' && 'active')}
           role="tab"
           aria-selected={activeTab === 'text'}
-          onClick={() => setActiveTab('text')}
+          onClick={() => handleTabSwitch('text')}
           type="button"
         >
           <TextIcon />
@@ -356,16 +453,21 @@ export function ToolSection() {
           className={cn('tab-btn', activeTab === 'url' && 'active')}
           role="tab"
           aria-selected={activeTab === 'url'}
-          onClick={() => setActiveTab('url')}
+          onClick={() => handleTabSwitch('url')}
           type="button"
         >
           <UrlIcon />
           {t('tabUrl')}
         </button>
-        <button className="tab-btn" role="tab" aria-selected={false} disabled type="button">
+        <button
+          className={cn('tab-btn', activeTab === 'ai' && 'active')}
+          role="tab"
+          aria-selected={activeTab === 'ai'}
+          onClick={() => handleTabSwitch('ai')}
+          type="button"
+        >
           <AiIcon />
-          {t('tabAi')} <span className="lock-icon">&#x1F512;</span>{' '}
-          <span className="pro-badge">{t('proBadge')}</span>
+          {t('tabAi')} <span className="pro-badge">{t('proBadge')}</span>
         </button>
       </div>
 
@@ -380,9 +482,7 @@ export function ToolSection() {
             spellCheck={false}
             aria-label={t('textInputLabel')}
           />
-          <div className="char-count">
-            {t('characters', { count: charCount.toLocaleString() })}
-          </div>
+          <div className="char-count">{t('characters', { count: charCount.toLocaleString() })}</div>
         </div>
       </div>
 
@@ -412,48 +512,47 @@ export function ToolSection() {
         </div>
       </div>
 
-      {/* Tab Content: AI (locked) */}
+      {/* Tab Content: AI (gated) */}
       <div className={cn('tab-content', activeTab === 'ai' && 'active')}>
-        <div className="ai-locked-banner">
-          &#x1F512; {t('aiLockedBanner')}
-          <span style={{ fontWeight: 700, color: 'var(--pro)', marginLeft: 'auto' }}>
-            {t('proBadge')}
-          </span>
-        </div>
-        <div className="ai-overlay">
-          <textarea
-            placeholder={t('placeholderText')}
-            spellCheck={false}
-            disabled
-            value={t('aiSampleText')}
-            aria-label={t('aiInputLabel')}
-            style={{ opacity: 0.5 }}
-          />
-          <div className="ai-lock">
-            <div className="lock-icon-big">&#x1F512;</div>
-            <p>{t('aiLockedDesc')}</p>
-            <Link href="/pricing" className="btn-upgrade">
-              {t('upgradeToPro')}
-            </Link>
+        {proLoading ? (
+          <div style={{ textAlign: 'center', padding: '48px 24px' }}>
+            <div
+              style={{
+                width: 24,
+                height: 24,
+                border: '2px solid var(--border)',
+                borderTopColor: 'var(--primary)',
+                borderRadius: '50%',
+                display: 'inline-block',
+                animation: 'extract-spin 0.8s linear infinite',
+              }}
+            />
           </div>
-        </div>
+        ) : !isSignedIn ? (
+          <AIGatedPanel variant="sign-in" />
+        ) : !isPro ? (
+          <AIGatedPanel variant="upgrade" />
+        ) : (
+          <AIInput onExtract={handleAIExtract} disabled={aiLoading} maxLength={AI_MAX_LENGTH} />
+        )}
       </div>
 
-      {/* Extract Button */}
-      <button
-        className={cn('btn-extract', loading && 'loading')}
-        disabled={
-          loading ||
-          activeTab === 'ai' ||
-          (activeTab === 'text' && !textInput.trim()) ||
-          (activeTab === 'url' && !urlInput.trim())
-        }
-        onClick={handleExtract}
-        type="button"
-      >
-        <span className="btn-text">{t('extract')}</span>
-        <span className="spinner" />
-      </button>
+      {/* Extract Button — shared for Text/URL tabs; AI tab has its own button in AIInput */}
+      {activeTab !== 'ai' && (
+        <button
+          className={cn('btn-extract', loading && 'loading')}
+          disabled={
+            loading ||
+            (activeTab === 'text' && !textInput.trim()) ||
+            (activeTab === 'url' && !urlInput.trim())
+          }
+          onClick={handleExtract}
+          type="button"
+        >
+          <span className="btn-text">{t('extract')}</span>
+          <span className="spinner" />
+        </button>
+      )}
 
       {activeTab !== 'url' && (
         <div className={cn('url-error', urlError && 'visible')}>
@@ -461,145 +560,208 @@ export function ToolSection() {
         </div>
       )}
 
-      {/* Results */}
-      <div className={cn('results', results && results.length > 0 && 'visible')}>
-        <div className="results-header">
-          <h2>{t('resultsTitle', { count: sortedResults.length })}</h2>
-        </div>
+      {activeTab !== 'ai' && (
+        <>
+          {/* Results */}
+          <div
+            className={cn(
+              'results',
+              results && results.length > 0 && activeTab === resultSource && 'visible',
+            )}
+          >
+            <div className="results-header">
+              <h2>{t('resultsTitle', { count: sortedResults.length })}</h2>
+            </div>
 
-        <div className="filter-chips">
-          {(['all', '1word', '2word', '3word'] as const).map((f) => (
-            <button
-              key={f}
-              className={cn('filter-chip', resultFilter === f && 'active')}
-              onClick={() => setResultFilter(f)}
-              type="button"
-            >
-              {t(
-                f === 'all'
-                  ? 'filterAll'
-                  : f === '1word'
-                    ? 'filterOneWord'
-                    : f === '2word'
-                      ? 'filterTwoWord'
-                      : 'filterThreeWord',
-              )}
-            </button>
-          ))}
-        </div>
+            <div className="filter-chips">
+              {(['all', '1word', '2word', '3word'] as const).map((f) => (
+                <button
+                  key={f}
+                  className={cn('filter-chip', resultFilter === f && 'active')}
+                  onClick={() => setResultFilter(f)}
+                  type="button"
+                >
+                  {t(
+                    f === 'all'
+                      ? 'filterAll'
+                      : f === '1word'
+                        ? 'filterOneWord'
+                        : f === '2word'
+                          ? 'filterTwoWord'
+                          : 'filterThreeWord',
+                  )}
+                </button>
+              ))}
+            </div>
 
-        <div className="results-actions">
-          <button onClick={handleDownloadCsv} aria-label={t('downloadCsvLabel')} type="button">
-            <CsvIcon />
-            {t('downloadCsv')}
-          </button>
-          <button onClick={handleCopy} aria-label={t('copyClipboardLabel')} type="button">
-            {copied ? <CheckIcon /> : <CopyIcon />}
-            {copied ? t('copied') : t('copyClipboard')}
-          </button>
-        </div>
+            <div className="results-actions">
+              <button onClick={handleDownloadCsv} aria-label={t('downloadCsvLabel')} type="button">
+                <CsvIcon />
+                {t('downloadCsv')}
+              </button>
+              <button onClick={handleCopy} aria-label={t('copyClipboardLabel')} type="button">
+                {copied ? <CheckIcon /> : <CopyIcon />}
+                {copied ? t('copied') : t('copyClipboard')}
+              </button>
+            </div>
 
-        <div className="table-wrap">
-          <table>
-            <caption
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th
+                      data-sort="word"
+                      className={sortField === 'word' ? 'sorted' : ''}
+                      onClick={() => handleSortHeader('word', 'asc')}
+                    >
+                      {t('tableKeyword')}{' '}
+                      <span className="sort-arrow">
+                        {sortField === 'word'
+                          ? sortDir === 'asc'
+                            ? '\u2191'
+                            : '\u2193'
+                          : '\u2191'}
+                      </span>
+                    </th>
+                    <th
+                      data-sort="count"
+                      className={sortField === 'count' ? 'sorted' : ''}
+                      onClick={() => handleSortHeader('count', 'desc')}
+                    >
+                      {t('tableCount')}{' '}
+                      <span className="sort-arrow">
+                        {sortField === 'count'
+                          ? sortDir === 'asc'
+                            ? '\u2191'
+                            : '\u2193'
+                          : '\u2191'}
+                      </span>
+                    </th>
+                    <th
+                      data-sort="density"
+                      className={sortField === 'density' ? 'sorted' : ''}
+                      onClick={() => handleSortHeader('density', 'desc')}
+                    >
+                      {t('tableDensity')}{' '}
+                      <span className="sort-arrow">
+                        {sortField === 'density'
+                          ? sortDir === 'asc'
+                            ? '\u2191'
+                            : '\u2193'
+                          : '\u2191'}
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedResults.map((item) => (
+                    <tr key={item.word}>
+                      <td>{item.word}</td>
+                      <td>{item.count}</td>
+                      <td>{item.density.toFixed(1)}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="pagination">
+              <button
+                type="button"
+                aria-label={t('pageFirst')}
+                disabled={safePage <= 1}
+                onClick={() => setCurrentPage(1)}
+              >
+                &laquo;
+              </button>
+              <button
+                type="button"
+                aria-label={t('pagePrevious')}
+                disabled={safePage <= 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              >
+                &lsaquo;
+              </button>
+              <span className="page-info">
+                {t('pageOf', { current: safePage, total: totalPages })}
+              </span>
+              <button
+                type="button"
+                aria-label={t('pageNext')}
+                disabled={safePage >= totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              >
+                &rsaquo;
+              </button>
+              <button
+                type="button"
+                aria-label={t('pageLast')}
+                disabled={safePage >= totalPages}
+                onClick={() => setCurrentPage(totalPages)}
+              >
+                &raquo;
+              </button>
+            </div>
+
+            <p
               style={{
-                captionSide: 'bottom',
-                marginTop: 8,
+                textAlign: 'center',
                 fontSize: 12,
                 color: 'var(--muted-foreground)',
-                textAlign: 'left',
+                marginTop: 16,
               }}
             >
               {t('tableCaption')}
-            </caption>
-            <thead>
-              <tr>
-                <th
-                  data-sort="word"
-                  className={sortField === 'word' ? 'sorted' : ''}
-                  onClick={() => handleSortHeader('word', 'asc')}
-                >
-                  {t('tableKeyword')}{' '}
-                  <span className="sort-arrow">
-                    {sortField === 'word' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
-                  </span>
-                </th>
-                <th
-                  data-sort="count"
-                  className={sortField === 'count' ? 'sorted' : ''}
-                  onClick={() => handleSortHeader('count', 'desc')}
-                >
-                  {t('tableCount')}{' '}
-                  <span className="sort-arrow">
-                    {sortField === 'count' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
-                  </span>
-                </th>
-                <th
-                  data-sort="density"
-                  className={sortField === 'density' ? 'sorted' : ''}
-                  onClick={() => handleSortHeader('density', 'desc')}
-                >
-                  {t('tableDensity')}{' '}
-                  <span className="sort-arrow">
-                    {sortField === 'density' ? (sortDir === 'asc' ? '\u2191' : '\u2193') : '\u2191'}
-                  </span>
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedResults.map((item) => (
-                <tr key={item.word}>
-                  <td>{item.word}</td>
-                  <td>{item.count}</td>
-                  <td>{item.density.toFixed(1)}%</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+            </p>
+          </div>
 
-        <div className="pagination">
-          <button
-            type="button"
-            aria-label={t('pageFirst')}
-            disabled={safePage <= 1}
-            onClick={() => setCurrentPage(1)}
-          >
-            &laquo;
-          </button>
-          <button
-            type="button"
-            aria-label={t('pagePrevious')}
-            disabled={safePage <= 1}
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-          >
-            &lsaquo;
-          </button>
-          <span className="page-info">{t('pageOf', { current: safePage, total: totalPages })}</span>
-          <button
-            type="button"
-            aria-label={t('pageNext')}
-            disabled={safePage >= totalPages}
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-          >
-            &rsaquo;
-          </button>
-          <button
-            type="button"
-            aria-label={t('pageLast')}
-            disabled={safePage >= totalPages}
-            onClick={() => setCurrentPage(totalPages)}
-          >
-            &raquo;
-          </button>
-        </div>
-      </div>
+          {/* Empty results */}
+          {results && results.length === 0 && activeTab === resultSource && (
+            <div className="results visible">
+              <div className="results-header">
+                <h2 style={{ color: 'var(--muted-foreground)' }}>{t('noKeywordsFound')}</h2>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
-      {/* Empty results */}
-      {results && results.length === 0 && (
+      {/* AI Results */}
+      {activeTab === 'ai' && aiLoading && <AILoadingState />}
+
+      {activeTab === 'ai' && aiError && (
+        <AIErrorDisplay
+          errorCode={aiError}
+          onRetry={handleAIErrorRetry}
+          onSwitchToBasic={handleSwitchToBasic}
+        />
+      )}
+
+      {activeTab === 'ai' && aiResults && aiResults.length > 0 && (
         <div className="results visible">
           <div className="results-header">
-            <h2 style={{ color: 'var(--muted-foreground)' }}>{t('noKeywordsFound')}</h2>
+            <h2>{t('resultsTitle', { count: aiResults.length })}</h2>
+          </div>
+          <div className="results-actions">
+            <button onClick={handleAIDownloadCsv} aria-label={t('downloadCsvLabel')} type="button">
+              <CsvIcon />
+              {t('downloadCsv')}
+            </button>
+            <button onClick={handleAICopy} aria-label={t('copyClipboardLabel')} type="button">
+              {copied ? <CheckIcon /> : <CopyIcon />}
+              {copied ? t('copied') : t('copyClipboard')}
+            </button>
+          </div>
+          <AIResultTable keywords={aiResults} />
+          <AIResultCard keywords={aiResults} />
+          {aiUsage && <AIQuotaDisplay remaining={aiUsage.remaining} />}
+        </div>
+      )}
+
+      {activeTab === 'ai' && aiResults && aiResults.length === 0 && (
+        <div className="results visible">
+          <div className="results-header">
+            <h2>{t('noKeywordsFound')}</h2>
           </div>
         </div>
       )}
