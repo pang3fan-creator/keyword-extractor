@@ -76,6 +76,15 @@ const FOOTER_BADGES = [
     imageClassName: 'footer-badge-image',
     rel: 'noopener noreferrer',
   },
+  {
+    href: 'https://uno.directory',
+    imageSrc: 'https://uno.directory/uno-directory.svg',
+    width: 120,
+    height: 30,
+    altKey: 'badgeAlt.unoDirectory',
+    imageClassName: 'footer-badge-image',
+    rel: undefined,
+  },
 ] as const;
 
 export function Footer() {
