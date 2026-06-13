@@ -6,9 +6,9 @@
 |-------|------|---------|--------|------|
 | Phase 0 | 项目初始化 | 0.5 天 | P0 | ✅ 完成 |
 | Phase 1 | 核心功能 | 2 天 | P0 | ✅ 完成（Text/URL 提取、短语分析、CSV/clipboard、API、限流已可用） |
-| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | ✅ 基础完成（Clerk、Creem、Supabase 订阅同步、Billing 菜单、AI Pro 提取已接入） |
-| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 基础完成（About/Privacy/Terms/Pricing、robots、sitemap、llms 已落地，内容持续优化） |
-| Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始 |
+| Phase 2 | 用户系统 + 支付 | 2 天 | P0 | ✅ 完成（Clerk、Creem、Supabase 订阅同步、Billing 菜单、AI Pro 提取已接入） |
+| Phase 3 | SEO 内容 | 1.5 天 | P1 | 🔄 基础完成（About/Privacy/Terms/Pricing、robots、sitemap、llms 已落地；内容页规划已完成，待实施） |
+| Phase 4 | 差异化功能 | 3 天 | P2 | ⏳ 未开始（PDF、YouTube、历史记录） |
 
 **MVP 上线范围：Phase 0-3**
 
@@ -21,7 +21,7 @@
 ~~### Task 0.3: 配置环境变量~~ ✅（.env.local + .env.example）
 ~~### Task 0.4: 配置 Vercel 部署~~ ✅（extractkeywords.com 上线）
 
-### Task 0.5: 创建基础组件结构 ✅ 已完成（AI 相关后续）
+### Task 0.5: 创建基础组件结构 ✅ 已完成
 
 **输入：** Task 0.4 完成
 
@@ -34,15 +34,15 @@
 - `src/components/ui/` — Button, Input, Tabs, Table ✓
 - `src/components/layout/` — Header, Footer, Logo ✓（额外）
 - `src/components/extractor/ToolSection.tsx` — 文本/URL 输入、结果展示、CSV/clipboard 内联实现 ✓
+- `src/components/extractor/AIInput.tsx`, `AIGatedPanel.tsx`, `AIResultTable.tsx`, `AIResultCard.tsx`, `AIQuotaDisplay.tsx`, `AIErrorDisplay.tsx` ✓
 - `src/components/theme/` — ThemeProvider, ThemeToggle（额外）
+- `src/components/billing/` — BillingProfilePanel, BillingPortalButton, PricingCheckoutActions ✓
 - `src/types/index.ts` ✓
 - `src/lib/utils.ts` ✓（cn 函数）
 - `src/i18n/routing.ts`, `request.ts`, `proxy.ts`（额外）
 - `src/lib/keyword-extractor.ts`, `url-fetcher.ts`, `robots-checker.ts` ✅
 - `src/lib/rate-limiter.ts` ✅（额外）
-
-**后续功能缺失：**
-- `src/lib/ai-extractor.ts` ❌（AI 功能未开始）
+- `src/lib/ai-extractor.ts`, `ai-usage.ts`, `entitlements.ts` ✅
 
 ---
 
@@ -539,27 +539,24 @@ async function processCreemSubscriptionEvent(event: NormalizedCreemSubscription)
 
 ---
 
-### Task 2.9: 创建权限/权益控制 🔄 部分完成（服务端权益已接入）
+### Task 2.9: 创建权限/权益控制 ✅ 已完成（当前 Pro 场景）
 
 **输入：** 无
 
-**文件：** `src/hooks/use-permissions.ts`
+**文件：** `src/lib/entitlements.ts`, `src/hooks/usePro.ts`
 
 **功能：**
 ```typescript
-function usePermissions() {
-  const { user } = useUser();
-  
+function usePro() {
   return {
+    isSignedIn: boolean;
     isPro: boolean;
-    canUseAI: boolean;
-    dailyLimit: number | null;
-    dailyRemaining: number;
+    isLoading: boolean;
   };
 }
 ```
 
-> 🔄 服务端权益已接入：`src/lib/entitlements.ts` 定义 Free 10,000 / Pro 50,000 / AI 20,000 字符限制，Text、URL、AI API 通过 Clerk userId + Supabase subscription 判断 Pro 权益。尚未创建客户端 `usePermissions()` Hook。
+> ✅ 服务端权益已接入：`src/lib/entitlements.ts` 定义 Free 10,000 / Pro 50,000 / AI 20,000 字符限制，Text、URL、AI API 通过 Clerk userId + Supabase subscription 判断 Pro 权益。客户端当前使用 `src/hooks/usePro.ts` 为 AI Tab 提供登录/Pro gating。后续如果增加历史记录、团队席位或更复杂配额展示，再扩展为 `usePermissions()`。
 
 ---
 
@@ -597,18 +594,18 @@ function usePermissions() {
 
 ---
 
-### Task 3.3: 添加 Schema.org 结构化数据 ⚠️ 部分完成
+### Task 3.3: 添加 Schema.org 结构化数据 ✅ 基础完成
 
 **输入：** 无
 
-**文件：** `src/components/seo/schema.tsx`
+**文件：** `src/lib/schema.ts`
 
 **功能：**
 - WebApplication Schema
 - FAQPage Schema
 - BreadcrumbList Schema
 
-> ⚠️ 首页、Privacy、Terms 已注入 JSON-LD，但尚未抽成统一 `schema.tsx` 组件，也未补 BreadcrumbList 等更完整结构。
+> ✅ 已抽出 `createJsonLdGraph()` / `createBreadcrumbList()` helper。首页、About、Privacy、Terms、Pricing 与 404 已注入 JSON-LD；非首页已同步可见 Breadcrumb UI 与 BreadcrumbList。后续新增内容页时继续复用同一 helper。
 
 ---
 
@@ -722,6 +719,30 @@ export const metadata: Metadata = {
 
 ---
 
+### Task 3.10: Blog 内容体系 🔄 前端框架完成，正式文章待实施
+
+**输入：** SEO / AI SEO 内容集群规划
+
+**文件：** `1-suzhen/content-pages-task.md`
+
+**已完成：**
+- `/blog` 前端入口页
+- `/blog/[slug]` 文章详情页骨架
+- 占位文章 `/blog/how-to-extract-keywords-from-a-webpage`
+- Header / Footer Blog 链接启用
+- Blog metadata、canonical、BreadcrumbList、Blog JSON-LD
+- 当前无正式文章，因此 `/blog` 和占位文章均暂设 `noindex`，不进 sitemap / llms.txt
+
+**计划文章：**
+- `/blog/how-to-extract-keywords-from-a-webpage`（P0）
+- `/blog/keyword-density-checker`（P1）
+- `/blog/bigrams-and-trigrams-in-seo`（P1）
+- `/blog/competitor-content-keyword-analysis`（P2）
+
+> 🔄 Blog 前端框架和文章详情页骨架已落地。下一步是替换第一篇文章的占位正文；正式文章上线后再加入 sitemap 和 `public/llms.txt`。
+
+---
+
 ## Phase 4: 差异化功能（后期）
 
 ### Task 4.1: PDF 提取功能
@@ -812,29 +833,38 @@ CREATE TABLE payment_events (
 );
 ```
 
-**ip_usage 表：**
-```sql
-CREATE TABLE ip_usage (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  ip_address TEXT NOT NULL,
-  date DATE NOT NULL,
-  count INTEGER DEFAULT 0,
-  UNIQUE(ip_address, date)
-);
-```
+**基础提取限流：**
 
-> ⏳ `ip_usage` / `ai_usage` 仍是后续持久化配额设计；当前线上限流使用 `src/lib/rate-limiter.ts`，可通过 Upstash Redis 环境变量启用生产持久限流，缺失时回退内存。
+> ✅ Text/URL 基础提取限流由 `src/lib/rate-limiter.ts` 处理。生产环境优先使用 Upstash Redis REST（`UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`），缺失或 Redis 请求失败时回退内存限流；不再规划 Supabase `ip_usage` 表。
 
 **ai_usage 表：**
 ```sql
 CREATE TABLE ai_usage (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
-  month TEXT NOT NULL, -- YYYY-MM
-  count INTEGER DEFAULT 0,
-  UNIQUE(user_id, month)
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clerk_user_id TEXT NOT NULL,
+  month TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0 CHECK (count >= 0),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (clerk_user_id, month)
 );
 ```
+
+**ai_usage_events 表：**
+```sql
+CREATE TABLE ai_usage_events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  clerk_user_id TEXT NOT NULL,
+  month TEXT NOT NULL,
+  status TEXT NOT NULL CHECK (status IN ('success', 'failed', 'timeout', 'refunded')),
+  input_chars INTEGER,
+  keywords_count INTEGER,
+  error_message TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+```
+
+> ✅ SQL 已提交在 `supabase/ai-usage.sql`。AI 月配额通过 `reserve_ai_usage(...)` / `refund_ai_usage(...)` RPC 原子处理：成功保留消耗，失败/超时/模型错误 refund。
 
 ---
 
@@ -898,16 +928,20 @@ test: 添加单元测试
 - [x] Billing 嵌入 Clerk 用户菜单
 - [x] `/account` 页面已移除，应返回 404
 - [x] AI 提取 API、Pro 权益、20,000 字符限制、月配额 reserve/refund 已接入
-- [ ] 客户端 `usePermissions()` Hook（等待 AI/历史等客户端权益场景）
+- [x] 客户端 `usePro()` Hook 已接入 AI Tab gating
 
 ### Phase 3 验收
 
 - [x] 首页渲染正常
 - [x] SEO 基础内容完整（首页、About、Privacy、Terms、Pricing）
 - [x] Schema.org 基础可用
-- [ ] BreadcrumbList 与统一 schema 组件仍可补充
+- [x] BreadcrumbList 与统一 schema helper 已接入
 - [x] robots.txt/sitemap.xml 可访问
 - [x] llms.txt 与 pricing.md 可访问
+- [x] Blog 内容体系规划已完成
+- [x] `/blog` 前端框架已完成
+- [x] `/blog/[slug]` 文章详情页骨架已完成
+- [ ] 首批 `/blog/*` 正式文章待实现
 
 ---
 

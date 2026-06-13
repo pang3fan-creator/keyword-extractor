@@ -2,23 +2,23 @@
 
 ## Summary
 
-本计划用于支付功能开发前的内容准备。目标不是复制首页的 Text/URL 提取功能，也不创建会和首页抢转化入口的变体工具页，而是补充解释型、教程型、可被搜索引擎和 AI 引用的内容页。
+本计划用于 Blog 内容体系准备。目标不是复制首页的 Text/URL 提取功能，也不创建会和首页抢转化入口的变体工具页，而是补充解释型、教程型、可被搜索引擎和 AI 引用的内容页。
 
-当前阶段只做规划，不新增页面路由。
+当前阶段已实现 `/blog` 前端框架和 `/blog/{slug}` 文章详情页骨架；正式文章正文后续单独实施。
 
 ## 内容原则
 
 - 首页继续承载核心免费工具：Text extraction、URL extraction、CSV、clipboard。
 - 内容页只解释方法、场景、判断标准和 SEO 背景，不重复放置完整工具 UI。
 - 页面 CTA 统一指向首页 `/#toolArea`，不做独立 extractor。
-- AI/Pro 只写 planned / future release，不写 available、active、purchasable。
-- 所有页面上线时必须补 metadata、canonical、schema、sitemap、llms.txt。
+- 可以准确提及 Pro AI semantic extraction 已上线；PDF、YouTube、history、priority support 仍写 planned / future release。
+- 所有正式文章上线时必须补 metadata、canonical、schema、sitemap、llms.txt。
 
 ## 推荐优先级
 
 ### P0: How to Extract Keywords from a Webpage
 
-**建议路径：** `/guides/how-to-extract-keywords-from-a-webpage`
+**建议路径：** `/blog/how-to-extract-keywords-from-a-webpage`
 
 **目标意图：** 用户想分析某个网页或竞争对手页面，但不确定 URL extraction 的流程、限制和注意事项。
 
@@ -33,7 +33,7 @@
 
 ### P1: Keyword Density Checker Guide
 
-**建议路径：** `/guides/keyword-density-checker`
+**建议路径：** `/blog/keyword-density-checker`
 
 **目标意图：** 用户想理解 keyword density 是什么、多少算合理、如何避免 keyword stuffing。
 
@@ -48,7 +48,7 @@
 
 ### P1: Bigrams and Trigrams in SEO
 
-**建议路径：** `/guides/bigrams-and-trigrams-in-seo`
+**建议路径：** `/blog/bigrams-and-trigrams-in-seo`
 
 **目标意图：** 用户想知道 2-word/3-word phrases 为什么比单词频率更有用。
 
@@ -57,13 +57,13 @@
 - 为什么 multi-word phrases 更接近真实搜索词
 - 如何用 phrases 发现内容主题和长尾机会
 - phrase extraction 与 AI semantic extraction 的区别
-- Pro AI 只作为 future planned capability 提及
+- Pro AI semantic extraction 可作为已上线功能提及，但不作为本文主转化入口
 
 **CTA：** Extract keyword phrases，链接到 `/#toolArea`
 
 ### P2: Keyword Extraction for Competitor Content Analysis
 
-**建议路径：** `/guides/competitor-content-keyword-analysis`
+**建议路径：** `/blog/competitor-content-keyword-analysis`
 
 **目标意图：** SEO/marketing 用户想审计竞争对手页面。
 

@@ -111,9 +111,7 @@ export function Footer() {
           <h4>{t('resources')}</h4>
           <ul>
             <li>
-              <Link href="#" onClick={(e) => e.preventDefault()}>
-                {t('blog')}
-              </Link>
+              <Link href="/blog">{t('blog')}</Link>
             </li>
           </ul>
         </div>

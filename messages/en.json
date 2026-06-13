@@ -682,6 +682,123 @@
       "success": "Checkout completed. Your subscription will update after payment confirmation. Use Billing in the user menu to manage your plan."
     }
   },
+  "blog": {
+    "metadata": {
+      "title": "Blog",
+      "description": "ExtractKeywords blog home for upcoming guides on keyword extraction, SEO workflows, and content analysis.",
+      "openGraphTitle": "Blog | ExtractKeywords",
+      "openGraphDescription": "Upcoming ExtractKeywords articles on keyword extraction, SEO workflows, and content analysis.",
+      "schemaName": "ExtractKeywords Blog",
+      "schemaDescription": "The ExtractKeywords blog will publish practical guides on keyword extraction, SEO workflows, and content analysis."
+    },
+    "hero": {
+      "title": "Keyword extraction notes for practical SEO work",
+      "subtitle": "A home for upcoming guides on webpage keyword extraction, density checks, phrase analysis, and content research workflows."
+    },
+    "sections": {
+      "scopeTitle": "What this blog will cover",
+      "scopeDesc": "The blog will focus on practical keyword analysis: how to extract keywords from public pages, when to use pasted text, how to read frequency and density, and how phrase extraction supports SEO decisions.",
+      "featuredTitle": "Featured articles",
+      "latestTitle": "Latest articles",
+      "emptyTitle": "Articles are being prepared",
+      "emptyDesc": "The first article will cover how to extract keywords from a webpage without turning the blog into another copy of the homepage tool.",
+      "plannedTitle": "Planned article topics"
+    },
+    "topics": [
+      {
+        "category": "Webpage analysis",
+        "title": "How to extract keywords from a webpage",
+        "description": "A step-by-step guide to using public URLs, understanding robots.txt limits, and deciding when pasted text is better.",
+        "meta": "Preview article layout"
+      },
+      {
+        "category": "SEO basics",
+        "title": "Keyword density checker guide",
+        "description": "A practical explanation of density, frequency, and why fixed percentage targets can mislead content decisions.",
+        "meta": "Planned article"
+      },
+      {
+        "category": "Phrase analysis",
+        "title": "Bigrams and trigrams in SEO",
+        "description": "A guide to reading two-word and three-word phrases for topic discovery and long-tail keyword research.",
+        "meta": "Planned article"
+      }
+    ],
+    "cta": {
+      "title": "Need keyword data now?",
+      "description": "Use the free extractor while the first articles are being prepared.",
+      "link": "Try the keyword extractor"
+    },
+    "aria": {
+      "scope": "Blog coverage topics",
+      "featured": "Featured blog articles",
+      "latest": "Latest blog articles",
+      "planned": "Planned blog article topics"
+    },
+    "article": {
+      "labels": {
+        "articleMeta": "Article details",
+        "category": "Category",
+        "readTime": "Read time",
+        "status": "Status",
+        "draftNotice": "Draft status",
+        "content": "Article content",
+        "related": "Related blog navigation"
+      },
+      "howToExtractKeywordsFromAWebpage": {
+        "metadata": {
+          "title": "How to Extract Keywords from a Webpage",
+          "description": "Draft article layout for an upcoming guide about extracting keywords from public web pages.",
+          "openGraphTitle": "How to Extract Keywords from a Webpage | ExtractKeywords",
+          "openGraphDescription": "Preview layout for an upcoming ExtractKeywords guide about webpage keyword extraction.",
+          "schemaDescription": "Draft article layout for an upcoming guide about extracting keywords from public web pages."
+        },
+        "category": "Webpage analysis",
+        "title": "How to Extract Keywords from a Webpage",
+        "summary": "A draft reading layout for the upcoming guide. The final article will explain URL extraction, common fetch limits, and how to interpret keyword results.",
+        "publishedLabel": "Drafted",
+        "publishedDate": "June 2026",
+        "readTime": "4 min read",
+        "status": "Draft layout",
+        "noticeTitle": "Article copy is still being prepared",
+        "noticeDesc": "This page exists to test the article reading experience before the final SEO article is written and submitted for indexing.",
+        "sections": [
+          {
+            "heading": "What the final guide will explain",
+            "paragraphs": [
+              "The finished article will walk through how to extract keywords from a public webpage, why some pages cannot be fetched, and when pasted text gives cleaner results.",
+              "It will keep the focus on practical SEO reading: frequency, density, bigrams, trigrams, and the limits of automated page extraction."
+            ],
+            "list": [
+              "How public URL extraction works",
+              "Why robots.txt, paywalls, and login walls can block extraction",
+              "How to decide between URL mode and pasted text"
+            ]
+          },
+          {
+            "heading": "How the reading layout should feel",
+            "paragraphs": [
+              "The article page uses a narrow reading column so long explanations stay comfortable on desktop and mobile.",
+              "Metadata stays visible near the title, while the body avoids tool UI and keeps the reader focused on the guide."
+            ]
+          },
+          {
+            "heading": "What happens next",
+            "paragraphs": [
+              "After the real article is written, this placeholder copy will be replaced with complete content, FAQ sections, and internal links.",
+              "Only then should the page be added to sitemap and llms.txt for search engines and AI systems."
+            ]
+          }
+        ],
+        "cta": {
+          "title": "Want to test extraction now?",
+          "description": "Use the free keyword extractor while the full article is being written.",
+          "link": "Try the keyword extractor"
+        },
+        "backToBlog": "Back to Blog"
+      }
+    }
+  },
   "billing": {
     "errors": {
       "authRequired": "Please sign in to continue.",

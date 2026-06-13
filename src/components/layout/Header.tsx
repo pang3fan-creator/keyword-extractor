@@ -15,8 +15,13 @@ import { ThemeToggle } from '../theme/ThemeToggle';
 const CENTER_LINKS = [
   { href: '/', key: 'home' },
   { href: '/pricing', key: 'pricing', enabled: true },
-  { href: '/blog', key: 'blog' },
+  { href: '/blog', key: 'blog', enabled: true },
 ] as const;
+
+function isNavItemActive(pathname: string, href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function BillingUserButton({ label }: { label: string }) {
   return (
@@ -60,7 +65,7 @@ export function Header() {
           <nav className="nav-center" aria-label={t('centerNavigation')}>
             {CENTER_LINKS.map((item) => {
               const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
-              const isActive = item.href === '/' ? pathname === '/' : pathname.endsWith(item.href);
+              const isActive = isNavItemActive(pathname, item.href);
 
               return isEnabled ? (
                 <Link
@@ -125,7 +130,7 @@ export function Header() {
       <div className={cn('mobile-overlay', menuOpen && 'open')} id="mobileOverlay">
         {CENTER_LINKS.map((item) => {
           const isEnabled = item.href === '/' || ('enabled' in item && item.enabled);
-          const isActive = item.href === '/' ? pathname === '/' : pathname.endsWith(item.href);
+          const isActive = isNavItemActive(pathname, item.href);
 
           return isEnabled ? (
             <Link
