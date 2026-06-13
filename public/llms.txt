@@ -20,6 +20,8 @@
 - About: https://extractkeywords.com/about
 - Privacy: https://extractkeywords.com/privacy
 - Terms: https://extractkeywords.com/terms
+- Blog: https://extractkeywords.com/blog
+- Blog Article (Preview): https://extractkeywords.com/blog/how-to-extract-keywords-from-a-webpage
 
 ## Technical
 - robots.txt: https://extractkeywords.com/robots.txt

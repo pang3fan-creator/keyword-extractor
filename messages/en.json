@@ -796,6 +796,18 @@
           "link": "Try the keyword extractor"
         },
         "backToBlog": "Back to Blog"
+      },
+      "relatedArticles": {
+        "title": "Related Articles",
+        "placeholderCategory": "Planned",
+        "placeholderTitle": "More articles coming soon",
+        "placeholderSummary": "New keyword extraction guides are being prepared."
+      },
+      "authorName": "ExtractKeywords Team",
+      "notFound": {
+        "title": "Article not found",
+        "description": "The article you are looking for does not exist.",
+        "backToBlog": "View all blog posts"
       }
     }
   },
